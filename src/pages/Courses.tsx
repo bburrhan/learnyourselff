@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
 import { Search, Filter, X, AlertCircle } from 'lucide-react'
 import { useCourses } from '../hooks/useCourses'
+import { supabase } from '../lib/supabase'
 import CourseCard from '../components/UI/CourseCard'
 import LoadingSpinner from '../components/UI/LoadingSpinner'
 
@@ -10,6 +11,8 @@ const Courses: React.FC = () => {
   const { t } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
   const [showFilters, setShowFilters] = useState(false)
+  const [categories, setCategories] = useState<any[]>([])
+  const [categoriesLoading, setCategoriesLoading] = useState(true)
 
   // Filter states
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '')
@@ -28,6 +31,37 @@ const Courses: React.FC = () => {
   }), [searchTerm, selectedCategory, selectedLanguage, selectedDifficulty, priceRange])
 
   const { courses, loading, error } = useCourses(filters)
+
+  // Fetch categories
+  React.useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('categories')
+          .select('*')
+          .eq('is_active', true)
+          .order('sort_order', { ascending: true })
+
+        if (error) throw error
+        setCategories(data || [])
+      } catch (error) {
+        console.error('Error fetching categories:', error)
+        // Fallback to default categories
+        setCategories([
+          { id: '1', slug: 'technology', name: 'Technology' },
+          { id: '2', slug: 'business', name: 'Business' },
+          { id: '3', slug: 'design', name: 'Design' },
+          { id: '4', slug: 'marketing', name: 'Marketing' },
+          { id: '5', slug: 'language', name: 'Language' },
+          { id: '6', slug: 'science', name: 'Science' }
+        ])
+      } finally {
+        setCategoriesLoading(false)
+      }
+    }
+
+    fetchCategories()
+  }, [])
 
   // Update URL params when filters change
   const updateSearchParams = () => {
@@ -48,7 +82,6 @@ const Courses: React.FC = () => {
     setSearchParams({})
   }
 
-  const categories = ['all', 'technology', 'business', 'design', 'marketing', 'language', 'science']
   const languages = ['all', 'en', 'tr', 'es', 'fr']
   const difficulties = ['all', 'beginner', 'intermediate', 'advanced']
 
