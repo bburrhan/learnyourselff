@@ -17,10 +17,12 @@ import {
 import toast from 'react-hot-toast'
 
 type Course = Database['public']['Tables']['courses']['Row']
+type Category = Database['public']['Tables']['categories']['Row']
 
 const AdminCourses: React.FC = () => {
   const { t, i18n } = useTranslation()
   const [courses, setCourses] = useState<Course[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [showForm, setShowForm] = useState(false)
@@ -46,7 +48,34 @@ const AdminCourses: React.FC = () => {
 
   useEffect(() => {
     fetchCourses()
+    fetchCategories()
   }, [i18n.language])
+
+  const fetchCategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true })
+
+      if (error) throw error
+
+      setCategories(data || [])
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+      // Fallback to default categories
+      const defaultCategories = [
+        { id: 'tech', name: 'Technology', slug: 'technology' },
+        { id: 'biz', name: 'Business', slug: 'business' },
+        { id: 'design', name: 'Design', slug: 'design' },
+        { id: 'marketing', name: 'Marketing', slug: 'marketing' },
+        { id: 'wellness', name: 'Health & Wellness', slug: 'health-wellness' },
+        { id: 'personal', name: 'Personal Development', slug: 'personal-development' },
+      ]
+      setCategories(defaultCategories as Category[])
+    }
+  }
 
   const fetchCourses = async () => {
     try {
@@ -507,14 +536,18 @@ const AdminCourses: React.FC = () => {
                       onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
-                      <option value="">Select {t('category')}</option>
-                      <option value="technology">Technology</option>
-                      <option value="business">Business</option>
-                      <option value="design">Design</option>
-                      <option value="marketing">Marketing</option>
-                      <option value="language">Language</option>
-                      <option value="science">Science</option>
+                      <option value="">Select Category</option>
+                      {categories.map((category) => (
+                        <option key={category.id} value={category.slug}>
+                          {category.name}
+                        </option>
+                      ))}
                     </select>
+                    {categories.length === 0 && (
+                      <p className="mt-1 text-xs text-amber-600">
+                        ⚠️ No categories available. Please create categories first in Category Management.
+                      </p>
+                    )}
                   </div>
                 </div>
 
