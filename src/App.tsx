@@ -25,6 +25,7 @@ import AdminCourses from './pages/Admin/AdminCourses'
 import AdminBlogs from './pages/Admin/AdminBlogs'
 import AdminUsers from './pages/Admin/AdminUsers'
 import AdminAnalytics from './pages/Admin/AdminAnalytics'
+import AdminCategories from './pages/Admin/AdminCategories'
 import About from './pages/About'
 import Contact from './pages/Contact'
 import Privacy from './pages/Privacy'
@@ -106,6 +107,14 @@ function App() {
               element={
                 <ProtectedRoute adminOnly>
                   <AdminAnalytics />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/categories"
+              element={
+                <ProtectedRoute adminOnly>
+                  <AdminCategories />
                 </ProtectedRoute>
               }
             />
