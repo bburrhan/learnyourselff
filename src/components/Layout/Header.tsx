@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { User, Globe, Menu, X } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
+import SubscriptionStatus from '../UI/SubscriptionStatus'
 import { useState } from 'react'
 
 const Header: React.FC = () => {
@@ -26,6 +27,7 @@ const Header: React.FC = () => {
   const navLinks = [
     { path: '/', label: t('home') },
     { path: '/courses', label: t('Courses') },
+    { path: '/products', label: t('products') },
     { path: '/blog', label: t('blog') },
   ]
 
@@ -62,6 +64,8 @@ const Header: React.FC = () => {
 
           {/* Right side actions */}
           <div className="hidden md:flex items-center space-x-4">
+            {user && <SubscriptionStatus />}
+            
             <button
               onClick={toggleLanguage}
               className="flex items-center space-x-1 text-gray-700 hover:text-royal-blue-600 transition-colors px-3 py-2 rounded-lg hover:bg-gray-50"
