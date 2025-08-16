@@ -23,8 +23,7 @@ const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, {
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { status: 200, headers: corsOptions })
-            if (course) {
-              try {
+  }
 
   try {
     const { courseId, email, fullName, successUrl, cancelUrl } = await req.json()
@@ -46,14 +45,17 @@ Deno.serve(async (req: Request) => {
       throw new Error('Course not found or inactive')
     }
 
-              } catch (emailError) {
+    if (course) {
+      try {
 
-              }
-            } else {
-              console.error('Cannot send email: course data not available')
+      } catch (emailError) {
+
+      }
+    } else {
+      console.error('Cannot send email: course data not available')
+    }
+
     // Create Stripe checkout session
-          }
-
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
