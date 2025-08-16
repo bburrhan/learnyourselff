@@ -237,6 +237,20 @@ const AdminDashboard: React.FC = () => {
               </Link>
 
               <Link
+                to="/admin/categories"
+                className="flex items-center justify-between p-4 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors"
+              >
+                <div className="flex items-center">
+                  <Tag className="h-8 w-8 text-indigo-600 mr-3" />
+                  <div>
+                    <h3 className="font-semibold text-indigo-900">Manage Categories</h3>
+                    <p className="text-sm text-indigo-700">Create and organize course categories</p>
+                  </div>
+                </div>
+                <ArrowRight className="h-5 w-5 text-indigo-600" />
+              </Link>
+
+              <Link
                 to="/admin/analytics"
                 className="flex items-center justify-between p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors"
               >
