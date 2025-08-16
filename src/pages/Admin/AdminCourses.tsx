@@ -206,10 +206,8 @@ const AdminCourses: React.FC = () => {
     try {
       const courseData = {
         ...formData,
-        id: editingCourse?.id || `course-${Date.now()}`, // Generate ID for new courses
         tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean),
         updated_at: new Date().toISOString(),
-        created_at: editingCourse?.created_at || new Date().toISOString(),
       }
 
       if (editingCourse) {
@@ -217,28 +215,48 @@ const AdminCourses: React.FC = () => {
         try {
           const { error } = await supabase
             .from('courses')
-            .update(courseData)
+            .update({
+              ...courseData,
+              updated_at: new Date().toISOString(),
+            })
             .eq('id', editingCourse.id)
 
           if (error) throw error
         } catch (dbError) {
           // Fallback: update in local state for demo mode
           setCourses(courses.map(course => 
-            course.id === editingCourse.id ? { ...course, ...courseData } : course
+            course.id === editingCourse.id ? { 
+              ...course, 
+              ...courseData,
+              id: editingCourse.id,
+              created_at: editingCourse.created_at,
+              updated_at: new Date().toISOString(),
+            } : course
           ))
         }
         toast.success('Course updated successfully!')
       } else {
         // Create new course
         try {
-          const { error } = await supabase
+          const { data, error } = await supabase
             .from('courses')
             .insert([courseData])
+            .select()
 
           if (error) throw error
+          
+          // Add the new course with proper UUID to local state
+          if (data && data[0]) {
+            setCourses([data[0], ...courses])
+          }
         } catch (dbError) {
           // Fallback: add to local state for demo mode
-          setCourses([courseData as Course, ...courses])
+          const newCourse = {
+            ...courseData,
+            id: `course-${Date.now()}`, // Only for demo mode
+            created_at: new Date().toISOString(),
+          } as Course
+          setCourses([newCourse, ...courses])
           
           // Also save to localStorage for persistence across page reloads
           const localCourses = localStorage.getItem('localCourses')
@@ -250,19 +268,12 @@ const AdminCourses: React.FC = () => {
               existingCourses = []
             }
           }
-          existingCourses.unshift(courseData)
+          existingCourses.unshift(newCourse)
           localStorage.setItem('localCourses', JSON.stringify(existingCourses))
         }
         toast.success('Course created successfully!')
       }
 
-      // Refresh courses if database is available, otherwise we already updated local state
-      try {
-        await fetchCourses()
-      } catch (error) {
-        // If fetchCourses fails, we're in demo mode and already updated local state
-        console.log('Demo mode: Using local state updates')
-      }
       resetForm()
     } catch (error) {
       console.error('Error saving course:', error)
