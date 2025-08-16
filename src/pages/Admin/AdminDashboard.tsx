@@ -11,7 +11,8 @@ import {
   ArrowRight,
   Calendar,
   Download,
-  FileText
+  FileText,
+  Tag
 } from 'lucide-react'
 import { format } from 'date-fns'
 

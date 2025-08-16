@@ -3,6 +3,7 @@ import { supabase, Database } from '../lib/supabase'
 import { useTranslation } from 'react-i18next'
 
 type Course = Database['public']['Tables']['courses']['Row']
+type Category = Database['public']['Tables']['categories']['Row']
 
 const mockCourses: Course[] = [
   {

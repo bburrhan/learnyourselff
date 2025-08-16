@@ -109,9 +109,9 @@ const Courses: React.FC = () => {
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent transition-all duration-200"
                 >
                   <option value="all">{t('allCategories')}</option>
-                  {categories.slice(1).map((category) => (
-                    <option key={category} value={category}>
-                      {category.charAt(0).toUpperCase() + category.slice(1)}
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.slug}>
+                      {category.name}
                     </option>
                   ))}
                 </select>
