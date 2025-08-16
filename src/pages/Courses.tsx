@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
 import { Search, Filter, X, AlertCircle } from 'lucide-react'
@@ -10,6 +11,12 @@ import LoadingSpinner from '../components/UI/LoadingSpinner'
 const Courses: React.FC = () => {
   const { t } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
   const [showFilters, setShowFilters] = useState(false)
   const [categories, setCategories] = useState<any[]>([])
   const [categoriesLoading, setCategoriesLoading] = useState(true)

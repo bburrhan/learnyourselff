@@ -44,6 +44,11 @@ const AdminAnalytics: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [dateRange, setDateRange] = useState('3months')
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {

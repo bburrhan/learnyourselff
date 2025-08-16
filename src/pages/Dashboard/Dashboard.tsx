@@ -12,6 +12,11 @@ const Dashboard: React.FC = () => {
   const { user } = useAuth()
   const location = useLocation()
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
   const sidebarItems = [
     {
       path: '/dashboard',

@@ -42,6 +42,11 @@ const AdminDashboard: React.FC = () => {
   })
   const [loading, setLoading] = useState(true)
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
   useEffect(() => {
     const fetchStats = async () => {
       try {

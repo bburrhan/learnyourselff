@@ -1,4 +1,5 @@
 import React from 'react'
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useCourses } from '../hooks/useCourses'
@@ -23,6 +24,11 @@ import {
 const Home: React.FC = () => {
   const { t } = useTranslation()
   const { courses: sampleCourses, loading: sampleLoading } = useCourses({ priceRange: [0, 10] })
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   const transformationStories = [
     {

@@ -29,6 +29,11 @@ const AdminBlogs: React.FC = () => {
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
   const [formData, setFormData] = useState({
     title: '',
     content: '',

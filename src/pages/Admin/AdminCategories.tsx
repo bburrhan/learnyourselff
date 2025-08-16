@@ -28,6 +28,11 @@ const AdminCategories: React.FC = () => {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
   const [formData, setFormData] = useState({
     name: '',
     slug: '',

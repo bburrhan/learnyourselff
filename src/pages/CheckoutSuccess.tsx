@@ -6,6 +6,11 @@ const CheckoutSuccess: React.FC = () => {
   const [searchParams] = useSearchParams()
   const [checkoutInfo, setCheckoutInfo] = useState<any>(null)
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
   useEffect(() => {
     // Get checkout info from localStorage
     const storedInfo = localStorage.getItem('checkoutInfo')
