@@ -60,7 +60,24 @@ const CourseDetail: React.FC = () => {
         // If no course found in Supabase, try mock data
         if (!courseData) {
           console.log('No course found in Supabase, trying mock data...')
-          // Provide mock course data based on ID and language
+          
+          // First check localStorage for locally created courses
+          const localCourses = localStorage.getItem('localCourses')
+          if (localCourses) {
+            try {
+              const parsedCourses = JSON.parse(localCourses)
+              const foundLocalCourse = parsedCourses.find((course: Course) => course.id === id)
+              if (foundLocalCourse) {
+                setCourse(foundLocalCourse)
+                console.log('Using locally created course data')
+                return
+              }
+            } catch (e) {
+              console.error('Error parsing local courses:', e)
+            }
+          }
+          
+          // Fallback to mock course data based on ID and language
         const mockCoursesEn = {
           'mock-1': {
             id: 'mock-1',

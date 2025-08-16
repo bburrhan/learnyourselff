@@ -332,7 +332,19 @@ export const useCourses = (filters?: {
             ...filters,
             language: i18n.language
           }
-          setCourses(filterMockCourses(mockCourses, filtersWithLanguage))
+          // Check if we have any courses in localStorage (from admin creation)
+          const localCourses = localStorage.getItem('localCourses')
+          if (localCourses) {
+            try {
+              const parsedCourses = JSON.parse(localCourses)
+              const allCourses = [...parsedCourses, ...mockCourses]
+              setCourses(filterMockCourses(allCourses, filtersWithLanguage))
+            } catch (e) {
+              setCourses(filterMockCourses(mockCourses, filtersWithLanguage))
+            }
+          } else {
+            setCourses(filterMockCourses(mockCourses, filtersWithLanguage))
+          }
         }
       } catch (err) {
         console.error('Error fetching courses:', err)
@@ -341,7 +353,19 @@ export const useCourses = (filters?: {
           ...filters,
           language: i18n.language
         }
-        setCourses(filterMockCourses(mockCourses, filtersWithLanguage))
+        // Check localStorage for locally created courses
+        const localCourses = localStorage.getItem('localCourses')
+        if (localCourses) {
+          try {
+            const parsedCourses = JSON.parse(localCourses)
+            const allCourses = [...parsedCourses, ...mockCourses]
+            setCourses(filterMockCourses(allCourses, filtersWithLanguage))
+          } catch (e) {
+            setCourses(filterMockCourses(mockCourses, filtersWithLanguage))
+          }
+        } else {
+          setCourses(filterMockCourses(mockCourses, filtersWithLanguage))
+        }
       } finally {
         setLoading(false)
       }
