@@ -294,7 +294,9 @@ export const useCourses = (filters?: {
         setLoading(true)
         setError(null)
 
-        // Try to fetch from Supabase first
+        // Always try to fetch from Supabase first
+        console.log('Fetching courses from Supabase for language:', i18n.language)
+        
         let query = supabase
           .from('courses')
           .select('*')
@@ -317,55 +319,40 @@ export const useCourses = (filters?: {
         }
         
         const { data: supabaseCourses, error: supabaseError } = await query
+        
+        console.log('Supabase courses result:', { 
+          count: supabaseCourses?.length || 0, 
+          error: supabaseError,
+          courses: supabaseCourses?.map(c => ({ id: c.id, title: c.title, cover_image_url: c.cover_image_url }))
+        })
 
         if (supabaseError) {
           console.error('Supabase error:', supabaseError)
-          throw supabaseError
+          // Don't throw error, fall back to mock data
+          console.log('Falling back to mock data due to Supabase error')
         }
 
-        if (supabaseCourses && supabaseCourses.length > 0) {
+        if (!supabaseError && supabaseCourses && supabaseCourses.length > 0) {
           // Use real courses from Supabase
+          console.log('Using Supabase courses:', supabaseCourses.length)
           setCourses(supabaseCourses)
         } else {
           // Fallback to mock courses if no real courses found
+          console.log('Using mock courses as fallback')
           const filtersWithLanguage = {
             ...filters,
             language: i18n.language
           }
-          // Check if we have any courses in localStorage (from admin creation)
-          const localCourses = localStorage.getItem('localCourses')
-          if (localCourses) {
-            try {
-              const parsedCourses = JSON.parse(localCourses)
-              const allCourses = [...parsedCourses, ...mockCourses]
-              setCourses(filterMockCourses(allCourses, filtersWithLanguage))
-            } catch (e) {
-              setCourses(filterMockCourses(mockCourses, filtersWithLanguage))
-            }
-          } else {
-            setCourses(filterMockCourses(mockCourses, filtersWithLanguage))
-          }
+          setCourses(filterMockCourses(mockCourses, filtersWithLanguage))
         }
       } catch (err) {
         console.error('Error fetching courses:', err)
-        // Fallback to mock courses on error
+        console.log('Exception occurred, using mock courses')
         const filtersWithLanguage = {
           ...filters,
           language: i18n.language
         }
-        // Check localStorage for locally created courses
-        const localCourses = localStorage.getItem('localCourses')
-        if (localCourses) {
-          try {
-            const parsedCourses = JSON.parse(localCourses)
-            const allCourses = [...parsedCourses, ...mockCourses]
-            setCourses(filterMockCourses(allCourses, filtersWithLanguage))
-          } catch (e) {
-            setCourses(filterMockCourses(mockCourses, filtersWithLanguage))
-          }
-        } else {
-          setCourses(filterMockCourses(mockCourses, filtersWithLanguage))
-        }
+        setCourses(filterMockCourses(mockCourses, filtersWithLanguage))
       } finally {
         setLoading(false)
       }

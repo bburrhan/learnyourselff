@@ -39,22 +39,20 @@ const CourseDetail: React.FC = () => {
         
         let courseData = null
         
-        // Try Supabase first if the ID is a valid UUID
-        if (isValidUUID(id)) {
-          console.log('Valid UUID, querying Supabase...')
-          const { data, error } = await supabase
-            .from('courses')
-            .select('*')
-            .eq('id', id)
-            .eq('is_active', true)
-            .single()
+        // Always try Supabase first, regardless of ID format
+        console.log('Querying Supabase for course...')
+        const { data, error } = await supabase
+          .from('courses')
+          .select('*')
+          .eq('id', id)
+          .eq('is_active', true)
+          .single()
 
-          console.log('Supabase query result:', { data, error })
+        console.log('Supabase query result:', { data, error })
 
-          if (!error && data) {
-            courseData = data
-            console.log('Found course in Supabase:', courseData.title)
-          }
+        if (!error && data) {
+          courseData = data
+          console.log('Found course in Supabase:', courseData.title)
         }
         
         // If no course found in Supabase, try mock data
