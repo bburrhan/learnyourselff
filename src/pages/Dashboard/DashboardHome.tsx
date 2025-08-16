@@ -240,16 +240,9 @@ const DashboardHome: React.FC = () => {
                   <div className="flex items-center space-x-4">
                     <img
                       src={purchase.courses.cover_image_url || 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg'}
-                <Link
-                  to="/products"
-                  className="flex flex-col items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
-                >
-                  <TrendingUp className="h-8 w-8 text-purple-600 mb-2" />
-                  <span className="text-sm font-medium text-purple-900">{t('products')}</span>
-                </Link>
                       alt={purchase.courses.title}
                       className="w-12 h-12 rounded-lg object-cover"
-                  className="flex flex-col items-center p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors"
+                    />
                     <div>
                       <h3 className="font-semibold text-gray-900">
                         {purchase.courses.title}
