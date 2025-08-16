@@ -2,16 +2,11 @@ import { loadStripe } from '@stripe/stripe-js'
 
 const stripePublishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
 
-// Only load Stripe if we have a valid publishable key
-export const stripePromise = stripePublishableKey && 
-  stripePublishableKey !== 'pk_test_...' && 
-  stripePublishableKey.startsWith('pk_') 
-    ? loadStripe(stripePublishableKey) 
-    : null
+export const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null
 
 export const createCheckoutSession = async (courseId: string, email: string, fullName: string) => {
   // Check if Stripe is configured
-  if (!stripePromise) {
+  if (!import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY === 'pk_test_...') {
     console.log('Stripe not configured, using demo mode')
     return {
       sessionId: 'demo_session_' + Math.random().toString(36).substr(2, 9),

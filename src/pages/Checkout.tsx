@@ -143,13 +143,8 @@ const Checkout: React.FC = () => {
 
     setProcessing(true)
     try {
-      console.log('Starting checkout process...')
-      console.log('Stripe configured:', !!stripePromise)
-      
       // Create checkout session using the utility function
       const session = await createCheckoutSession(course.id, data.email, data.fullName)
-
-      console.log('Checkout session created:', session)
 
       // Check if this is demo mode
       if (session.demo) {
@@ -188,7 +183,6 @@ const Checkout: React.FC = () => {
       const stripe = await stripePromise
       if (!stripe) throw new Error('Stripe not loaded')
 
-      console.log('Redirecting to Stripe checkout...')
       // Redirect to Stripe checkout
       const result = await stripe.redirectToCheckout({
         sessionId: session.sessionId,

@@ -13,8 +13,6 @@ import ProtectedRoute from './components/Auth/ProtectedRoute'
 import Home from './pages/Home'
 import Courses from './pages/Courses'
 import CourseDetail from './pages/CourseDetail'
-import Products from './pages/Products'
-import Success from './pages/Success'
 import Checkout from './pages/Checkout'
 import Blog from './pages/Blog'
 import BlogPost from './pages/BlogPost'
@@ -41,8 +39,6 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/courses" element={<Courses />} />
             <Route path="/course/:id" element={<CourseDetail />} />
-            <Route path="/products" element={<Products />} />
-            <Route path="/success" element={<Success />} />
             <Route path="/checkout/:courseId" element={<Checkout />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
