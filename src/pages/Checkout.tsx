@@ -80,6 +80,15 @@ const Checkout: React.FC = () => {
       );
 
       if (url) {
+        // Store checkout info in localStorage for success page
+        localStorage.setItem('checkoutInfo', JSON.stringify({
+          courseId: course.id,
+          courseTitle: course.title,
+          email: formData.email,
+          fullName: formData.fullName,
+          amount: course.price,
+          currency: course.currency
+        }));
         window.location.href = url;
       } else {
         throw new Error('No checkout URL received');

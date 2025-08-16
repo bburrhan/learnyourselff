@@ -14,6 +14,7 @@ import Home from './pages/Home'
 import Courses from './pages/Courses'
 import CourseDetail from './pages/CourseDetail'
 import Checkout from './pages/Checkout'
+import CheckoutSuccess from './pages/CheckoutSuccess'
 import Blog from './pages/Blog'
 import BlogPost from './pages/BlogPost'
 import Login from './pages/Auth/Login'
@@ -40,6 +41,7 @@ function App() {
             <Route path="/courses" element={<Courses />} />
             <Route path="/course/:id" element={<CourseDetail />} />
             <Route path="/checkout/:courseId" element={<Checkout />} />
+            <Route path="/checkout/success" element={<CheckoutSuccess />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/login" element={<Login />} />

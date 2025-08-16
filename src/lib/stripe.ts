@@ -11,7 +11,7 @@ export const createCheckoutSession = async (courseId: string, email: string, ful
         courseId,
         email,
         fullName,
-        successUrl: `${window.location.origin}/dashboard/my-courses?success=true`,
+        successUrl: `${window.location.origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
         cancelUrl: `${window.location.origin}/courses/${courseId}?canceled=true`,
       }),
     });
