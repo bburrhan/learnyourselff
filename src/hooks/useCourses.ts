@@ -353,7 +353,7 @@ export const useCourses = (filters?: {
   return { courses, loading, error }
 }
 
-export const useFeaturedCourses = () => {
+const useFeaturedCourses = () => {
   const [courses, setCourses] = useState<Course[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

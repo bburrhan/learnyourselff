@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
-    "@stripe/stripe-js": "^7.8.0",
     "@supabase/supabase-js": "^2.55.0",
     "date-fns": "^4.1.0",
     "i18next": "^25.3.5",
@@ -22,8 +21,6 @@
     "react-hot-toast": "^2.5.2",
     "react-i18next": "^15.6.1",
     "react-router-dom": "^7.8.0",
-    "resend": "^6.0.1",
-    "stripe": "^18.4.0",
     "zod": "^4.0.17"
   },
   "devDependencies": {
