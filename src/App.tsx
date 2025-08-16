@@ -22,6 +22,7 @@ import Signup from './pages/Auth/Signup'
 import Dashboard from './pages/Dashboard/Dashboard'
 import AdminDashboard from './pages/Admin/AdminDashboard'
 import AdminCourses from './pages/Admin/AdminCourses'
+import AdminBlogs from './pages/Admin/AdminBlogs'
 import AdminUsers from './pages/Admin/AdminUsers'
 import AdminAnalytics from './pages/Admin/AdminAnalytics'
 import About from './pages/About'
@@ -73,6 +74,14 @@ function App() {
               element={
                 <ProtectedRoute adminOnly>
                   <AdminCourses />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/blogs"
+              element={
+                <ProtectedRoute adminOnly>
+                  <AdminBlogs />
                 </ProtectedRoute>
               }
             />

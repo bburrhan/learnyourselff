@@ -10,7 +10,8 @@ import {
   TrendingUp, 
   ArrowRight,
   Calendar,
-  Download 
+  Download,
+  FileText
 } from 'lucide-react'
 import { format } from 'date-fns'
 
@@ -221,17 +222,31 @@ const AdminDashboard: React.FC = () => {
               </Link>
 
               <Link
-                to="/admin/analytics"
+                to="/admin/blogs"
                 className="flex items-center justify-between p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
               >
                 <div className="flex items-center">
-                  <TrendingUp className="h-8 w-8 text-purple-600 mr-3" />
+                  <FileText className="h-8 w-8 text-purple-600 mr-3" />
                   <div>
-                    <h3 className="font-semibold text-purple-900">{t('view')} {t('salesAnalytics')}</h3>
-                    <p className="text-sm text-purple-700">Sales reports and insights</p>
+                    <h3 className="font-semibold text-purple-900">Manage Blog Posts</h3>
+                    <p className="text-sm text-purple-700">Create and manage blog content</p>
                   </div>
                 </div>
                 <ArrowRight className="h-5 w-5 text-purple-600" />
+              </Link>
+
+              <Link
+                to="/admin/analytics"
+                className="flex items-center justify-between p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors"
+              >
+                <div className="flex items-center">
+                  <TrendingUp className="h-8 w-8 text-orange-600 mr-3" />
+                  <div>
+                    <h3 className="font-semibold text-orange-900">{t('view')} {t('salesAnalytics')}</h3>
+                    <p className="text-sm text-orange-700">Sales reports and insights</p>
+                  </div>
+                </div>
+                <ArrowRight className="h-5 w-5 text-orange-600" />
               </Link>
             </div>
           </div>
