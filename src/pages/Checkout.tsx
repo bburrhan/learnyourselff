@@ -78,8 +78,6 @@ Deno.serve(async (req: Request) => {
     return new Response(
       JSON.stringify({
         sessionId: session.id,
-      console.log('Redirecting to Stripe checkout with session:', session.sessionId)
-
         url: session.url,
       }),
       {
@@ -88,10 +86,7 @@ Deno.serve(async (req: Request) => {
           ...corsOptions,
         },
       }
-      if (!stripe) {
-        console.error('Stripe failed to load')
-        throw new Error('Stripe not loaded')
-      }
+    )
   } catch (error) {
     console.error('Checkout session creation error:', error)
     return new Response(
@@ -99,7 +94,6 @@ Deno.serve(async (req: Request) => {
         error: error.message || 'Failed to create checkout session'
       }),
       {
-        console.error('Stripe redirect error:', result.error)
         status: 400,
         headers: {
           'Content-Type': 'application/json',
