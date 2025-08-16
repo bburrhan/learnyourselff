@@ -119,7 +119,7 @@ const Footer: React.FC = () => {
           <p className="text-gray-400 text-sm">
             © 2025 LearnYourself.co. All rights reserved.
           </p>
-          <p className="text-gray-400 text-sm flex items-center">
+          <p className="text-gray-400 text-sm flex items-center order-first md:order-last">
             Made with <Heart className="h-4 w-4 text-red-500 mx-1" /> for learners worldwide
           </p>
         </div>

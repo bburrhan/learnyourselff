@@ -78,14 +78,14 @@ const Home: React.FC = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Link
                   to="/courses"
-                  className="inline-flex items-center justify-center px-8 py-4 bg-warm-orange-500 text-white rounded-lg font-bold text-lg hover:bg-warm-orange-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                  className="inline-flex items-center justify-center px-8 py-4 bg-warm-orange-500 text-white rounded-lg font-bold text-lg hover:bg-warm-orange-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-warm-orange-400"
                 >
                   {t('startYourTransformation')}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
                 <Link
                   to="/courses"
-                  className="inline-flex items-center justify-center px-8 py-4 border-2 border-white text-white rounded-lg font-semibold text-lg hover:bg-white hover:text-royal-blue-600 transition-all duration-300"
+                  className="inline-flex items-center justify-center px-8 py-4 border-2 border-white text-white rounded-lg font-semibold text-lg hover:bg-white hover:text-royal-blue-600 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-white"
                 >
                   {t('browseLifeChangingCourses')}
                 </Link>

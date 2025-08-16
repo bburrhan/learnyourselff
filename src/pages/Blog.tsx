@@ -193,7 +193,7 @@ const Blog: React.FC = () => {
           {posts.slice(1).map((post) => (
             <article
               key={post.id}
-              className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden"
+              className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden transform hover:-translate-y-1"
             >
               <div className="aspect-video">
                 <img
@@ -201,6 +201,10 @@ const Blog: React.FC = () => {
                   alt={post.title}
                   className="w-full h-full object-cover"
                   loading="lazy"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg';
+                  }}
                 />
               </div>
               <div className="p-6">

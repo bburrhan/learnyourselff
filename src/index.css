@@ -26,4 +26,16 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+  
+  /* Smooth scrolling for anchor links */
+  .scroll-smooth {
+    scroll-behavior: smooth;
+  }
+  
+  /* Focus styles for better accessibility */
+  .focus-visible\:ring-2:focus-visible {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px #3b82f6;
+  }
 }

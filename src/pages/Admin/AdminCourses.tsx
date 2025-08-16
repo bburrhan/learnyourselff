@@ -620,7 +620,7 @@ const AdminCourses: React.FC = () => {
                     />
                     <span className="ml-2 text-sm text-gray-700">{t('featured')} {t('course')}</span>
                   </label>
-
+                      className="flex items-center hover:opacity-75 transition-opacity"
                   <label className="flex items-center">
                     <input
                       type="checkbox"
@@ -636,14 +636,14 @@ const AdminCourses: React.FC = () => {
                   <button
                     type="button"
                     onClick={resetForm}
-                    className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors"
+                    className="text-blue-600 hover:text-blue-700 p-1 rounded hover:bg-blue-50 transition-colors"
                   >
                     {t('cancel')}
                   </button>
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="text-red-600 hover:text-red-700 p-1 rounded hover:bg-red-50 transition-colors"
                   >
                     {submitting ? (
                       t('saving')

@@ -42,6 +42,10 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, className = '' }) => {
           alt={course.title}
           className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
           loading="lazy"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.src = 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg';
+          }}
         />
         <div className="absolute top-4 left-4">
           <span className={`px-3 py-1 rounded-full text-xs font-medium shadow-sm ${getDifficultyColor(course.difficulty_level)}`}>

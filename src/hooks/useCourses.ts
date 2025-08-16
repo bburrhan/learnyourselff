@@ -147,7 +147,7 @@ const mockCourses: Course[] = [
     currency: 'USD',
     category: 'wellness',
     instructor_name: 'Dr. Mehmet Özkan',
-    description: 'Lisanslı terapist ve mindfulness uzmanı',
+    instructor_bio: 'Lisanslı terapist ve mindfulness uzmanı',
     pdf_url: 'https://example.com/stres-yonetimi.pdf',
     cover_image_url: 'https://images.pexels.com/photos/3760263/pexels-photo-3760263.jpeg',
     tags: ['stres', 'mindfulness', 'sağlık'],

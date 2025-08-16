@@ -30,7 +30,7 @@ const NotFound: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/"
-              className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
             >
               <Home className="h-4 w-4 mr-2" />
               {t('goHome')}
@@ -38,7 +38,7 @@ const NotFound: React.FC = () => {
             
             <Link
               to="/courses"
-              className="inline-flex items-center justify-center px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-colors"
+              className="inline-flex items-center justify-center px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-colors font-semibold"
             >
               <BookOpen className="h-4 w-4 mr-2" />
               {t('browseCoursesBtn')}

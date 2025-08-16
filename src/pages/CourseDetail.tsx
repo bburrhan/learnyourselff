@@ -423,6 +423,15 @@ const CourseDetail: React.FC = () => {
                   </span>
                   <span className="font-medium text-gray-900">PDF</span>
                 </div>
+                <div className="flex items-center justify-between py-2 border-b border-gray-100">
+                  <span className="text-gray-600 flex items-center">
+                    <Star className="h-4 w-4 mr-2" />
+                    {t('difficulty')}
+                  </span>
+                  <span className="font-medium text-gray-900 capitalize">
+                    {course.difficulty_level}
+                  </span>
+                </div>
               </div>
 
               <div className="space-y-3">

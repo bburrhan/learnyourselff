@@ -222,7 +222,7 @@ const Checkout: React.FC = () => {
               <button
                 type="submit"
                 disabled={processing || !formData.email || !formData.fullName}
-                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2 transform hover:scale-105"
               >
                 {processing ? (
                   <>

@@ -82,7 +82,7 @@ const CheckoutSuccess: React.FC = () => {
           <div className="space-y-3">
             <Link
               to="/courses"
-              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center"
+              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-all duration-300 flex items-center justify-center transform hover:scale-105"
             >
               Browse More Courses
               <ArrowRight className="h-4 w-4 ml-2" />
@@ -90,7 +90,7 @@ const CheckoutSuccess: React.FC = () => {
             
             <Link
               to="/"
-              className="w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+              className="w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-lg font-medium hover:bg-gray-200 transition-all duration-300 transform hover:scale-105"
             >
               Back to Home
             </Link>
