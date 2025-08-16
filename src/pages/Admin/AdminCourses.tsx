@@ -647,7 +647,8 @@ const AdminCourses: React.FC = () => {
                     placeholder="https://example.com/image.jpg"
                   />
                   <p className="mt-1 text-xs text-gray-500">
-                    Enter a direct URL to an image (JPG, PNG, WebP). Recommended size: 800x600px or larger.
+                    Enter a direct URL to an image (JPG, PNG, WebP). Recommended size: 800x600px or larger.<br/>
+                    <strong>Note:</strong> Google Drive links don't work - use direct image hosting like Imgur, Pexels, or upload to a web server.
                   </p>
                   {formData.cover_image_url && (
                     <div className="mt-2">
@@ -658,15 +659,40 @@ const AdminCourses: React.FC = () => {
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
                           target.style.display = 'none';
+                          // Show error message for Google Drive links
+                          const errorMsg = document.getElementById('image-error-msg');
+                          if (formData.cover_image_url.includes('drive.google.com')) {
+                            if (errorMsg) {
+                              errorMsg.textContent = '❌ Google Drive links don\'t work. Please use a direct image URL.';
+                              errorMsg.style.display = 'block';
+                            }
+                          }
                         }}
                         onLoad={(e) => {
                           const target = e.target as HTMLImageElement;
                           target.style.display = 'block';
+                          // Hide error message on successful load
+                          const errorMsg = document.getElementById('image-error-msg');
+                          if (errorMsg) {
+                            errorMsg.style.display = 'none';
+                          }
                         }}
                       />
+                      <p id="image-error-msg" className="text-xs text-red-600 mt-1" style={{ display: 'none' }}></p>
                       <p className="text-xs text-green-600 mt-1">✓ Image preview loaded successfully</p>
                     </div>
                   )}
+                  
+                  {/* Helper section for Google Drive users */}
+                  <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                    <p className="text-xs text-blue-800 font-medium mb-2">💡 How to get a direct image URL:</p>
+                    <ul className="text-xs text-blue-700 space-y-1">
+                      <li>• <strong>Imgur:</strong> Upload to imgur.com and copy the direct link</li>
+                      <li>• <strong>Pexels:</strong> Right-click any image and "Copy image address"</li>
+                      <li>• <strong>Your website:</strong> Upload to your web server and use the direct URL</li>
+                      <li>• <strong>GitHub:</strong> Upload to a GitHub repo and use the raw file URL</li>
+                    </ul>
+                  </div>
                 </div>
 
                 <div>
