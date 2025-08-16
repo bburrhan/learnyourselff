@@ -38,13 +38,15 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, className = '' }) => {
     <div className={`bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group transform hover:-translate-y-2 flex flex-col h-full ${className}`}>
       <div className="relative">
         <img
-          src={course.cover_image_url || 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg'}
+          src={course.cover_image_url}
           alt={course.title}
           className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
           loading="lazy"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
-            target.src = 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg';
+            if (target.src !== 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg') {
+              target.src = 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg';
+            }
           }}
         />
         <div className="absolute top-4 left-4">

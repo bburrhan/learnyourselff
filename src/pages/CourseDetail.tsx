@@ -280,9 +280,13 @@ const CourseDetail: React.FC = () => {
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="relative">
                 <img
-                  src={course.cover_image_url || 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg'}
+                  src={course.cover_image_url}
                   alt={course.title}
                   className="w-full h-64 md:h-80 object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg';
+                  }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                 <div className="absolute bottom-6 left-6 right-6">
