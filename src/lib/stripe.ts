@@ -41,8 +41,11 @@ Deno.serve(async (req: Request) => {
       .single()
 
     if (courseError || !course) {
+      console.error('Course fetch error:', courseError)
       throw new Error('Course not found or inactive')
     }
+
+    console.log('Found course:', course.title, 'Price:', course.price)
 
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
