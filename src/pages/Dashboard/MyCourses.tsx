@@ -234,9 +234,13 @@ const MyCourses: React.FC = () => {
               >
                 <div className="flex items-start space-x-4">
                   <img
-                    src={purchase.courses.cover_image_url || 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg'}
+                    src={purchase.courses.cover_image_url}
                     alt={purchase.courses.title}
                     className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg';
+                    }}
                   />
                   
                   <div className="flex-1 min-w-0">

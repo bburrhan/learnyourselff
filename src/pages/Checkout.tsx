@@ -151,6 +151,10 @@ const Checkout: React.FC = () => {
                     src={course.cover_image_url}
                     alt={course.title}
                     className="w-20 h-20 object-cover rounded-lg"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg';
+                    }}
                   />
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900">{course.title}</h3>

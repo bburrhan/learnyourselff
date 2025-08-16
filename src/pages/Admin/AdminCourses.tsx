@@ -345,9 +345,13 @@ const AdminCourses: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <img
-                          src={course.cover_image_url || 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg'}
+                          src={course.cover_image_url}
                           alt={course.title}
                           className="w-10 h-10 rounded-lg object-cover mr-4"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg';
+                          }}
                         />
                         <div>
                           <div className="text-sm font-medium text-gray-900">
@@ -586,19 +590,15 @@ const AdminCourses: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Cover Image URL (Required)
+                    Cover Image URL
                   </label>
                   <input
                     type="url"
-                    required
                     value={formData.cover_image_url}
                     onChange={(e) => setFormData({ ...formData, cover_image_url: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="https://example.com/image.jpg"
                   />
-                  <p className="mt-1 text-sm text-gray-500">
-                    Enter a direct URL to an image (JPG, PNG, WebP). Recommended size: 800x600px or larger.
-                  </p>
                 </div>
 
                 <div>
@@ -624,7 +624,7 @@ const AdminCourses: React.FC = () => {
                     />
                     <span className="ml-2 text-sm text-gray-700">{t('featured')} {t('course')}</span>
                   </label>
-                      className="flex items-center hover:opacity-75 transition-opacity"
+
                   <label className="flex items-center">
                     <input
                       type="checkbox"
@@ -640,14 +640,14 @@ const AdminCourses: React.FC = () => {
                   <button
                     type="button"
                     onClick={resetForm}
-                    className="text-blue-600 hover:text-blue-700 p-1 rounded hover:bg-blue-50 transition-colors"
+                    className="px-4 py-2 text-gray-600 hover:text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
                   >
                     {t('cancel')}
                   </button>
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="text-red-600 hover:text-red-700 p-1 rounded hover:bg-red-50 transition-colors"
+                    className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
                   >
                     {submitting ? (
                       t('saving')
