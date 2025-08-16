@@ -68,9 +68,14 @@ Deno.serve(async (req: Request) => {
         customerEmail: email,
         customerName: fullName,
       },
+      // Add webhook endpoint URL for testing
+      // In production, configure this in Stripe Dashboard
+      // For now, we'll rely on Stripe Dashboard webhook configuration
     });
 
     console.log('Stripe session created:', session.id);
+    console.log('Session URL:', session.url);
+    console.log('Session metadata:', session.metadata);
 
     return new Response(
       JSON.stringify({ url: session.url }),
