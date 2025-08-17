@@ -68,11 +68,6 @@ const Contact: React.FC = () => {
     logger.info('Contact page viewed')
   }, [])
 
-  const onSubmit = async (data: ContactForm) => {
-    const result = await handleAsyncError(async () => {
-      setLoading(false)
-  }
-
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
