@@ -100,6 +100,57 @@ const Checkout: React.FC = () => {
       })
       
       try {
+        // Create purchase record for free course
+        const purchaseData = {
+          user_id: user?.id || null,
+          course_id: course.id,
+          email: formData.email,
+          stripe_payment_id: `free_${Date.now()}`, // Special identifier for free courses
+          amount: 0,
+          currency: course.currency,
+          status: 'completed' as const,
+        }
+
+        const { data: purchaseResult, error: purchaseError } = await supabase
+          .from('purchases')
+          .insert([purchaseData])
+          .select()
+          .single()
+
+        if (purchaseError) {
+          logger.error('Failed to create free course purchase record', { error: purchaseError })
+          throw purchaseError
+        }
+
+        logger.info('Free course purchase record created', { purchaseId: purchaseResult.id })
+
+        // Send course materials via edge function
+        const emailResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-course-email`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            purchaseId: purchaseResult.id,
+            email: formData.email,
+            fullName: formData.fullName,
+            courseTitle: course.title,
+            courseId: course.id,
+            pdfUrl: course.pdf_url,
+            isFree: true,
+            language: i18n.language,
+          }),
+        })
+
+        if (!emailResponse.ok) {
+          const emailError = await emailResponse.json()
+          logger.error('Failed to send course email', { error: emailError })
+          throw new Error('Failed to send course materials')
+        }
+
+        logger.info('Course email sent successfully', { email: formData.email })
+
         // Store checkout info for success page
         localStorage.setItem('checkoutInfo', JSON.stringify({
           courseId: course.id,
@@ -109,7 +160,8 @@ const Checkout: React.FC = () => {
           amount: 0,
           currency: course.currency,
           language: i18n.language,
-          isFree: true
+          isFree: true,
+          purchaseId: purchaseResult.id,
         }));
         
         // Redirect directly to success page
@@ -117,7 +169,7 @@ const Checkout: React.FC = () => {
         return;
       } catch (err) {
         logger.error('Free course enrollment failed', { error: err }, err as Error)
-        setError('Failed to enroll in free course');
+        setError('Failed to enroll in free course. Please try again.');
         return;
       }
     }
