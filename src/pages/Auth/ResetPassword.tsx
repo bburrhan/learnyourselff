@@ -8,7 +8,6 @@ import { supabase } from '../../lib/supabase'
 import LanguageAwareLink from '../../components/Layout/LanguageAwareLink'
 import { Eye, EyeOff, Lock } from 'lucide-react'
 import toast from 'react-hot-toast'
-import LoadingSpinner from '../../components/UI/LoadingSpinner'
 
 const resetPasswordSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters'),
@@ -28,7 +27,6 @@ const ResetPassword: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [validSession, setValidSession] = useState(false)
-  const [sessionChecked, setSessionChecked] = useState(false)
 
   // Scroll to top when component mounts
   useEffect(() => {
@@ -46,92 +44,39 @@ const ResetPassword: React.FC = () => {
   useEffect(() => {
     // Check if we have valid session from password reset link
     const checkSession = async () => {
-      console.log('ResetPassword: Checking session...')
-      console.log('ResetPassword: Current URL:', window.location.href)
-      
       const { data: { session } } = await supabase.auth.getSession()
-      
-      if (error) {
-        console.error('ResetPassword: Error getting session:', error)
-        setValidSession(false)
-        setSessionChecked(true)
-        return
-      }
-
       if (session) {
-        console.log('ResetPassword: Session found!', session)
         setValidSession(true)
-        
-        // Clear the URL fragment to prevent re-processing
-        if (window.location.hash) {
-          console.log('ResetPassword: Clearing URL fragment')
-          window.history.replaceState(null, '', window.location.pathname + window.location.search)
-        }
       } else {
-        console.log('ResetPassword: No session found')
-        setValidSession(false)
+        // If no session, redirect to forgot password page
+        navigate('/forgot-password')
       }
-      
-      setSessionChecked(true)
     }
 
     checkSession()
-  }, [])
-
-  // Handle navigation after session check is complete
-  useEffect(() => {
-    if (sessionChecked && !validSession) {
-      console.log('ResetPassword: Redirecting to forgot-password page')
-      navigate('/forgot-password')
-    }
-  }, [sessionChecked, validSession, navigate])
+  }, [navigate])
 
   const onSubmit = async (data: ResetPasswordForm) => {
     setLoading(true)
     try {
-      // Re-verify session before updating password
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
-        toast.error('Session expired. Please request a new password reset link.')
-        navigate('/forgot-password')
-        return
-      }
-      
-      console.log('ResetPassword: Updating password for user:', session.user.id)
       const { error } = await supabase.auth.updateUser({
         password: data.password,
       })
       
       if (error) {
-        console.error('ResetPassword: Password update error:', error)
         toast.error(error.message)
       } else {
-        console.log('ResetPassword: Password updated successfully')
         toast.success('Password updated successfully!')
         navigate('/dashboard')
       }
     } catch (error) {
-      console.error('ResetPassword: Unexpected error:', error)
       toast.error('An error occurred while updating password')
     } finally {
       setLoading(false)
     }
   }
 
-  // Show loading spinner while checking session
-  if (!sessionChecked) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <LoadingSpinner size="lg" />
-          <p className="mt-4 text-gray-600">Verifying reset link...</p>
-        </div>
-      </div>
-    )
-  }
-
-  // Show invalid link message if session check is complete but no valid session
-  if (sessionChecked && !validSession) {
+  if (!validSession) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
