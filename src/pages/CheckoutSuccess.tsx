@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import LanguageAwareLink from '../components/Layout/LanguageAwareLink'
 import { CheckCircle, Download, Mail, ArrowRight } from 'lucide-react'
 
 const CheckoutSuccess: React.FC = () => {
+  const { t } = useTranslation()
   const [searchParams] = useSearchParams()
   const [checkoutInfo, setCheckoutInfo] = useState<any>(null)
 
@@ -35,25 +37,25 @@ const CheckoutSuccess: React.FC = () => {
 
           {/* Success Message */}
           <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            Payment Successful!
+            {t('paymentSuccessful')}
           </h1>
           
           <p className="text-gray-600 mb-6">
-            Thank you for your purchase. Your payment has been processed successfully.
+            {t('thankYouPurchase')}
           </p>
 
           {/* Course Info */}
           {checkoutInfo && (
             <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left">
-              <h3 className="font-semibold text-gray-900 mb-2">Course Details:</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">{t('courseDetails')}:</h3>
               <p className="text-sm text-gray-600 mb-1">
-                <strong>Course:</strong> {checkoutInfo.courseTitle}
+                <strong>{t('course')}:</strong> {checkoutInfo.courseTitle}
               </p>
               <p className="text-sm text-gray-600 mb-1">
-                <strong>Email:</strong> {checkoutInfo.email}
+                <strong>{t('email')}:</strong> {checkoutInfo.email}
               </p>
               <p className="text-sm text-gray-600">
-                <strong>Amount:</strong> {new Intl.NumberFormat('en-US', {
+                <strong>{t('amount')}:</strong> {new Intl.NumberFormat('en-US', {
                   style: 'currency',
                   currency: checkoutInfo.currency || 'USD',
                 }).format(checkoutInfo.amount)}
@@ -68,7 +70,7 @@ const CheckoutSuccess: React.FC = () => {
               <span className="font-medium text-blue-900">Check Your Email</span>
             </div>
             <p className="text-sm text-blue-700">
-              We've sent your course materials and download instructions to{' '}
+              {t('emailSentInstructions')}{' '}
               <strong>{checkoutInfo?.email || 'your email address'}</strong>
             </p>
           </div>
@@ -80,7 +82,7 @@ const CheckoutSuccess: React.FC = () => {
               <span className="font-medium text-green-900">Instant Access</span>
             </div>
             <p className="text-sm text-green-700">
-              Your PDF course materials are ready for download. Check your email for the download link.
+              {t('pdfReadyDownload')}
             </p>
           </div>
 
@@ -90,7 +92,7 @@ const CheckoutSuccess: React.FC = () => {
               to="/courses"
               className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-all duration-300 flex items-center justify-center transform hover:scale-105"
             >
-              Browse More Courses
+              {t('browseMoreCourses')}
               <ArrowRight className="h-4 w-4 ml-2" />
             </LanguageAwareLink>
             
@@ -98,14 +100,14 @@ const CheckoutSuccess: React.FC = () => {
               to="/"
               className="w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-lg font-medium hover:bg-gray-200 transition-all duration-300 transform hover:scale-105"
             >
-              Back to Home
+              {t('backToHome')}
             </LanguageAwareLink>
           </div>
 
           {/* Session ID for reference */}
           {sessionId && (
             <p className="text-xs text-gray-400 mt-6">
-              Reference: {sessionId}
+              {t('reference')}: {sessionId}
             </p>
           )}
         </div>

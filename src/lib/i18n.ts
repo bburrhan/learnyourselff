@@ -346,6 +346,16 @@ const resources = {
       readyStartLearning: 'Ready to start learning?',
       exploreCollection: 'Explore our collection of affordable courses designed for everyone.',
       
+      // Checkout Success
+      paymentSuccessful: 'Payment Successful!',
+      thankYouPurchase: 'Thank you for your purchase. Your payment has been processed successfully.',
+      courseDetails: 'Course Details',
+      emailSentInstructions: 'We\'ve sent your course materials and download instructions to',
+      pdfReadyDownload: 'Your PDF course materials are ready for download. Check your email for the download link.',
+      browseMoreCourses: 'Browse More Courses',
+      backToHome: 'Back to Home',
+      reference: 'Reference',
+      
       // Course Categories
       saveMoney: 'Save Money',
       makeExtraIncome: 'Make Extra Income',
@@ -719,6 +729,16 @@ const resources = {
       checkBackSoon: 'Eğitim içeriği ve içgörüler için yakında tekrar kontrol edin!',
       readyStartLearning: 'Öğrenmeye başlamaya hazır mısınız?',
       exploreCollection: 'Herkes için tasarlanmış uygun fiyatlı kurs koleksiyonumuzu keşfedin.',
+      
+      // Checkout Success
+      paymentSuccessful: 'Ödeme Başarılı!',
+      thankYouPurchase: 'Satın alımınız için teşekkür ederiz. Ödemeniz başarıyla işlendi.',
+      courseDetails: 'Kurs Detayları',
+      emailSentInstructions: 'Kurs materyallerinizi ve indirme talimatlarını şu adrese gönderdik:',
+      pdfReadyDownload: 'PDF kurs materyalleriniz indirmeye hazır. İndirme bağlantısı için e-postanızı kontrol edin.',
+      browseMoreCourses: 'Daha Fazla Kursa Göz Atın',
+      backToHome: 'Ana Sayfaya Dön',
+      reference: 'Referans',
       
       // Course Categories
       saveMoney: 'Para Biriktir',

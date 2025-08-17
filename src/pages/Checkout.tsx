@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { createCheckoutSession } from '../lib/stripe';
@@ -23,6 +24,7 @@ interface Course {
 const Checkout: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
+  const { i18n } = useTranslation();
   const { user } = useAuth();
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
@@ -102,7 +104,8 @@ const Checkout: React.FC = () => {
       const { url } = await createCheckoutSession(
         course.id,
         formData.email,
-        formData.fullName
+        formData.fullName,
+        i18n.language
       );
 
       if (url) {
@@ -114,7 +117,8 @@ const Checkout: React.FC = () => {
           email: formData.email,
           fullName: formData.fullName,
           amount: course.price,
-          currency: course.currency
+          currency: course.currency,
+          language: i18n.language
         }));
         window.location.href = url;
       } else {

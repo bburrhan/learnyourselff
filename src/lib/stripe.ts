@@ -1,10 +1,13 @@
 import logger from '../utils/logger'
 import { handleNetworkError } from '../utils/errorHandler'
+import { getCurrentLanguageFromUrl } from '../components/Layout/LanguageRouter'
 
 // Client-side Stripe utilities
-export const createCheckoutSession = async (courseId: string, email: string, fullName: string) => {
+export const createCheckoutSession = async (courseId: string, email: string, fullName: string, language?: string) => {
   try {
     logger.info('Creating checkout session', { courseId, email })
+    
+    const currentLang = language || getCurrentLanguageFromUrl()
     
     const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout-session`, {
       method: 'POST',
@@ -16,8 +19,8 @@ export const createCheckoutSession = async (courseId: string, email: string, ful
         courseId,
         email,
         fullName,
-        successUrl: `${window.location.origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancelUrl: `${window.location.origin}/courses/${courseId}?canceled=true`,
+        successUrl: `${window.location.origin}/${currentLang}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancelUrl: `${window.location.origin}/${currentLang}/courses/${courseId}?canceled=true`,
       }),
     });
 
