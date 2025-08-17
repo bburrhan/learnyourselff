@@ -36,10 +36,16 @@ Deno.serve(async (req: Request) => {
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    });
 
     // Check if user exists
-    const { data: userData, error: userError } = await supabase.auth.admin.getUserByEmail(email);
+    const { data: userData, error: userError } = await supabaseAdmin.auth.admin.getUserByEmail(email);
     
     if (userError || !userData.user) {
       console.log('User not found for password reset:', email);
