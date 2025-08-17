@@ -36,12 +36,23 @@ const ForgotPassword: React.FC = () => {
   const onSubmit = async (data: ForgotPasswordForm) => {
     setLoading(true)
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+      // Use our custom edge function for password reset emails
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-password-reset`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: data.email,
+          language: i18n.language,
+        }),
       })
+
+      const result = await response.json()
       
-      if (error) {
-        toast.error(error.message)
+      if (!response.ok) {
+        toast.error(result.error || 'Failed to send reset email')
       } else {
         setEmailSent(true)
         toast.success('Password reset email sent! Check your inbox.')
