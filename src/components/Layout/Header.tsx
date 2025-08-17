@@ -184,14 +184,6 @@ const Header: React.FC = () => {
                         <span>Blog Management</span>
                       </Link>
                     )}
-                    {user?.user_metadata?.role === 'admin' && (
-                      <Link
-                        to="/admin/blogs"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                      >
-                        Blog Management
-                      </Link>
-                    )}
                     <button
                       onClick={handleSignOut}
                       className="flex items-center space-x-2 px-4 py-3 text-gray-700 hover:text-royal-blue-600 w-full text-left rounded-lg hover:bg-gray-50 transition-colors"

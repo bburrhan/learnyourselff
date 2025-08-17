@@ -87,14 +87,6 @@ function App() {
               }
             />
             <Route
-              path="/admin/blogs"
-              element={
-                <ProtectedRoute adminOnly>
-                  <AdminBlogs />
-                </ProtectedRoute>
-              }
-            />
-            <Route
               path="/admin/users"
               element={
                 <ProtectedRoute adminOnly>

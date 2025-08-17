@@ -147,7 +147,7 @@ const Checkout: React.FC = () => {
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Course Summary */}
           <div className="bg-white rounded-xl shadow-sm border p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Course Summary</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Order Summary</h2>
             
             {course && (
               <div className="space-y-4">
@@ -189,7 +189,7 @@ const Checkout: React.FC = () => {
 
           {/* Checkout Form */}
           <div className="bg-white rounded-xl shadow-sm border p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Payment Details</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Customer Information</h2>
             
             <form onSubmit={handleCheckout} className="space-y-4">
               <div>
