@@ -75,7 +75,7 @@ const Home: React.FC = () => {
         {/* Background Image */}
         <div className="absolute inset-0">
           <img
-            src="https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg"
+            src="https://images.pexels.com/photos/4050291/pexels-photo-4050291.jpeg"
             alt="Person working on computer"
             className="w-full h-full object-cover"
           />
