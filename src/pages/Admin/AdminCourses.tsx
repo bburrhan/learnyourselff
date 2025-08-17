@@ -90,6 +90,7 @@ const AdminCourses: React.FC = () => {
         { id: 'personal', name: 'Personal Development', slug: 'personal-development' },
       ]
       setCategories(defaultCategories as Category[])
+    }
   }
 
   const fetchCourses = async () => {
