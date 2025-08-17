@@ -234,7 +234,7 @@ const CourseDetail: React.FC = () => {
     }
 
     fetchCourse()
-  }, [id])
+  }, [id, i18n.language])
 
   if (loading) {
     return (
@@ -523,3 +523,9 @@ const CourseDetail: React.FC = () => {
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+export default CourseDetail
