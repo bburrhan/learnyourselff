@@ -71,17 +71,27 @@ const Home: React.FC = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-royal-blue-600 via-royal-blue-700 to-emerald-600 text-white py-20 md:py-32">
+      <section className="relative text-white py-20 md:py-32 overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <img
+            src="https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg"
+            alt="Person working on computer"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-royal-blue-900/90 via-royal-blue-800/85 to-emerald-700/80"></div>
+        </div>
+        
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="text-center lg:text-left">
+          <div className="relative z-10 text-center">
+            <div className="max-w-4xl mx-auto">
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-8">
                 {t('heroTitleHome').split(' ').slice(0, -1).join(' ')} <span className="text-yellow-300">{t('heroTitleHome').split(' ').slice(-1)[0]}</span>
               </h1>
               <p className="text-xl md:text-2xl text-blue-100 mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
                 {t('heroSubtitleHome')}
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <LanguageAwareLink
                   to="/courses"
                   className="inline-flex items-center justify-center px-8 py-4 bg-warm-orange-500 text-white rounded-lg font-bold text-lg hover:bg-warm-orange-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-warm-orange-400"
@@ -96,17 +106,6 @@ const Home: React.FC = () => {
                   {t('browseLifeChangingCourses')}
                 </LanguageAwareLink>
               </div>
-            </div>
-            <div className="relative">
-              <div className="relative z-10">
-                <img
-                  src="https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg"
-                  alt="Person celebrating success"
-                  className="rounded-2xl shadow-2xl w-full h-auto"
-                  loading="lazy"
-                />
-              </div>
-              <div className="absolute -top-6 -right-6 w-full h-full bg-gradient-to-br from-yellow-400 to-pink-500 rounded-2xl opacity-20 -z-10"></div>
             </div>
           </div>
         </div>
