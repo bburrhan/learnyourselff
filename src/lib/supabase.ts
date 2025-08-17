@@ -3,11 +3,12 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || ''
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 
-// Create client even if env vars are empty for development
-export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co', 
-  supabaseAnonKey || 'placeholder-key'
-)
+// Only create client if we have valid environment variables
+if (!supabaseUrl || !supabaseAnonKey || supabaseUrl.includes('placeholder') || supabaseAnonKey.includes('placeholder')) {
+  throw new Error('Supabase configuration is missing. Please set up your Supabase project by clicking "Connect to Supabase" in the top right corner.')
+}
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 
 export type Database = {
