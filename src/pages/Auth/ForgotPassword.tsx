@@ -37,22 +37,30 @@ const ForgotPassword: React.FC = () => {
   const onSubmit = async (data: ForgotPasswordForm) => {
     setLoading(true)
     try {
-      console.log('Attempting password reset for:', data.email)
-      
       const currentLang = getCurrentLanguageFromUrl()
-      const redirectUrl = `${window.location.origin}/${currentLang}/reset-password`
       
-      console.log('Reset redirect URL:', redirectUrl)
+      console.log('Sending password reset email via Resend for:', data.email)
       
-      const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
-        redirectTo: redirectUrl,
+      // Use our custom edge function with Resend
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-password-reset`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: data.email,
+          language: currentLang,
+        }),
       })
+
+      const result = await response.json()
       
-      if (error) {
-        console.error('Supabase reset password error:', error)
-        toast.error(error.message || 'Failed to send reset email')
+      if (!response.ok || result.error) {
+        console.error('Password reset email error:', result.error)
+        toast.error(result.error || 'Failed to send reset email')
       } else {
-        console.log('Password reset email sent successfully')
+        console.log('Password reset email sent successfully via Resend:', result)
         setEmailSent(true)
         toast.success('Password reset email sent! Check your inbox.')
       }
