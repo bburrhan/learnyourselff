@@ -47,6 +47,9 @@ const ForgotPassword: React.FC = () => {
         headers: {
           'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
           'Content-Type': 'application/json',
+        }
+      }
+      )
       // Try custom edge function first (with Resend)
       try {
         const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-password-reset`, {
