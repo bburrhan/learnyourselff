@@ -459,14 +459,15 @@ const CourseDetail: React.FC = () => {
                   </span>
                   <span className="font-medium text-gray-900">PDF</span>
                 </div>
-                <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                  <span className="text-gray-600 flex items-center">
-                    <Star className="h-4 w-4 mr-2" />
-                    {t('difficulty')}
-                  </span>
-                  <span className="font-medium text-gray-900 capitalize">
-                    {course.difficulty_level}
-                  </span>
+              </div>
+
+              {/* Price Information */}
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-gray-900 mb-1">
+                    {formatPrice(course.price, course.currency)}
+                  </div>
+                  <p className="text-sm text-gray-600">{t('oneTimePayment')}</p>
                 </div>
               </div>
 
@@ -522,9 +523,3 @@ const CourseDetail: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  )
-}
-
-export default CourseDetail
