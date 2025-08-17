@@ -16,7 +16,14 @@ export const useAuth = () => {
         const { data: { session }, error } = await supabase.auth.getSession()
         
         if (error) {
-          handleSupabaseError(error, 'getSession')
+          const errorResult = handleSupabaseError(error, 'getSession')
+          
+          // If session is expired or refresh token is invalid, clear the session
+          if (errorResult.code === 'SESSION_EXPIRED') {
+            logger.info('Session expired, clearing invalid session data')
+            await supabase.auth.signOut()
+            setUser(null)
+          }
         } else {
           setUser(session?.user ?? null)
           logger.info('Session retrieved', { 
@@ -26,6 +33,13 @@ export const useAuth = () => {
         }
       } catch (error) {
         logger.error('Failed to get session', { error }, error as Error)
+        // Clear any potentially corrupted session data
+        try {
+          await supabase.auth.signOut()
+          setUser(null)
+        } catch (signOutError) {
+          logger.error('Failed to clear session after error', { signOutError }, signOutError as Error)
+        }
       } finally {
         setLoading(false)
       }

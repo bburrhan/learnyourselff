@@ -107,6 +107,9 @@ export const handleSupabaseError = (error: any, context?: string) => {
     if (error.message.includes('JWT')) {
       message = 'Session expired. Please log in again.'
       code = 'SESSION_EXPIRED'
+    } else if (error.message.includes('refresh_token_not_found') || error.message.includes('Invalid Refresh Token')) {
+      message = 'Session expired. Please log in again.'
+      code = 'SESSION_EXPIRED'
     } else if (error.message.includes('Row Level Security')) {
       message = 'Access denied. You don\'t have permission for this action.'
       code = 'ACCESS_DENIED'
