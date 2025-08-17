@@ -75,7 +75,7 @@ const Home: React.FC = () => {
         {/* Background Image */}
         <div className="absolute inset-0">
           <img
-            src="https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg"
+            src="https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg"
             alt="Person working on computer"
             className="w-full h-full object-cover"
           />
@@ -84,11 +84,11 @@ const Home: React.FC = () => {
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="relative z-10 text-center">
-            <div className="max-w-4xl mx-auto">
+            <div className="w-full">
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-8">
                 {t('heroTitleHome').split(' ').slice(0, -1).join(' ')} <span className="text-yellow-300">{t('heroTitleHome').split(' ').slice(-1)[0]}</span>
               </h1>
-              <p className="text-xl md:text-2xl text-blue-100 mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+              <p className="text-xl md:text-2xl text-blue-100 mb-10 leading-relaxed max-w-4xl mx-auto">
                 {t('heroSubtitleHome')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
