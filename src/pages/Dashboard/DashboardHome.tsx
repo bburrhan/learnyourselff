@@ -215,12 +215,12 @@ const DashboardHome: React.FC = () => {
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold text-gray-900">{t('recentPurchases')}</h2>
-            <Link
+            <LanguageAwareLink
               to="/dashboard/courses"
               className="text-blue-600 hover:text-blue-700 text-sm font-medium"
             >
               {t('viewAll')}
-            </Link>
+            </LanguageAwareLink>
           </div>
         </div>
         <div className="p-6">
