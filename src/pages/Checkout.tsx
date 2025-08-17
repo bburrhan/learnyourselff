@@ -100,9 +100,37 @@ const Checkout: React.FC = () => {
       })
       
       try {
+        // Create a temporary user for anonymous purchases
+        let userId = user?.id
+        
+        if (!user) {
+          // Create anonymous user account for free course access
+          const tempPassword = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+          
+          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+            email: formData.email,
+            password: tempPassword,
+            options: {
+              data: {
+                full_name: formData.fullName,
+                language_preference: i18n.language,
+                is_temp_user: true, // Mark as temporary user
+              },
+            },
+          })
+          
+          if (signUpError) {
+            logger.error('Failed to create temporary user', { error: signUpError })
+            throw signUpError
+          }
+          
+          userId = signUpData.user?.id
+          logger.info('Created temporary user for free course', { userId, email: formData.email })
+        }
+
         // Create purchase record for free course
         const purchaseData = {
-          user_id: user?.id || null,
+          user_id: userId,
           course_id: course.id,
           email: formData.email,
           stripe_payment_id: `free_${Date.now()}`, // Special identifier for free courses
