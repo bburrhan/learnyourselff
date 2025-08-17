@@ -170,78 +170,63 @@ const Home: React.FC = () => {
             <div className="w-24 h-1 bg-warm-orange-500 mx-auto mb-8"></div>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {transformationStories.map((story, index) => (
-              <div key={index} className="relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 overflow-hidden group">
-                {/* Category Badge */}
-                <div className="absolute top-4 right-4 z-10">
-                  <span className="bg-warm-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide shadow-lg">
-                    {t(story.categoryKey)}
-                  </span>
-                </div>
+          <div className="max-w-5xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
+              {transformationStories.map((story, index) => (
+                <div key={index} className="group">
+                  {/* Category Label */}
+                  <div className="text-center mb-6">
+                    <span className="inline-block bg-royal-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wide">
+                      {t(story.categoryKey)}
+                    </span>
+                  </div>
 
-                {/* Before Section */}
-                <div className="relative bg-gradient-to-br from-red-50 to-red-100 p-6 border-b-2 border-dashed border-gray-200">
-                  <div className="absolute top-2 left-2">
-                    <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">😔</span>
+                  {/* Before Card */}
+                  <div className="bg-white rounded-xl shadow-md border-l-4 border-red-400 p-6 mb-4 group-hover:shadow-lg transition-all duration-300">
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-shrink-0">
+                        <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                          <span className="text-red-600 font-bold text-sm">{t('before')}</span>
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-gray-700 font-medium leading-relaxed">
+                          {t(story.beforeKey)}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                  <div className="pt-6">
-                    <div className="flex items-center mb-3">
-                      <span className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
-                        {t('before')}
-                      </span>
-                    </div>
-                    <p className="text-red-800 font-medium text-lg leading-relaxed">
-                      "{t(story.beforeKey)}"
-                    </p>
-                  </div>
-                </div>
 
-                {/* Transformation Arrow */}
-                <div className="relative flex items-center justify-center py-4 bg-gradient-to-r from-warm-orange-400 to-warm-orange-500">
-                  <div className="bg-white rounded-full p-3 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    <ArrowRight className="h-6 w-6 text-warm-orange-600" />
+                  {/* Arrow */}
+                  <div className="flex justify-center mb-4">
+                    <div className="bg-warm-orange-500 rounded-full p-3 shadow-md group-hover:scale-110 transition-transform duration-300">
+                      <ArrowRight className="h-5 w-5 text-white transform rotate-90" />
+                    </div>
                   </div>
-                  <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                    <div className="w-2 h-2 bg-white rounded-full opacity-60"></div>
-                  </div>
-                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                    <div className="w-2 h-2 bg-white rounded-full opacity-60"></div>
-                  </div>
-                </div>
 
-                {/* After Section */}
-                <div className="relative bg-gradient-to-br from-green-50 to-emerald-100 p-6">
-                  <div className="absolute top-2 left-2">
-                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">🎉</span>
-                    </div>
-                  </div>
-                  <div className="pt-6">
-                    <div className="flex items-center mb-3">
-                      <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
-                        {t('after')}
-                      </span>
-                    </div>
-                    <p className="text-green-800 font-bold text-lg leading-relaxed">
-                      "{t(story.afterKey)}"
-                    </p>
-                  </div>
-                  
-                  {/* Success Indicator */}
-                  <div className="absolute bottom-2 right-2">
-                    <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                      <CheckCircle className="h-4 w-4 text-white" />
+                  {/* After Card */}
+                  <div className="bg-white rounded-xl shadow-md border-l-4 border-green-400 p-6 group-hover:shadow-lg transition-all duration-300">
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-shrink-0">
+                        <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                          <CheckCircle className="h-5 w-5 text-green-600" />
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center mb-2">
+                          <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold uppercase">
+                            {t('after')}
+                          </span>
+                        </div>
+                        <p className="text-gray-900 font-semibold leading-relaxed">
+                          {t(story.afterKey)}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
-
-                {/* Hover Effect Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-warm-orange-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
