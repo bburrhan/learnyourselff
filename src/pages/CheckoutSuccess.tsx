@@ -68,8 +68,13 @@ const CheckoutSuccess: React.FC = () => {
                 <strong>{t('amount')}:</strong> {new Intl.NumberFormat('en-US', {
                   style: 'currency',
                   currency: checkoutInfo.currency || 'USD',
-                }).format(checkoutInfo.amount)}
+                }).format(checkoutInfo.amount || 0)}
               </p>
+              {checkoutInfo.isFree && (
+                <p className="text-sm text-green-600 font-medium">
+                  <strong>{t('courseType')}:</strong> {t('freeCourse')}
+                </p>
+              )}
             </div>
           )}
 
