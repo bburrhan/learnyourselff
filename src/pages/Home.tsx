@@ -183,13 +183,13 @@ const Home: React.FC = () => {
 
                   {/* Before Card */}
                   <div className="bg-white rounded-xl shadow-md border-l-4 border-red-400 p-6 mb-4 group-hover:shadow-lg transition-all duration-300 flex-1 flex flex-col justify-center min-h-[120px]">
-                    <div className="flex items-start space-x-3">
+                    <div className="flex items-center space-x-4 h-full">
                       <div className="flex-shrink-0">
-                        <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                        <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
                           <span className="text-red-600 font-bold text-sm">{t('before')}</span>
                         </div>
                       </div>
-                      <div className="flex-1 flex items-center">
+                      <div className="flex-1">
                         <p className="text-gray-700 font-medium leading-relaxed">
                           {t(story.beforeKey)}
                         </p>
@@ -206,15 +206,15 @@ const Home: React.FC = () => {
 
                   {/* After Card */}
                   <div className="bg-white rounded-xl shadow-md border-l-4 border-green-400 p-6 group-hover:shadow-lg transition-all duration-300 flex-1 flex flex-col justify-center min-h-[120px]">
-                    <div className="flex items-start space-x-3">
+                    <div className="flex items-center space-x-4 h-full">
                       <div className="flex-shrink-0">
-                        <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                        <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                           <CheckCircle className="h-5 w-5 text-green-600" />
                         </div>
                       </div>
-                      <div className="flex-1 flex items-center">
-                        <div className="flex items-center mb-2">
-                          <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold uppercase">
+                      <div className="flex-1">
+                        <div className="mb-2">
+                          <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold uppercase">
                             {t('after')}
                           </span>
                         </div>
