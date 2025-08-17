@@ -47,22 +47,39 @@ const ForgotPassword: React.FC = () => {
         headers: {
           'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
           'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: data.email,
-          language: currentLang,
-        }),
+      // Try custom edge function first (with Resend)
+      try {
+        const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-password-reset`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: data.email,
+            language: i18n.language
+          })
+        })
+
+        const result = await response.json()
+
+        if (response.ok) {
+          setSuccess(t('auth.forgotPassword.emailSent'))
+          return
+        }
+        
+        console.warn('Edge function failed, falling back to Supabase auth:', result)
+      } catch (edgeFunctionError) {
+        console.warn('Edge function not available, falling back to Supabase auth:', edgeFunctionError)
+      }
+
+      // Fallback to Supabase built-in auth
+      const { error: supabaseError } = await supabase.auth.resetPasswordForEmail(data.email, {
+        redirectTo: `${window.location.origin}/${i18n.language}/reset-password`
       })
 
-      const result = await response.json()
-      
-      if (!response.ok || result.error) {
-        console.error('Password reset email error:', result.error)
-        toast.error(result.error || 'Failed to send reset email')
-      } else {
-        console.log('Password reset email sent successfully via Resend:', result)
-        setEmailSent(true)
-        toast.success('Password reset email sent! Check your inbox.')
+      if (supabaseError) {
+        throw supabaseError
       }
     } catch (error) {
       console.error('Forgot password error:', error)
