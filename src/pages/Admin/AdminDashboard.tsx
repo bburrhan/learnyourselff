@@ -321,6 +321,12 @@ const AdminDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+      
+      {/* Log Viewer Modal */}
+      <LogViewer 
+        isOpen={logViewerOpen} 
+        onClose={() => setLogViewerOpen(false)} 
+      />
     </div>
   )
 }
