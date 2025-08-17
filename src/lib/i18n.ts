@@ -107,6 +107,16 @@ const resources = {
       backToCourse: 'Back to Course',
       checkout: 'Checkout',
       completePurchase: 'Complete your purchase securely',
+      completePurchaseTitle: 'Complete Your Purchase',
+      customerInformation: 'Customer Information',
+      coursePrice: 'Course Price',
+      proceedToPayment: 'Proceed to Payment',
+      securePayment: 'Secure Payment',
+      sslEncrypted: 'SSL encrypted payment processing',
+      instantAccess: 'Instant access after payment',
+      courseNotFound: 'Course Not Found',
+      backToCourses: 'Back to Courses',
+      fillAllFields: 'Please fill in all required fields',
       
       // Dashboard
       myCourses: 'My Courses',
@@ -491,6 +501,16 @@ const resources = {
       backToCourse: 'Kursa Geri Dön',
       checkout: 'Ödeme',
       completePurchase: 'Satın alımınızı güvenli şekilde tamamlayın',
+      completePurchaseTitle: 'Satın Alımınızı Tamamlayın',
+      customerInformation: 'Müşteri Bilgileri',
+      coursePrice: 'Kurs Fiyatı',
+      proceedToPayment: 'Ödemeye Geç',
+      securePayment: 'Güvenli Ödeme',
+      sslEncrypted: 'SSL şifreli ödeme işlemi',
+      instantAccess: 'Ödeme sonrası anında erişim',
+      courseNotFound: 'Kurs Bulunamadı',
+      backToCourses: 'Kurslara Geri Dön',
+      fillAllFields: 'Lütfen tüm gerekli alanları doldurun',
       
       // Dashboard
       myCourses: 'Kurslarım',

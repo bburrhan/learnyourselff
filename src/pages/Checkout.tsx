@@ -88,7 +88,7 @@ const Checkout: React.FC = () => {
         hasEmail: !!formData.email, 
         hasFullName: !!formData.fullName 
       })
-      setError('Please fill in all required fields');
+      setError(t('fillAllFields'));
       return;
     }
 
@@ -148,13 +148,13 @@ const Checkout: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Course Not Found</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('courseNotFound')}</h1>
           <p className="text-gray-600 mb-6">{error}</p>
           <button
             onClick={() => navigate('/courses')}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Back to Courses
+            {t('backToCourses')}
           </button>
         </div>
       </div>
@@ -171,15 +171,15 @@ const Checkout: React.FC = () => {
             className="flex items-center text-gray-600 hover:text-gray-900 transition-colors mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Course
+            {t('backToCourse')}
           </button>
-          <h1 className="text-3xl font-bold text-gray-900">Complete Your Purchase</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{t('completePurchaseTitle')}</h1>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Course Summary */}
           <div className="bg-white rounded-xl shadow-sm border p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Order Summary</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('orderSummary')}</h2>
             
             {course && (
               <div className="space-y-4">
@@ -209,7 +209,7 @@ const Checkout: React.FC = () => {
                 
                 <div className="border-t pt-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Course Price</span>
+                    <span className="text-gray-600">{t('coursePrice')}</span>
                     <span className="text-2xl font-bold text-gray-900">
                       ${course.price} {course.currency}
                     </span>
@@ -221,12 +221,12 @@ const Checkout: React.FC = () => {
 
           {/* Checkout Form */}
           <div className="bg-white rounded-xl shadow-sm border p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Customer Information</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('customerInformation')}</h2>
             
             <form onSubmit={handleCheckout} className="space-y-4">
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                  Email Address
+                  {t('emailAddress')}
                 </label>
                 <input
                   type="email"
@@ -241,7 +241,7 @@ const Checkout: React.FC = () => {
 
               <div>
                 <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
-                  Full Name
+                  {t('fullName')}
                 </label>
                 <input
                   type="text"
@@ -250,7 +250,7 @@ const Checkout: React.FC = () => {
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="John Doe"
+                  placeholder={t('fullName')}
                 />
               </div>
 
@@ -273,7 +273,7 @@ const Checkout: React.FC = () => {
                 ) : (
                   <>
                     <CreditCard className="w-5 h-5" />
-                    Proceed to Payment
+                    {t('proceedToPayment')}
                   </>
                 )}
               </button>
@@ -281,15 +281,15 @@ const Checkout: React.FC = () => {
 
             {/* Security Features */}
             <div className="mt-6 pt-6 border-t">
-              <h3 className="text-sm font-medium text-gray-900 mb-3">Secure Payment</h3>
+              <h3 className="text-sm font-medium text-gray-900 mb-3">{t('securePayment')}</h3>
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <Shield className="w-4 h-4 text-green-600" />
-                  SSL encrypted payment processing
+                  {t('sslEncrypted')}
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <Clock className="w-4 h-4 text-blue-600" />
-                  Instant access after payment
+                  {t('instantAccess')}
                 </div>
               </div>
             </div>
