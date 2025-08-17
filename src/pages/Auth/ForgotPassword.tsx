@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -7,6 +8,7 @@ import { supabase } from '../../lib/supabase'
 import LanguageAwareLink from '../../components/Layout/LanguageAwareLink'
 import { Mail, ArrowLeft, CheckCircle } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { getCurrentLanguageFromUrl } from '../../components/Layout/LanguageRouter'
 
 const forgotPasswordSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -36,28 +38,27 @@ const ForgotPassword: React.FC = () => {
   const onSubmit = async (data: ForgotPasswordForm) => {
     setLoading(true)
     try {
-      // Use our custom edge function for password reset emails
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-password-reset`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: data.email,
-          language: i18n.language,
-        }),
-      })
-
-      const result = await response.json()
+      console.log('Attempting password reset for:', data.email)
       
-      if (!response.ok) {
-        toast.error(result.error || 'Failed to send reset email')
+      const currentLang = getCurrentLanguageFromUrl()
+      const redirectUrl = `${window.location.origin}/${currentLang}/reset-password`
+      
+      console.log('Reset redirect URL:', redirectUrl)
+      
+      const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
+        redirectTo: redirectUrl,
+      })
+      
+      if (error) {
+        console.error('Supabase reset password error:', error)
+        toast.error(error.message || 'Failed to send reset email')
       } else {
+        console.log('Password reset email sent successfully')
         setEmailSent(true)
         toast.success('Password reset email sent! Check your inbox.')
       }
     } catch (error) {
+      console.error('Forgot password error:', error)
       toast.error('An error occurred while sending reset email')
     } finally {
       setLoading(false)
