@@ -20,14 +20,17 @@ const CheckoutSuccess: React.FC = () => {
     const isFree = searchParams.get('free') === 'true'
     
     if (isSuccess || isFree) {
-    if (storedInfo) {
-      if (isFree) {
-        toast.success('Free course enrolled successfully! Check your email for access instructions.')
-      } else {
-        toast.success(isDemo ? 'Demo purchase completed! In production, you would receive an email with download links.' : 'Purchase completed successfully!')
+      const storedInfo = localStorage.getItem('checkoutInfo')
+      if (storedInfo) {
+        setCheckoutInfo(JSON.parse(storedInfo))
+        if (isFree) {
+          // toast.success('Free course enrolled successfully! Check your email for access instructions.')
+        } else {
+          // toast.success(isDemo ? 'Demo purchase completed! In production, you would receive an email with download links.' : 'Purchase completed successfully!')
+        }
+        // Clear the stored info
+        localStorage.removeItem('checkoutInfo')
       }
-      // Clear the stored info
-      localStorage.removeItem('checkoutInfo')
     }
   }, [])
 
@@ -65,13 +68,8 @@ const CheckoutSuccess: React.FC = () => {
                 <strong>{t('amount')}:</strong> {new Intl.NumberFormat('en-US', {
                   style: 'currency',
                   currency: checkoutInfo.currency || 'USD',
-                }).format(checkoutInfo.amount || 0)}
+                }).format(checkoutInfo.amount)}
               </p>
-              {checkoutInfo.isFree && (
-                <p className="text-sm text-green-600 font-medium">
-                  <strong>{t('courseType')}:</strong> {t('freeCourse')}
-                </p>
-              )}
             </div>
           )}
 
