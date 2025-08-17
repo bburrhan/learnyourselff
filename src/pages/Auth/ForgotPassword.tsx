@@ -7,7 +7,6 @@ import { supabase } from '../../lib/supabase'
 import LanguageAwareLink from '../../components/Layout/LanguageAwareLink'
 import { Mail, ArrowLeft, CheckCircle } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { getCurrentLanguageFromUrl } from '../../components/Layout/LanguageRouter'
 
 const forgotPasswordSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -37,33 +36,23 @@ const ForgotPassword: React.FC = () => {
   const onSubmit = async (data: ForgotPasswordForm) => {
     setLoading(true)
     try {
-      console.log('Sending password reset email via Resend for:', data.email)
+      console.log('Sending password reset email via Supabase for:', data.email)
       
-      // Use our custom edge function with Resend
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-password-reset`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: data.email,
-          language: getCurrentLanguageFromUrl()
-        })
+      // Use Supabase's built-in password reset
+      const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
+        redirectTo: `${window.location.origin}/reset-password`,
       })
 
-      const result = await response.json()
-      console.log('Password reset response:', result)
-
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to send password reset email')
+      if (error) {
+        console.error('Supabase password reset error:', error)
+        throw error
       }
 
       setEmailSent(true)
       toast.success('Password reset email sent successfully!')
     } catch (error) {
       console.error('Forgot password error:', error)
-      toast.error(error instanceof Error ? error.message : 'An error occurred while sending reset email')
+      toast.error(error instanceof Error ? error.message : 'Failed to send password reset email')
     } finally {
       setLoading(false)
     }
