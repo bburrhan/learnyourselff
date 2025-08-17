@@ -7,7 +7,7 @@ import { createCheckoutSession } from '../lib/stripe';
 import logger from '../utils/logger';
 import { handleSupabaseError, handleAsyncError } from '../utils/errorHandler';
 import LoadingSpinner from '../components/UI/LoadingSpinner';
-import { ArrowLeft, CreditCard, Shield, Clock } from 'lucide-react';
+import { ArrowLeft, CreditCard, Shield, Clock, CheckCircle } from 'lucide-react';
 
 interface Course {
   id: string;
@@ -90,6 +90,36 @@ const Checkout: React.FC = () => {
       })
       setError(t('fillAllFields'));
       return;
+    }
+
+    // Handle free courses - skip payment and go directly to success
+    if (course.price === 0) {
+      logger.info('Processing free course enrollment', { 
+        courseId: course.id, 
+        email: formData.email 
+      })
+      
+      try {
+        // Store checkout info for success page
+        localStorage.setItem('checkoutInfo', JSON.stringify({
+          courseId: course.id,
+          courseTitle: course.title,
+          email: formData.email,
+          fullName: formData.fullName,
+          amount: 0,
+          currency: course.currency,
+          language: i18n.language,
+          isFree: true
+        }));
+        
+        // Redirect directly to success page
+        navigate(`/checkout/success?free=true&course_id=${course.id}`);
+        return;
+      } catch (err) {
+        logger.error('Free course enrollment failed', { error: err }, err as Error)
+        setError('Failed to enroll in free course');
+        return;
+      }
     }
 
     setProcessing(true);
@@ -210,8 +240,8 @@ const Checkout: React.FC = () => {
                 <div className="border-t pt-4">
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">{t('coursePrice')}</span>
-                    <span className="text-2xl font-bold text-gray-900">
-                      ${course.price} {course.currency}
+                    <span className={`text-2xl font-bold ${course.price === 0 ? 'text-green-600' : 'text-gray-900'}`}>
+                      {course.price === 0 ? 'FREE' : `$${course.price} ${course.currency}`}
                     </span>
                   </div>
                 </div>
@@ -263,7 +293,11 @@ const Checkout: React.FC = () => {
               <button
                 type="submit"
                 disabled={processing || !formData.email || !formData.fullName}
-                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2 transform hover:scale-105"
+                className={`w-full text-white py-3 px-4 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2 transform hover:scale-105 ${
+                  course?.price === 0 
+                    ? 'bg-green-600 hover:bg-green-700' 
+                    : 'bg-blue-600 hover:bg-blue-700'
+                }`}
               >
                 {processing ? (
                   <>
@@ -272,8 +306,17 @@ const Checkout: React.FC = () => {
                   </>
                 ) : (
                   <>
-                    <CreditCard className="w-5 h-5" />
-                    {t('proceedToPayment')}
+                    {course?.price === 0 ? (
+                      <>
+                        <CheckCircle className="w-5 h-5" />
+                        {t('enrollForFree')}
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard className="w-5 h-5" />
+                        {t('proceedToPayment')}
+                      </>
+                    )}
                   </>
                 )}
               </button>

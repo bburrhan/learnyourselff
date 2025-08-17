@@ -55,6 +55,12 @@ const resources = {
       
       // Course
       buyNow: 'Buy Now',
+      getForFree: 'Get for Free',
+      enrollForFree: 'Enroll for Free',
+      freeCourse: 'Free Course',
+      enrollmentSuccessful: 'Enrollment Successful!',
+      thankYouEnrollment: 'Thank you for enrolling in this free course. You now have access to the materials.',
+      courseType: 'Course Type',
       price: 'Price',
       instructor: 'Instructor',
       category: 'Category',
@@ -449,6 +455,12 @@ const resources = {
       
       // Course
       buyNow: 'Hemen Satın Al',
+      getForFree: 'Ücretsiz Al',
+      enrollForFree: 'Ücretsiz Kayıt Ol',
+      freeCourse: 'Ücretsiz Kurs',
+      enrollmentSuccessful: 'Kayıt Başarılı!',
+      thankYouEnrollment: 'Bu ücretsiz kursa kaydolduğunuz için teşekkür ederiz. Artık materyallere erişiminiz var.',
+      courseType: 'Kurs Türü',
       price: 'Fiyat',
       instructor: 'Eğitmen',
       category: 'Kategori',

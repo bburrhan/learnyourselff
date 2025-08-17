@@ -15,6 +15,9 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, className = '' }) => {
   const { t } = useTranslation()
 
   const formatPrice = (price: number, currency: string) => {
+    if (price === 0) {
+      return 'FREE'
+    }
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: currency || 'USD',
@@ -121,9 +124,13 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, className = '' }) => {
         <div className="mt-auto pt-4">
           <LanguageAwareLink
             to={`/course/${course.id}`}
-            className="block w-full bg-royal-blue-600 text-white text-center py-3 rounded-lg hover:bg-royal-blue-700 transition-all duration-300 font-semibold transform hover:scale-105 shadow-sm hover:shadow-md"
+            className={`block w-full text-white text-center py-3 rounded-lg transition-all duration-300 font-semibold transform hover:scale-105 shadow-sm hover:shadow-md ${
+              course.price === 0 
+                ? 'bg-green-600 hover:bg-green-700' 
+                : 'bg-royal-blue-600 hover:bg-royal-blue-700'
+            }`}
           >
-            {t('buyNow')}
+            {course.price === 0 ? t('getForFree') : t('buyNow')}
           </LanguageAwareLink>
         </div>
       </div>

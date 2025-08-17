@@ -16,9 +16,16 @@ const CheckoutSuccess: React.FC = () => {
 
   useEffect(() => {
     // Get checkout info from localStorage
-    const storedInfo = localStorage.getItem('checkoutInfo')
+    const isSuccess = searchParams.get('success') === 'true'
+    const isFree = searchParams.get('free') === 'true'
+    
+    if (isSuccess || isFree) {
     if (storedInfo) {
-      setCheckoutInfo(JSON.parse(storedInfo))
+      if (isFree) {
+        toast.success('Free course enrolled successfully! Check your email for access instructions.')
+      } else {
+        toast.success(isDemo ? 'Demo purchase completed! In production, you would receive an email with download links.' : 'Purchase completed successfully!')
+      }
       // Clear the stored info
       localStorage.removeItem('checkoutInfo')
     }
@@ -37,11 +44,11 @@ const CheckoutSuccess: React.FC = () => {
 
           {/* Success Message */}
           <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            {t('paymentSuccessful')}
+            {checkoutInfo?.isFree ? t('enrollmentSuccessful') : t('paymentSuccessful')}
           </h1>
           
           <p className="text-gray-600 mb-6">
-            {t('thankYouPurchase')}
+            {checkoutInfo?.isFree ? t('thankYouEnrollment') : t('thankYouPurchase')}
           </p>
 
           {/* Course Info */}
@@ -58,8 +65,13 @@ const CheckoutSuccess: React.FC = () => {
                 <strong>{t('amount')}:</strong> {new Intl.NumberFormat('en-US', {
                   style: 'currency',
                   currency: checkoutInfo.currency || 'USD',
-                }).format(checkoutInfo.amount)}
+                }).format(checkoutInfo.amount || 0)}
               </p>
+              {checkoutInfo.isFree && (
+                <p className="text-sm text-green-600 font-medium">
+                  <strong>{t('courseType')}:</strong> {t('freeCourse')}
+                </p>
+              )}
             </div>
           )}
 

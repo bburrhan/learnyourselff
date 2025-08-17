@@ -263,6 +263,9 @@ const CourseDetail: React.FC = () => {
   }
 
   const formatPrice = (price: number, currency: string) => {
+    if (price === 0) {
+      return 'FREE'
+    }
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: currency || 'USD',
@@ -470,10 +473,14 @@ const CourseDetail: React.FC = () => {
               <div className="space-y-3">
                 <LanguageAwareLink
                   to={`/checkout/${course.id}`}
-                  className="w-full bg-royal-blue-600 text-white py-4 px-6 rounded-lg font-semibold hover:bg-royal-blue-700 transition-colors flex items-center justify-center"
+                  className={`w-full py-4 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center ${
+                    course.price === 0 
+                      ? 'bg-green-600 text-white hover:bg-green-700' 
+                      : 'bg-royal-blue-600 text-white hover:bg-royal-blue-700'
+                  }`}
                 >
                   <CreditCard className="h-5 w-5 mr-2" />
-                  {t('buyNow')}
+                  {course.price === 0 ? t('getForFree') : t('buyNow')}
                 </LanguageAwareLink>
                 
                 <button className="w-full bg-gray-100 text-gray-700 py-3 px-6 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center justify-center">
