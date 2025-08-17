@@ -3,8 +3,6 @@ import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { User, Globe, Menu, X, Bug } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
-import LogViewer from '../Debug/LogViewer'
-import logger from '../../utils/logger'
 import { useState } from 'react'
 
 const Header: React.FC = () => {
@@ -12,22 +10,18 @@ const Header: React.FC = () => {
   const { user, signOut } = useAuth()
   const location = useLocation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [logViewerOpen, setLogViewerOpen] = useState(false)
 
   const toggleLanguage = () => {
     const newLang = i18n.language === 'en' ? 'tr' : 'en'
     i18n.changeLanguage(newLang)
-    logger.info('Language changed', { from: i18n.language, to: newLang })
   }
 
   const handleSignOut = async () => {
     try {
-      logger.info('User signing out', { userId: user?.id })
       await signOut()
       setMobileMenuOpen(false)
-      logger.info('User signed out successfully')
     } catch (error) {
-      logger.error('Sign out failed', { error }, error as Error)
+      console.error('Sign out failed', error)
     }
   }
 
@@ -72,17 +66,6 @@ const Header: React.FC = () => {
 
           {/* Right side actions */}
           <div className="hidden md:flex items-center space-x-4">
-            {/* Debug Log Viewer (Development Only) */}
-            {import.meta.env.DEV && (
-              <button
-                onClick={() => setLogViewerOpen(true)}
-                className="flex items-center space-x-1 text-gray-700 hover:text-royal-blue-600 transition-colors px-3 py-2 rounded-lg hover:bg-gray-50"
-                title="View Application Logs"
-              >
-                <Bug className="h-4 w-4" />
-              </button>
-            )}
-
             <button
               onClick={toggleLanguage}
               className="flex items-center space-x-1 text-gray-700 hover:text-royal-blue-600 transition-colors px-3 py-2 rounded-lg hover:bg-gray-50"
@@ -235,12 +218,6 @@ const Header: React.FC = () => {
           </div>
         )}
       </div>
-      
-      {/* Log Viewer Modal */}
-      <LogViewer 
-        isOpen={logViewerOpen} 
-        onClose={() => setLogViewerOpen(false)} 
-      />
     </header>
   )
 }

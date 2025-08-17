@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../../lib/supabase'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
+import LogViewer from '../../components/Debug/LogViewer'
 import { 
   BookOpen, 
   Users, 
@@ -12,7 +13,8 @@ import {
   Calendar,
   Download,
   FileText,
-  Tag
+  Tag,
+  Bug
 } from 'lucide-react'
 import { format } from 'date-fns'
 
@@ -33,6 +35,7 @@ interface AdminStats {
 
 const AdminDashboard: React.FC = () => {
   const { t, i18n } = useTranslation()
+  const [logViewerOpen, setLogViewerOpen] = useState(false)
   const [stats, setStats] = useState<AdminStats>({
     totalCourses: 0,
     totalUsers: 0,
