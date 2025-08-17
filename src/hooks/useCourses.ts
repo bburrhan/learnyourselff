@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { supabase, Database } from '../lib/supabase'
 import { useTranslation } from 'react-i18next'
+import logger from '../utils/logger'
+import { handleSupabaseError, handleAsyncError } from '../utils/errorHandler'
 
 type Course = Database['public']['Tables']['courses']['Row']
 type Category = Database['public']['Tables']['categories']['Row']
@@ -291,12 +293,17 @@ export const useCourses = (filters?: {
 
   useEffect(() => {
     const fetchCourses = async () => {
-      try {
+      const result = await handleAsyncError(async () => {
         setLoading(true)
         setError(null)
+        
+        logger.debug('Fetching courses', { 
+          language: i18n.language, 
+          filters 
+        })
 
         // Always try to fetch from Supabase first
-        console.log('Fetching courses from Supabase for language:', i18n.language)
+        logger.info('Fetching courses from Supabase', { language: i18n.language })
         
         let query = supabase
           .from('courses')
@@ -321,42 +328,45 @@ export const useCourses = (filters?: {
         
         const { data: supabaseCourses, error: supabaseError } = await query
         
-        console.log('Supabase courses result:', { 
+        logger.debug('Supabase courses result', { 
           count: supabaseCourses?.length || 0, 
           error: supabaseError,
-          courses: supabaseCourses?.map(c => ({ id: c.id, title: c.title, cover_image_url: c.cover_image_url }))
+          courses: supabaseCourses?.map(c => ({ id: c.id, title: c.title }))
         })
 
         if (supabaseError) {
-          console.error('Supabase error:', supabaseError)
+          handleSupabaseError(supabaseError, 'fetchCourses')
           // Don't throw error, fall back to mock data
-          console.log('Falling back to mock data due to Supabase error')
+          logger.warn('Falling back to mock data due to Supabase error')
         }
 
         if (!supabaseError && supabaseCourses && supabaseCourses.length > 0) {
           // Use real courses from Supabase
-          console.log('Using Supabase courses:', supabaseCourses.length)
+          logger.info('Using Supabase courses', { count: supabaseCourses.length })
           setCourses(supabaseCourses)
         } else {
           // Fallback to mock courses if no real courses found
-          console.log('Using mock courses as fallback')
+          logger.info('Using mock courses as fallback')
           const filtersWithLanguage = {
             ...filters,
             language: i18n.language
           }
           setCourses(filterMockCourses(mockCourses, filtersWithLanguage))
         }
-      } catch (err) {
-        console.error('Error fetching courses:', err)
-        console.log('Exception occurred, using mock courses')
+        
+        return true
+      }, 'fetchCourses', false)
+      
+      if (!result) {
+        logger.warn('Fetch courses failed, using mock data')
         const filtersWithLanguage = {
           ...filters,
           language: i18n.language
         }
         setCourses(filterMockCourses(mockCourses, filtersWithLanguage))
-      } finally {
-        setLoading(false)
       }
+      
+      setLoading(false)
     }
 
     fetchCourses()
@@ -373,7 +383,9 @@ export const useFeaturedCourses = () => {
 
   useEffect(() => {
     const fetchFeaturedCourses = async () => {
-      try {
+      const result = await handleAsyncError(async () => {
+        logger.debug('Fetching featured courses', { language: i18n.language })
+        
         // Try to fetch featured courses from Supabase first
         const { data: supabaseCourses, error: supabaseError } = await supabase
           .from('courses')
@@ -385,23 +397,29 @@ export const useFeaturedCourses = () => {
           .limit(6)
 
         if (supabaseError) {
-          console.error('Supabase error:', supabaseError)
-          throw supabaseError
+          handleSupabaseError(supabaseError, 'fetchFeaturedCourses')
+          throw new Error('Supabase error')
         }
 
         if (supabaseCourses && supabaseCourses.length > 0) {
+          logger.info('Using Supabase featured courses', { count: supabaseCourses.length })
           setCourses(supabaseCourses)
         } else {
           // Fallback to mock courses
+          logger.info('Using mock featured courses')
           setCourses(mockCourses.filter(course => course.is_featured && course.language === i18n.language))
         }
-      } catch (err) {
-        console.error('Error fetching featured courses:', err)
+        
+        return true
+      }, 'fetchFeaturedCourses', false)
+      
+      if (!result) {
+        logger.warn('Fetch featured courses failed, using mock data')
         // Fallback to mock courses on error
         setCourses(mockCourses.filter(course => course.is_featured && course.language === i18n.language))
-      } finally {
-        setLoading(false)
       }
+      
+      setLoading(false)
     }
 
     fetchFeaturedCourses()

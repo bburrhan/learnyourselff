@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { supabase, Database } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
+import logger from '../../utils/logger'
+import { handleSupabaseError, handleAsyncError } from '../../utils/errorHandler'
 import { Download, Calendar, ExternalLink, AlertCircle } from 'lucide-react'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
@@ -27,7 +29,9 @@ const MyCourses: React.FC = () => {
     const fetchPurchases = async () => {
       if (!user) return
 
-      try {
+      const result = await handleAsyncError(async () => {
+        logger.info('Fetching user purchases', { userId: user.id })
+        
         const { data, error } = await supabase
           .from('purchases')
           .select(`
@@ -39,11 +43,18 @@ const MyCourses: React.FC = () => {
           .eq('courses.language', i18n.language)
           .order('created_at', { ascending: false })
 
-        if (error) throw error
+        if (error) {
+          handleSupabaseError(error, 'fetchUserPurchases')
+          throw error
+        }
 
+        logger.info('User purchases fetched', { count: data?.length || 0 })
         setPurchases(data || [])
-      } catch (error) {
-        console.error('Error fetching purchases:', error)
+        return true
+      }, 'fetchUserPurchases', false)
+      
+      if (!result) {
+        logger.warn('Failed to fetch purchases, using mock data')
         // Provide mock data when database is not available
         if (user) {
           const mockPurchasesEn = [
@@ -119,9 +130,9 @@ const MyCourses: React.FC = () => {
           const mockPurchases = i18n.language === 'tr' ? mockPurchasesTr : mockPurchasesEn
           setPurchases(mockPurchases)
         }
-      } finally {
-        setLoading(false)
       }
+      
+      setLoading(false)
     }
 
     fetchPurchases()
@@ -130,11 +141,14 @@ const MyCourses: React.FC = () => {
   const handleDownload = async (purchaseId: string, courseTitle: string) => {
     setDownloading(purchaseId)
     
-    try {
+    const result = await handleAsyncError(async () => {
+      logger.info('Starting course download', { purchaseId, courseTitle })
+      
       // Check if this is a demo purchase or real purchase
       const purchase = purchases.find(p => p.id === purchaseId)
       if (purchase?.stripe_payment_id?.startsWith('demo_')) {
         // Demo mode - simulate download
+        logger.info('Demo download simulated', { purchaseId })
         toast.success('Demo mode: In production, your PDF would download now!')
         
         // Update download count for demo
@@ -157,6 +171,7 @@ const MyCourses: React.FC = () => {
         }
       } else {
         // Real download flow
+        logger.info('Processing real download', { purchaseId })
         const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/download-course`, {
           method: 'POST',
           headers: {
@@ -171,6 +186,7 @@ const MyCourses: React.FC = () => {
         const result = await response.json()
 
         if (result.error) {
+          logger.error('Download service error', { error: result.error })
           throw new Error(result.error)
         }
 
@@ -183,6 +199,7 @@ const MyCourses: React.FC = () => {
         document.body.removeChild(link)
 
         toast.success('Download started!')
+        logger.info('Download completed successfully', { purchaseId })
 
         // Refresh the purchases to update download count
         const updatedPurchases = purchases.map(p => 
@@ -193,12 +210,14 @@ const MyCourses: React.FC = () => {
         setPurchases(updatedPurchases)
       }
 
-    } catch (error) {
-      console.error('Download error:', error)
+      return true
+    }, 'downloadCourse')
+    
+    if (!result) {
       toast.error('Failed to download course')
-    } finally {
-      setDownloading(null)
     }
+    
+    setDownloading(null)
   }
 
   if (loading) {

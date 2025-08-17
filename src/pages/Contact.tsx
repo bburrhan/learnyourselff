@@ -4,6 +4,8 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Mail, Phone, MapPin, Send, MessageCircle, HelpCircle, Users } from 'lucide-react'
+import logger from '../utils/logger'
+import { handleAsyncError } from '../utils/errorHandler'
 import toast from 'react-hot-toast'
 
 const contactSchema = z.object({
@@ -34,21 +36,41 @@ const Contact: React.FC = () => {
   })
 
   const onSubmit = async (data: ContactForm) => {
-    setLoading(true)
-    try {
+    const result = await handleAsyncError(async () => {
+      setLoading(true)
+      logger.info('Contact form submission', { 
+        name: data.name, 
+        email: data.email, 
+        subject: data.subject 
+      })
+      
       // In a real application, you would send this to your backend
-      console.log('Contact form submission:', data)
+      logger.debug('Contact form data', data)
       
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000))
       
-      toast.success('Message sent successfully! We\'ll get back to you soon.')
+      logger.info('Contact form submitted successfully', { email: data.email })
+      toast.success(t('messageSent'))
       reset()
-    } catch (error) {
-      toast.error('Failed to send message. Please try again.')
-    } finally {
-      setLoading(false)
+      return true
+    }, 'contactFormSubmission')
+    
+    if (!result) {
+      toast.error(t('failedSendMessage'))
     }
+    
+    setLoading(false)
+  }
+
+  // Log page view
+  useEffect(() => {
+    logger.info('Contact page viewed')
+  }, [])
+
+  const onSubmit = async (data: ContactForm) => {
+    const result = await handleAsyncError(async () => {
+      setLoading(false)
   }
 
   return (

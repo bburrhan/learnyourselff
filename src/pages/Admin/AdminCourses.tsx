@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { supabase, Database } from '../../lib/supabase'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
+import logger from '../../utils/logger'
+import { handleSupabaseError, handleAsyncError } from '../../utils/errorHandler'
 import { 
   Plus, 
   Search, 
@@ -57,18 +59,27 @@ const AdminCourses: React.FC = () => {
   }, [i18n.language])
 
   const fetchCategories = async () => {
-    try {
+    const result = await handleAsyncError(async () => {
+      logger.debug('Fetching categories for admin')
+      
       const { data, error } = await supabase
         .from('categories')
         .select('*')
         .eq('is_active', true)
         .order('sort_order', { ascending: true })
 
-      if (error) throw error
+      if (error) {
+        handleSupabaseError(error, 'fetchCategoriesAdmin')
+        throw error
+      }
 
+      logger.info('Categories fetched for admin', { count: data?.length || 0 })
       setCategories(data || [])
-    } catch (error) {
-      console.error('Error fetching categories:', error)
+      return true
+    }, 'fetchCategoriesAdmin', false)
+    
+    if (!result) {
+      logger.warn('Failed to fetch categories, using defaults')
       // Fallback to default categories
       const defaultCategories = [
         { id: 'tech', name: 'Technology', slug: 'technology' },
@@ -79,22 +90,30 @@ const AdminCourses: React.FC = () => {
         { id: 'personal', name: 'Personal Development', slug: 'personal-development' },
       ]
       setCategories(defaultCategories as Category[])
-    }
   }
 
   const fetchCourses = async () => {
-    try {
+    const result = await handleAsyncError(async () => {
+      logger.debug('Fetching courses for admin', { language: i18n.language })
+      
       const { data, error } = await supabase
         .from('courses')
         .select('*')
         .eq('language', i18n.language)
         .order('created_at', { ascending: false })
 
-      if (error) throw error
+      if (error) {
+        handleSupabaseError(error, 'fetchCoursesAdmin')
+        throw error
+      }
 
+      logger.info('Courses fetched for admin', { count: data?.length || 0 })
       setCourses(data || [])
-    } catch (error) {
-      console.error('Error fetching courses:', error)
+      return true
+    }, 'fetchCoursesAdmin', false)
+    
+    if (!result) {
+      logger.warn('Failed to fetch courses, using mock data')
       // Provide mock courses for admin
       const mockCoursesEn = [
         {
@@ -180,9 +199,9 @@ const AdminCourses: React.FC = () => {
       
       const mockCourses = i18n.language === 'tr' ? mockCoursesTr : mockCoursesEn
       setCourses(mockCourses)
-    } finally {
-      setLoading(false)
     }
+    
+    setLoading(false)
   }
 
   const filteredCourses = courses.filter(course =>
@@ -236,8 +255,13 @@ const AdminCourses: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
+    
+    logger.info('Submitting course form', { 
+      isEdit: !!editingCourse, 
+      title: formData.title 
+    })
 
-    try {
+    const result = await handleAsyncError(async () => {
       const courseData = {
         ...formData,
         tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean),
@@ -246,7 +270,7 @@ const AdminCourses: React.FC = () => {
 
       if (editingCourse) {
         // Update existing course
-        try {
+        const updateResult = await handleAsyncError(async () => {
           const { error } = await supabase
             .from('courses')
             .update({
@@ -255,9 +279,17 @@ const AdminCourses: React.FC = () => {
             })
             .eq('id', editingCourse.id)
 
-          if (error) throw error
-        } catch (dbError) {
+          if (error) {
+            handleSupabaseError(error, 'updateCourse')
+            throw error
+          }
+          
+          return true
+        }, 'updateCourse', false)
+        
+        if (!updateResult) {
           // Fallback: update in local state for demo mode
+          logger.warn('Database update failed, updating local state')
           setCourses(courses.map(course => 
             course.id === editingCourse.id ? { 
               ...course, 
@@ -268,23 +300,34 @@ const AdminCourses: React.FC = () => {
             } : course
           ))
         }
+        
+        logger.info('Course updated successfully', { courseId: editingCourse.id })
         toast.success('Course updated successfully!')
       } else {
         // Create new course
-        try {
+        const createResult = await handleAsyncError(async () => {
           const { data, error } = await supabase
             .from('courses')
             .insert([courseData])
             .select()
 
-          if (error) throw error
+          if (error) {
+            handleSupabaseError(error, 'createCourse')
+            throw error
+          }
           
           // Add the new course with proper UUID to local state
           if (data && data[0]) {
+            logger.info('Course created in database', { courseId: data[0].id })
             setCourses([data[0], ...courses])
           }
-        } catch (dbError) {
+          
+          return true
+        }, 'createCourse', false)
+        
+        if (!createResult) {
           // Fallback: add to local state for demo mode
+          logger.warn('Database create failed, using local state')
           const newCourse = {
             ...courseData,
             id: `course-${Date.now()}`, // Only for demo mode
@@ -305,26 +348,35 @@ const AdminCourses: React.FC = () => {
           existingCourses.unshift(newCourse)
           localStorage.setItem('localCourses', JSON.stringify(existingCourses))
         }
+        
+        logger.info('Course created successfully')
         toast.success('Course created successfully!')
       }
 
       resetForm()
-    } catch (error) {
-      console.error('Error saving course:', error)
+      return true
+    }, 'submitCourseForm')
+    
+    if (!result) {
       toast.error('Failed to save course')
-    } finally {
-      setSubmitting(false)
     }
+    
+    setSubmitting(false)
   }
 
   const toggleCourseStatus = async (courseId: string, currentStatus: boolean) => {
-    try {
+    const result = await handleAsyncError(async () => {
+      logger.info('Toggling course status', { courseId, currentStatus })
+      
       const { error } = await supabase
         .from('courses')
         .update({ is_active: !currentStatus })
         .eq('id', courseId)
 
-      if (error) throw error
+      if (error) {
+        handleSupabaseError(error, 'toggleCourseStatus')
+        throw error
+      }
 
       setCourses(courses.map(course =>
         course.id === courseId
@@ -332,30 +384,42 @@ const AdminCourses: React.FC = () => {
           : course
       ))
 
+      logger.info('Course status toggled successfully', { courseId, newStatus: !currentStatus })
       toast.success(`Course ${!currentStatus ? 'activated' : 'deactivated'} successfully!`)
-    } catch (error) {
-      console.error('Error toggling course status:', error)
+      return true
+    }, 'toggleCourseStatus')
+    
+    if (!result) {
       toast.error('Failed to update course status')
     }
   }
 
   const deleteCourse = async (courseId: string) => {
     if (!window.confirm('Are you sure you want to delete this course? This action cannot be undone.')) {
+      logger.debug('Course deletion cancelled by user', { courseId })
       return
     }
 
-    try {
+    const result = await handleAsyncError(async () => {
+      logger.info('Deleting course', { courseId })
+      
       const { error } = await supabase
         .from('courses')
         .delete()
         .eq('id', courseId)
 
-      if (error) throw error
+      if (error) {
+        handleSupabaseError(error, 'deleteCourse')
+        throw error
+      }
 
       setCourses(courses.filter(course => course.id !== courseId))
+      logger.info('Course deleted successfully', { courseId })
       toast.success('Course deleted successfully!')
-    } catch (error) {
-      console.error('Error deleting course:', error)
+      return true
+    }, 'deleteCourse')
+    
+    if (!result) {
       toast.error('Failed to delete course')
     }
   }

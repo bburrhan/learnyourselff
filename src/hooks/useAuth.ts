@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
+import logger from '../utils/logger'
+import { handleSupabaseError } from '../utils/errorHandler'
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null)
@@ -9,9 +11,24 @@ export const useAuth = () => {
   useEffect(() => {
     // Get initial session
     const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      setUser(session?.user ?? null)
-      setLoading(false)
+      try {
+        logger.debug('Getting initial session')
+        const { data: { session }, error } = await supabase.auth.getSession()
+        
+        if (error) {
+          handleSupabaseError(error, 'getSession')
+        } else {
+          setUser(session?.user ?? null)
+          logger.info('Session retrieved', { 
+            hasUser: !!session?.user,
+            userId: session?.user?.id 
+          })
+        }
+      } catch (error) {
+        logger.error('Failed to get session', { error }, error as Error)
+      } finally {
+        setLoading(false)
+      }
     }
 
     getSession()
@@ -19,6 +36,11 @@ export const useAuth = () => {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        logger.info('Auth state changed', { 
+          event, 
+          hasUser: !!session?.user,
+          userId: session?.user?.id 
+        })
         setUser(session?.user ?? null)
         setLoading(false)
       }
@@ -28,30 +50,69 @@ export const useAuth = () => {
   }, [])
 
   const signIn = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-    return { data, error }
+    try {
+      logger.info('Sign in attempt', { email })
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+      
+      if (error) {
+        logger.warn('Sign in failed', { email, error: error.message })
+        return { data, error: handleSupabaseError(error, 'signIn') }
+      }
+      
+      logger.info('Sign in successful', { email, userId: data.user?.id })
+      return { data, error }
+    } catch (error) {
+      logger.error('Sign in error', { email, error }, error as Error)
+      return { data: null, error }
+    }
   }
 
   const signUp = async (email: string, password: string, fullName?: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: fullName,
-          language_preference: 'en',
+    try {
+      logger.info('Sign up attempt', { email, hasFullName: !!fullName })
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+            language_preference: 'en',
+          },
         },
-      },
-    })
-    return { data, error }
+      })
+      
+      if (error) {
+        logger.warn('Sign up failed', { email, error: error.message })
+        return { data, error: handleSupabaseError(error, 'signUp') }
+      }
+      
+      logger.info('Sign up successful', { email, userId: data.user?.id })
+      return { data, error }
+    } catch (error) {
+      logger.error('Sign up error', { email, error }, error as Error)
+      return { data: null, error }
+    }
   }
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut()
-    return { error }
+    try {
+      logger.info('Sign out attempt')
+      const { error } = await supabase.auth.signOut()
+      
+      if (error) {
+        logger.warn('Sign out failed', { error: error.message })
+        return { error: handleSupabaseError(error, 'signOut') }
+      }
+      
+      logger.info('Sign out successful')
+      return { error }
+    } catch (error) {
+      logger.error('Sign out error', { error }, error as Error)
+      return { error }
+    }
   }
 
   return {

@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { createCheckoutSession } from '../lib/stripe';
+import logger from '../utils/logger';
+import { handleSupabaseError, handleAsyncError } from '../utils/errorHandler';
 import LoadingSpinner from '../components/UI/LoadingSpinner';
 import { ArrowLeft, CreditCard, Shield, Clock } from 'lucide-react';
 
@@ -46,7 +48,9 @@ const Checkout: React.FC = () => {
   }, [courseId, navigate]);
 
   const fetchCourse = async () => {
-    try {
+    const result = await handleAsyncError(async () => {
+      logger.info('Fetching course for checkout', { courseId })
+      
       const { data, error } = await supabase
         .from('courses')
         .select('*')
@@ -55,21 +59,33 @@ const Checkout: React.FC = () => {
         .single();
 
       if (error || !data) {
+        if (error) {
+          handleSupabaseError(error, 'fetchCourseForCheckout')
+        }
         throw new Error('Course not found');
       }
 
+      logger.info('Course fetched for checkout', { courseId, title: data.title })
       setCourse(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load course');
-    } finally {
-      setLoading(false);
+      return true
+    }, 'fetchCourseForCheckout', false)
+    
+    if (!result) {
+      setError('Failed to load course');
     }
+    
+    setLoading(false);
   };
 
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!course || !formData.email || !formData.fullName) {
+      logger.warn('Checkout validation failed', { 
+        hasCourse: !!course, 
+        hasEmail: !!formData.email, 
+        hasFullName: !!formData.fullName 
+      })
       setError('Please fill in all required fields');
       return;
     }
@@ -78,6 +94,11 @@ const Checkout: React.FC = () => {
     setError(null);
 
     try {
+      logger.info('Starting checkout process', { 
+        courseId: course.id, 
+        email: formData.email 
+      })
+      
       const { url } = await createCheckoutSession(
         course.id,
         formData.email,
@@ -85,6 +106,7 @@ const Checkout: React.FC = () => {
       );
 
       if (url) {
+        logger.info('Redirecting to Stripe checkout', { url })
         // Store checkout info in localStorage for success page
         localStorage.setItem('checkoutInfo', JSON.stringify({
           courseId: course.id,
@@ -96,9 +118,15 @@ const Checkout: React.FC = () => {
         }));
         window.location.href = url;
       } else {
+        logger.error('No checkout URL received from Stripe')
         throw new Error('No checkout URL received');
       }
     } catch (err) {
+      logger.error('Checkout process failed', { 
+        courseId: course.id, 
+        email: formData.email, 
+        error: err 
+      }, err as Error)
       setError(err instanceof Error ? err.message : 'Failed to start checkout');
       setProcessing(false);
     }

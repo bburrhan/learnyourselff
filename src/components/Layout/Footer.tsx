@@ -1,18 +1,37 @@
 import React from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Mail, Globe, Heart } from 'lucide-react'
+import { Mail, Globe, Heart, Bug } from 'lucide-react'
+import DebugPanel from '../Debug/DebugPanel'
 
 const Footer: React.FC = () => {
   const { t } = useTranslation()
+  const [debugPanelOpen, setDebugPanelOpen] = useState(false)
+  const [debugClickCount, setDebugClickCount] = useState(0)
+
+  // Secret debug panel activation (click logo 5 times in development)
+  const handleLogoClick = () => {
+    if (import.meta.env.DEV) {
+      setDebugClickCount(prev => prev + 1)
+      if (debugClickCount >= 4) {
+        setDebugPanelOpen(true)
+        setDebugClickCount(0)
+      }
+    }
+  }
 
   return (
-    <footer className="bg-gray-900 text-white border-t border-gray-800">
+    <>
+      <footer className="bg-gray-900 text-white border-t border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-2 mb-4">
+            <div 
+              className="flex items-center space-x-2 mb-4 cursor-pointer"
+              onClick={handleLogoClick}
+            >
               <img 
                 src="/Learnyourself_Logo copy.svg" 
                 alt="LearnYourself Logo" 
@@ -125,6 +144,12 @@ const Footer: React.FC = () => {
         </div>
       </div>
     </footer>
+      
+      <DebugPanel 
+        isOpen={debugPanelOpen} 
+        onClose={() => setDebugPanelOpen(false)} 
+      />
+    </>
   )
 }
 

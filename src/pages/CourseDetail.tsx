@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { supabase, Database } from '../lib/supabase'
+import logger from '../utils/logger'
+import { handleSupabaseError, handleAsyncError } from '../utils/errorHandler'
 import LoadingSpinner from '../components/UI/LoadingSpinner'
 import { 
   Star, 
@@ -39,13 +41,13 @@ const CourseDetail: React.FC = () => {
     const fetchCourse = async () => {
       if (!id) return
 
-      try {
-        console.log('Fetching course with ID:', id)
+      const result = await handleAsyncError(async () => {
+        logger.info('Fetching course details', { courseId: id })
         
         let courseData = null
         
         // Always try Supabase first, regardless of ID format
-        console.log('Querying Supabase for course...')
+        logger.debug('Querying Supabase for course')
         const { data, error } = await supabase
           .from('courses')
           .select('*')
@@ -53,16 +55,18 @@ const CourseDetail: React.FC = () => {
           .eq('is_active', true)
           .single()
 
-        console.log('Supabase query result:', { data, error })
+        logger.debug('Supabase query result', { hasData: !!data, error })
 
-        if (!error && data) {
+        if (error) {
+          handleSupabaseError(error, 'fetchCourseDetail')
+        } else if (data) {
           courseData = data
-          console.log('Found course in Supabase:', courseData.title)
+          logger.info('Found course in Supabase', { title: courseData.title })
         }
         
         // If no course found in Supabase, try mock data
         if (!courseData) {
-          console.log('No course found in Supabase, trying mock data...')
+          logger.debug('No course found in Supabase, trying mock data')
           
           // First check localStorage for locally created courses
           const localCourses = localStorage.getItem('localCourses')
@@ -71,12 +75,12 @@ const CourseDetail: React.FC = () => {
               const parsedCourses = JSON.parse(localCourses)
               const foundLocalCourse = parsedCourses.find((course: Course) => course.id === id)
               if (foundLocalCourse) {
+                logger.info('Using locally created course data', { courseId: id })
                 setCourse(foundLocalCourse)
-                console.log('Using locally created course data')
                 return
               }
             } catch (e) {
-              console.error('Error parsing local courses:', e)
+              logger.error('Error parsing local courses', { error: e }, e as Error)
             }
           }
           
@@ -205,9 +209,9 @@ const CourseDetail: React.FC = () => {
         
         if (id && mockCourses[id as keyof typeof mockCourses]) {
           setCourse(mockCourses[id as keyof typeof mockCourses])
-          console.log('Using mock course data')
+          logger.info('Using mock course data', { courseId: id })
         } else {
-          console.log('Course not found in mock data either')
+          logger.warn('Course not found in mock data', { courseId: id })
           setError('Course not found')
         }
         }
@@ -216,12 +220,16 @@ const CourseDetail: React.FC = () => {
           setCourse(courseData)
           setError(null)
         }
-      } catch (error) {
-        console.error('Error in fetchCourse:', error)
+        
+        return true
+      }, 'fetchCourseDetail', false)
+      
+      if (!result) {
+        logger.error('Failed to fetch course details', { courseId: id })
         setError('Failed to fetch course')
-      } finally {
-        setLoading(false)
       }
+      
+      setLoading(false)
     }
 
     fetchCourse()
