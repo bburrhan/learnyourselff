@@ -172,27 +172,74 @@ const Home: React.FC = () => {
 
           <div className="grid md:grid-cols-3 gap-8">
             {transformationStories.map((story, index) => (
-              <div key={index} className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2">
-                <div className="mb-4">
-                  <span className="inline-block bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium mb-2">
-                    {t('before')}
+              <div key={index} className="relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 overflow-hidden group">
+                {/* Category Badge */}
+                <div className="absolute top-4 right-4 z-10">
+                  <span className="bg-warm-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide shadow-lg">
+                    {t(story.categoryKey)}
                   </span>
-                  <p className="text-gray-700 italic text-lg">"{t(story.beforeKey)}"</p>
                 </div>
-                <div className="flex items-center justify-center my-4">
-                  <div className="bg-warm-orange-100 rounded-full p-2">
-                    <ArrowRight className="h-6 w-6 text-warm-orange-600" />
+
+                {/* Before Section */}
+                <div className="relative bg-gradient-to-br from-red-50 to-red-100 p-6 border-b-2 border-dashed border-gray-200">
+                  <div className="absolute top-2 left-2">
+                    <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">😔</span>
+                    </div>
+                  </div>
+                  <div className="pt-6">
+                    <div className="flex items-center mb-3">
+                      <span className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
+                        {t('before')}
+                      </span>
+                    </div>
+                    <p className="text-red-800 font-medium text-lg leading-relaxed">
+                      "{t(story.beforeKey)}"
+                    </p>
                   </div>
                 </div>
-                <div>
-                  <span className="inline-block bg-warm-orange-100 text-warm-orange-800 px-3 py-1 rounded-full text-sm font-medium mb-2">
-                    {t('after')}
-                  </span>
-                  <p className="text-gray-900 font-medium text-lg">"{t(story.afterKey)}"</p>
+
+                {/* Transformation Arrow */}
+                <div className="relative flex items-center justify-center py-4 bg-gradient-to-r from-warm-orange-400 to-warm-orange-500">
+                  <div className="bg-white rounded-full p-3 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <ArrowRight className="h-6 w-6 text-warm-orange-600" />
+                  </div>
+                  <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                    <div className="w-2 h-2 bg-white rounded-full opacity-60"></div>
+                  </div>
+                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                    <div className="w-2 h-2 bg-white rounded-full opacity-60"></div>
+                  </div>
                 </div>
-                <div className="mt-4 pt-4 border-t border-gray-100">
-                  <span className="text-sm text-warm-orange-600 font-medium">{t(story.categoryKey)}</span>
+
+                {/* After Section */}
+                <div className="relative bg-gradient-to-br from-green-50 to-emerald-100 p-6">
+                  <div className="absolute top-2 left-2">
+                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">🎉</span>
+                    </div>
+                  </div>
+                  <div className="pt-6">
+                    <div className="flex items-center mb-3">
+                      <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
+                        {t('after')}
+                      </span>
+                    </div>
+                    <p className="text-green-800 font-bold text-lg leading-relaxed">
+                      "{t(story.afterKey)}"
+                    </p>
+                  </div>
+                  
+                  {/* Success Indicator */}
+                  <div className="absolute bottom-2 right-2">
+                    <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                      <CheckCircle className="h-4 w-4 text-white" />
+                    </div>
+                  </div>
                 </div>
+
+                {/* Hover Effect Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-warm-orange-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
               </div>
             ))}
           </div>
