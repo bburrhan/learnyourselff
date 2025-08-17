@@ -422,6 +422,19 @@ const CourseDetail: React.FC = () => {
             )}
           </div>
 
+          {/* Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-lg shadow-md p-6 sticky top-8">
+              {/* Course Info */}
+              <div className="space-y-4 mb-6">
+                <div className="flex items-center justify-between py-2 border-b border-gray-100">
+                  <span className="text-gray-600 flex items-center">
+                    <Globe className="h-4 w-4 mr-2" />
+                    {t('language')}
+                  </span>
+                  <span className="font-medium text-gray-900">
+                    {course.language === 'tr' ? 'Türkçe' : 'English'}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between py-2 border-b border-gray-100">
                   <span className="text-gray-600 flex items-center">
@@ -496,3 +509,9 @@ const CourseDetail: React.FC = () => {
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+export default CourseDetail
