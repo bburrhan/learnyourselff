@@ -422,26 +422,6 @@ const CourseDetail: React.FC = () => {
             )}
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Purchase Card */}
-            <div className="bg-white rounded-lg shadow-md p-6 sticky top-24">
-              <div className="text-center mb-6">
-                <div className="text-4xl font-bold text-gray-900 mb-2">
-                  {formatPrice(course.price, course.currency)}
-                </div>
-                <p className="text-gray-600">{t('oneTimePayment')}</p>
-              </div>
-
-              <div className="space-y-4 mb-6">
-                <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                  <span className="text-gray-600 flex items-center">
-                    <Globe className="h-4 w-4 mr-2" />
-                    {t('language')}
-                  </span>
-                  <span className="font-medium text-gray-900">
-                    {course.language?.toUpperCase()}
-                  </span>
                 </div>
                 <div className="flex items-center justify-between py-2 border-b border-gray-100">
                   <span className="text-gray-600 flex items-center">
@@ -451,13 +431,6 @@ const CourseDetail: React.FC = () => {
                   <span className="font-medium text-gray-900">
                     {course.category}
                   </span>
-                </div>
-                <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                  <span className="text-gray-600 flex items-center">
-                    <Download className="h-4 w-4 mr-2" />
-                    {t('format')}
-                  </span>
-                  <span className="font-medium text-gray-900">PDF</span>
                 </div>
               </div>
 
@@ -523,9 +496,3 @@ const CourseDetail: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  )
-}
-
-export default CourseDetail
