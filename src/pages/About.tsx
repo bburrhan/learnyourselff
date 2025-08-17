@@ -226,13 +226,21 @@ const About: React.FC = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="/courses"
+              href="#"
+              onClick={(e) => {
+                e.preventDefault()
+                window.location.href = '/courses'
+              }}
               className="inline-flex items-center justify-center px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
             >
               Start Learning Today
             </a>
             <a
-              href="/contact"
+              href="#"
+              onClick={(e) => {
+                e.preventDefault()
+                window.location.href = '/contact'
+              }}
               className="inline-flex items-center justify-center px-8 py-3 border-2 border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-600 hover:text-white transition-colors"
             >
               Get in Touch

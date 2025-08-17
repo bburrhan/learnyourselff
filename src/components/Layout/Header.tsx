@@ -1,8 +1,10 @@
 import React from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { User, Globe, Menu, X, Bug } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
+import LanguageAwareLink from './LanguageAwareLink'
+import { getPathWithoutLanguage } from './LanguageRouter'
 import { useState } from 'react'
 
 const Header: React.FC = () => {
@@ -38,29 +40,29 @@ const Header: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+          <LanguageAwareLink to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
             <img 
               src="/Learnyourself_Logo copy.svg" 
               alt="LearnYourself Logo" 
               className="h-8 w-8"
             />
             <span className="text-xl font-bold text-gray-900 hidden sm:block">LearnYourself</span>
-          </Link>
+          </LanguageAwareLink>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
             {navLinks.map((link) => (
-              <Link
+              <LanguageAwareLink
                 key={link.path}
                 to={link.path}
                 className={`px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg ${
-                  isActive(link.path)
+                  isActive(getPathWithoutLanguage(location.pathname)) && getPathWithoutLanguage(location.pathname) === link.path
                     ? 'text-royal-blue-600 bg-royal-blue-50'
                     : 'text-gray-700 hover:text-royal-blue-600 hover:bg-gray-50'
                 }`}
               >
                 {link.label}
-              </Link>
+              </LanguageAwareLink>
             ))}
           </nav>
 
@@ -83,19 +85,19 @@ const Header: React.FC = () => {
                   <span className="text-sm font-medium truncate max-w-32">{user.email}</span>
                 </button>
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border border-gray-100">
-                  <Link
+                  <LanguageAwareLink
                     to="/dashboard"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                   >
                     {t('dashboard')}
-                  </Link>
+                  </LanguageAwareLink>
                   {user?.user_metadata?.role === 'admin' && (
-                    <Link
+                    <LanguageAwareLink
                       to="/admin"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                     >
                       {t('admin')}
-                    </Link>
+                    </LanguageAwareLink>
                   )}
                   <button
                     onClick={handleSignOut}
@@ -107,18 +109,18 @@ const Header: React.FC = () => {
               </div>
             ) : (
               <div className="flex items-center space-x-2">
-                <Link
+                <LanguageAwareLink
                   to="/login"
                   className="text-gray-700 hover:text-royal-blue-600 px-4 py-2 text-sm font-medium rounded-lg hover:bg-gray-50 transition-all"
                 >
                   {t('login')}
-                </Link>
-                <Link
+                </LanguageAwareLink>
+                <LanguageAwareLink
                   to="/signup"
                   className="bg-royal-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-royal-blue-700 transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105"
                 >
                   {t('signup')}
-                </Link>
+                </LanguageAwareLink>
               </div>
             )}
           </div>
@@ -137,18 +139,18 @@ const Header: React.FC = () => {
           <div className="md:hidden py-4 border-t border-gray-200 bg-white/95 backdrop-blur-sm">
             <div className="flex flex-col space-y-2">
               {navLinks.map((link) => (
-                <Link
+                <LanguageAwareLink
                   key={link.path}
                   to={link.path}
                   onClick={() => setMobileMenuOpen(false)}
                   className={`px-4 py-3 text-base font-medium transition-colors rounded-lg mx-2 ${
-                    isActive(link.path)
+                    isActive(getPathWithoutLanguage(location.pathname)) && getPathWithoutLanguage(location.pathname) === link.path
                       ? 'text-royal-blue-600 bg-royal-blue-50 font-semibold'
                       : 'text-gray-700 hover:text-royal-blue-600 hover:bg-gray-50'
                   }`}
                 >
                   {link.label}
-                </Link>
+                </LanguageAwareLink>
               ))}
               
               <div className="border-t border-gray-200 pt-4 mt-4 mx-2">
@@ -162,31 +164,31 @@ const Header: React.FC = () => {
                 
                 {user ? (
                   <div className="space-y-2">
-                    <Link
+                    <LanguageAwareLink
                       to="/dashboard"
                       onClick={() => setMobileMenuOpen(false)}
                       className="flex items-center space-x-2 px-4 py-3 text-gray-700 hover:text-royal-blue-600 rounded-lg hover:bg-gray-50 transition-colors"
                     >
                       <User className="h-4 w-4" />
                       <span>{t('dashboard')}</span>
-                    </Link>
+                    </LanguageAwareLink>
                     {user?.user_metadata?.role === 'admin' && (
-                      <Link
+                      <LanguageAwareLink
                         to="/admin"
                         onClick={() => setMobileMenuOpen(false)}
                         className="flex items-center space-x-2 px-4 py-3 text-gray-700 hover:text-royal-blue-600 rounded-lg hover:bg-gray-50 transition-colors"
                       >
                         <span>{t('admin')}</span>
-                      </Link>
+                      </LanguageAwareLink>
                     )}
                     {user?.user_metadata?.role === 'admin' && (
-                      <Link
+                      <LanguageAwareLink
                         to="/admin/blogs"
                         onClick={() => setMobileMenuOpen(false)}
                         className="flex items-center space-x-2 px-4 py-3 text-gray-700 hover:text-royal-blue-600 rounded-lg hover:bg-gray-50 transition-colors"
                       >
                         <span>Blog Management</span>
-                      </Link>
+                      </LanguageAwareLink>
                     )}
                     <button
                       onClick={handleSignOut}
@@ -197,20 +199,20 @@ const Header: React.FC = () => {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <Link
+                    <LanguageAwareLink
                       to="/login"
                       onClick={() => setMobileMenuOpen(false)}
                       className="block px-4 py-3 text-gray-700 hover:text-royal-blue-600 rounded-lg hover:bg-gray-50 transition-colors"
                     >
                       {t('login')}
-                    </Link>
-                    <Link
+                    </LanguageAwareLink>
+                    <LanguageAwareLink
                       to="/signup"
                       onClick={() => setMobileMenuOpen(false)}
                       className="block px-4 py-3 bg-royal-blue-600 text-white rounded-lg hover:bg-royal-blue-700 transition-colors font-medium text-center"
                     >
                       {t('signup')}
-                    </Link>
+                    </LanguageAwareLink>
                   </div>
                 )}
               </div>

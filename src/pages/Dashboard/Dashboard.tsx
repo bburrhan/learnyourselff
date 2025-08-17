@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react'
-import { Routes, Route, Link, useLocation } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../hooks/useAuth'
+import LanguageAwareLink from '../../components/Layout/LanguageAwareLink'
+import { getPathWithoutLanguage } from '../../components/Layout/LanguageRouter'
 import { BookOpen, Download, User, Settings, Home } from 'lucide-react'
 import MyCourses from './MyCourses'
 import AccountSettings from './AccountSettings'
@@ -37,10 +39,11 @@ const Dashboard: React.FC = () => {
   ]
 
   const isActive = (path: string, exact = false) => {
+    const currentPathWithoutLang = getPathWithoutLanguage(location.pathname)
     if (exact) {
-      return location.pathname === path
+      return currentPathWithoutLang === path
     }
-    return location.pathname.startsWith(path)
+    return currentPathWithoutLang.startsWith(path)
   }
 
   return (
@@ -62,7 +65,7 @@ const Dashboard: React.FC = () => {
               {sidebarItems.map((item) => {
                 const Icon = item.icon
                 return (
-                  <Link
+                  <LanguageAwareLink
                     key={item.path}
                     to={item.path}
                     className={`flex items-center space-x-3 px-3 py-2 rounded-md transition-colors ${
@@ -73,7 +76,7 @@ const Dashboard: React.FC = () => {
                   >
                     <Icon className="h-5 w-5" />
                     <span className="font-medium">{item.label}</span>
-                  </Link>
+                  </LanguageAwareLink>
                 )
               })}
             </nav>

@@ -1,5 +1,6 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
+import { getCurrentLanguageFromUrl } from '../components/Layout/LanguageRouter'
 
 const resources = {
   en: {
@@ -756,7 +757,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: 'en',
+    lng: getCurrentLanguageFromUrl(),
     fallbackLng: 'en',
     interpolation: {
       escapeValue: false,

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useAuth } from '../../hooks/useAuth'
+import LanguageAwareLink from '../../components/Layout/LanguageAwareLink'
 import { Eye, EyeOff } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -60,26 +61,26 @@ const Login: React.FC = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <Link to="/" className="flex items-center space-x-2">
+          <LanguageAwareLink to="/" className="flex items-center space-x-2">
             <img 
               src="/Learnyourself_Logo copy.svg" 
               alt="LearnYourself Logo" 
               className="h-10 w-10"
             />
             <span className="text-2xl font-bold text-gray-900">LearnYourself</span>
-          </Link>
+          </LanguageAwareLink>
         </div>
         <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
           {t('login')}
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
           Or{' '}
-          <Link
+          <LanguageAwareLink
             to="/signup"
             className="font-medium text-royal-blue-600 hover:text-royal-blue-500"
           >
             {t('signup')}
-          </Link>
+          </LanguageAwareLink>
         </p>
       </div>
 
@@ -135,12 +136,12 @@ const Login: React.FC = () => {
 
             <div className="flex items-center justify-between">
               <div className="text-sm">
-                <Link
+                <LanguageAwareLink
                   to="/forgot-password"
                   className="font-medium text-royal-blue-600 hover:text-royal-blue-500"
                 >
                   Forgot password?
-                </Link>
+                </LanguageAwareLink>
               </div>
             </div>
 
@@ -166,12 +167,12 @@ const Login: React.FC = () => {
             </div>
 
             <div className="mt-6">
-              <Link
+              <LanguageAwareLink
                 to="/courses"
                 className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
               >
                 {t('browseCoursesBtn')}
-              </Link>
+              </LanguageAwareLink>
             </div>
           </div>
         </div>

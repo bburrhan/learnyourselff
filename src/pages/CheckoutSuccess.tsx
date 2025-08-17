@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
+import LanguageAwareLink from '../components/Layout/LanguageAwareLink'
 import { CheckCircle, Download, Mail, ArrowRight } from 'lucide-react'
 
 const CheckoutSuccess: React.FC = () => {
@@ -85,20 +86,20 @@ const CheckoutSuccess: React.FC = () => {
 
           {/* Actions */}
           <div className="space-y-3">
-            <Link
+            <LanguageAwareLink
               to="/courses"
               className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-all duration-300 flex items-center justify-center transform hover:scale-105"
             >
               Browse More Courses
               <ArrowRight className="h-4 w-4 ml-2" />
-            </Link>
+            </LanguageAwareLink>
             
-            <Link
+            <LanguageAwareLink
               to="/"
               className="w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-lg font-medium hover:bg-gray-200 transition-all duration-300 transform hover:scale-105"
             >
               Back to Home
-            </Link>
+            </LanguageAwareLink>
           </div>
 
           {/* Session ID for reference */}

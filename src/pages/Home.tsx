@@ -1,9 +1,9 @@
 import React from 'react'
 import { useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useCourses } from '../hooks/useCourses'
 import LoadingSpinner from '../components/UI/LoadingSpinner'
+import LanguageAwareLink from '../components/Layout/LanguageAwareLink'
 import { 
   ArrowRight, 
   Clock, 
@@ -82,19 +82,19 @@ const Home: React.FC = () => {
                 {t('heroSubtitleHome')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Link
+                <LanguageAwareLink
                   to="/courses"
                   className="inline-flex items-center justify-center px-8 py-4 bg-warm-orange-500 text-white rounded-lg font-bold text-lg hover:bg-warm-orange-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-warm-orange-400"
                 >
                   {t('startYourTransformation')}
                   <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-                <Link
+                </LanguageAwareLink>
+                <LanguageAwareLink
                   to="/courses"
                   className="inline-flex items-center justify-center px-8 py-4 border-2 border-white text-white rounded-lg font-semibold text-lg hover:bg-white hover:text-royal-blue-600 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-white"
                 >
                   {t('browseLifeChangingCourses')}
-                </Link>
+                </LanguageAwareLink>
               </div>
             </div>
             <div className="relative">
@@ -214,7 +214,7 @@ const Home: React.FC = () => {
             {lifeCategories.map((category, index) => {
               const Icon = category.icon
               return (
-                <Link
+                <LanguageAwareLink
                   key={index}
                   to="/courses"
                   className="group bg-white border-2 border-gray-100 rounded-xl p-6 text-center hover:border-royal-blue-200 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2"
@@ -225,7 +225,7 @@ const Home: React.FC = () => {
                   <h3 className="font-semibold text-gray-900 group-hover:text-royal-blue-600 transition-colors text-sm">
                     {t(category.titleKey)}
                   </h3>
-                </Link>
+                </LanguageAwareLink>
               )
             })}
           </div>
@@ -275,13 +275,13 @@ const Home: React.FC = () => {
                   <p className="text-gray-600 mb-6 line-clamp-3 leading-relaxed">
                     {course.description}
                   </p>
-                  <Link
+                  <LanguageAwareLink
                     to={`/course/${course.id}`}
                     className="w-full bg-royal-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-royal-blue-700 transition-all duration-300 flex items-center justify-center transform hover:scale-105"
                   >
                     <Play className="h-4 w-4 mr-2" />
                     Start Now
-                  </Link>
+                  </LanguageAwareLink>
                 </div>
               ))}
             </div>
@@ -289,18 +289,18 @@ const Home: React.FC = () => {
             <div className="text-center py-8">
               <p className="text-gray-600">No courses available at the moment.</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
-                <Link
+                <LanguageAwareLink
                   to="/courses"
                   className="inline-flex items-center justify-center px-8 py-4 bg-warm-orange-500 text-white rounded-xl font-bold text-lg hover:bg-warm-orange-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                 >
                   {t('startYourTransformation')}
-                </Link>
-                <Link
+                </LanguageAwareLink>
+                <LanguageAwareLink
                   to="/courses"
                   className="inline-flex items-center justify-center px-8 py-4 border-2 border-warm-orange-500 text-warm-orange-600 rounded-xl font-semibold text-lg hover:bg-warm-orange-500 hover:text-white transition-all duration-300"
                 >
                   {t('browseCourses')}
-                </Link>
+                </LanguageAwareLink>
               </div>
             </div>
           )}
@@ -401,13 +401,13 @@ const Home: React.FC = () => {
           <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
             {t('noSubscriptions')}
           </p>
-          <Link
+          <LanguageAwareLink
             to="/courses"
             className="inline-flex items-center justify-center px-12 py-5 bg-warm-orange-500 text-white rounded-lg font-bold text-xl hover:bg-warm-orange-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
           >
             {t('startTransformation')}
             <ArrowRight className="ml-3 h-6 w-6" />
-          </Link>
+          </LanguageAwareLink>
         </div>
       </section>
     </div>

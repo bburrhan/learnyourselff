@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { supabase, Database } from '../lib/supabase'
 import LoadingSpinner from '../components/UI/LoadingSpinner'
+import LanguageAwareLink from '../components/Layout/LanguageAwareLink'
 import { Calendar, User, Tag, ArrowRight } from 'lucide-react'
 import { format } from 'date-fns'
 
@@ -158,12 +158,12 @@ const Blog: React.FC = () => {
                     </span>
                   </div>
                   <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                    <Link
+                    <LanguageAwareLink
                       to={`/blog/${posts[0].slug}`}
                       className="hover:text-blue-600 transition-colors"
                     >
                       {posts[0].title}
-                    </Link>
+                    </LanguageAwareLink>
                   </h2>
                   <p className="text-gray-600 mb-6 line-clamp-3">
                     {posts[0].excerpt}
@@ -179,13 +179,13 @@ const Blog: React.FC = () => {
                         {format(new Date(posts[0].created_at), 'MMM d, yyyy')}
                       </div>
                     </div>
-                    <Link
+                    <LanguageAwareLink
                       to={`/blog/${posts[0].slug}`}
                       className="text-blue-600 hover:text-blue-700 font-medium flex items-center"
                     >
                       {t('readMore')}
                       <ArrowRight className="h-4 w-4 ml-1" />
-                    </Link>
+                    </LanguageAwareLink>
                   </div>
                 </div>
               </div>
@@ -224,12 +224,12 @@ const Blog: React.FC = () => {
                   ))}
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                  <Link
+                  <LanguageAwareLink
                     to={`/blog/${post.slug}`}
                     className="hover:text-blue-600 transition-colors"
                   >
                     {post.title}
-                  </Link>
+                  </LanguageAwareLink>
                 </h3>
                 <p className="text-gray-600 text-sm mb-4 line-clamp-3">
                   {post.excerpt}

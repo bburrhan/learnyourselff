@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { supabase, Database } from '../lib/supabase'
 import LoadingSpinner from '../components/UI/LoadingSpinner'
+import LanguageAwareLink from '../components/Layout/LanguageAwareLink'
 import { Calendar, User, Tag, ArrowLeft, Share2 } from 'lucide-react'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
@@ -185,13 +186,13 @@ const BlogPost: React.FC = () => {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('error')}</h1>
           <p className="text-gray-600 mb-4">{error || 'Blog post not found'}</p>
-          <Link
+          <LanguageAwareLink
             to="/blog"
             className="inline-flex items-center text-blue-600 hover:text-blue-700"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Blog
-          </Link>
+          </LanguageAwareLink>
         </div>
       </div>
     )
@@ -203,13 +204,13 @@ const BlogPost: React.FC = () => {
       <div className="bg-white border-b">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <nav className="flex items-center space-x-2 text-sm">
-            <Link to="/" className="text-gray-500 hover:text-gray-700">
+            <LanguageAwareLink to="/" className="text-gray-500 hover:text-gray-700">
               {t('home')}
-            </Link>
+            </LanguageAwareLink>
             <span className="text-gray-400">/</span>
-            <Link to="/blog" className="text-gray-500 hover:text-gray-700">
+            <LanguageAwareLink to="/blog" className="text-gray-500 hover:text-gray-700">
               {t('blog')}
-            </Link>
+            </LanguageAwareLink>
             <span className="text-gray-400">/</span>
             <span className="text-gray-900 truncate">{post.title}</span>
           </nav>
@@ -287,13 +288,13 @@ const BlogPost: React.FC = () => {
           <p className="text-gray-600 mb-4">
             {t('exploreCollection')}
           </p>
-          <Link
+          <LanguageAwareLink
             to="/courses"
             className="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
           >
             {t('browseCoursesBtn')}
             <ArrowLeft className="h-4 w-4 ml-2 rotate-180" />
-          </Link>
+          </LanguageAwareLink>
         </div>
       </article>
     </div>

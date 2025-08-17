@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useAuth } from '../../hooks/useAuth'
+import LanguageAwareLink from '../../components/Layout/LanguageAwareLink'
 import { Eye, EyeOff } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -63,26 +64,26 @@ const Signup: React.FC = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <Link to="/" className="flex items-center space-x-2">
+          <LanguageAwareLink to="/" className="flex items-center space-x-2">
             <img 
               src="/Learnyourself_Logo copy.svg" 
               alt="LearnYourself Logo" 
               className="h-10 w-10"
             />
             <span className="text-2xl font-bold text-gray-900">LearnYourself</span>
-          </Link>
+          </LanguageAwareLink>
         </div>
         <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
           {t('signup')}
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
           Or{' '}
-          <Link
+          <LanguageAwareLink
             to="/login"
             className="font-medium text-royal-blue-600 hover:text-royal-blue-500"
           >
             {t('login')}
-          </Link>
+          </LanguageAwareLink>
         </p>
       </div>
 
@@ -207,13 +208,13 @@ const Signup: React.FC = () => {
             <div className="mt-6 text-center">
               <p className="text-xs text-gray-500">
                 By signing up, you agree to our{' '}
-                <Link to="/terms" className="text-royal-blue-600 hover:text-royal-blue-500">
+                <LanguageAwareLink to="/terms" className="text-royal-blue-600 hover:text-royal-blue-500">
                   Terms of Service
-                </Link>{' '}
+                </LanguageAwareLink>{' '}
                 and{' '}
-                <Link to="/privacy" className="text-royal-blue-600 hover:text-royal-blue-500">
+                <LanguageAwareLink to="/privacy" className="text-royal-blue-600 hover:text-royal-blue-500">
                   Privacy Policy
-                </Link>
+                </LanguageAwareLink>
               </p>
             </div>
           </div>

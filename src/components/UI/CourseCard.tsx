@@ -1,7 +1,7 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Database } from '../../lib/supabase'
+import LanguageAwareLink from '../Layout/LanguageAwareLink'
 import { Star, Clock, Users, BookOpen } from 'lucide-react'
 
 type Course = Database['public']['Tables']['courses']['Row']
@@ -119,12 +119,12 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, className = '' }) => {
         </div>
 
         <div className="mt-auto pt-4">
-          <Link
+          <LanguageAwareLink
             to={`/course/${course.id}`}
             className="block w-full bg-royal-blue-600 text-white text-center py-3 rounded-lg hover:bg-royal-blue-700 transition-all duration-300 font-semibold transform hover:scale-105 shadow-sm hover:shadow-md"
           >
             {t('buyNow')}
-          </Link>
+          </LanguageAwareLink>
         </div>
       </div>
     </div>

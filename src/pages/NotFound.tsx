@@ -1,7 +1,7 @@
 import React from 'react'
 import { useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import LanguageAwareLink from '../components/Layout/LanguageAwareLink'
 import { Home, ArrowLeft, Search, BookOpen } from 'lucide-react'
 
 const NotFound: React.FC = () => {
@@ -34,21 +34,21 @@ const NotFound: React.FC = () => {
         {/* Actions */}
         <div className="mt-8 space-y-4">
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
+            <LanguageAwareLink
               to="/"
               className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
             >
               <Home className="h-4 w-4 mr-2" />
               {t('goHome')}
-            </Link>
+            </LanguageAwareLink>
             
-            <Link
+            <LanguageAwareLink
               to="/courses"
               className="inline-flex items-center justify-center px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-colors font-semibold"
             >
               <BookOpen className="h-4 w-4 mr-2" />
               {t('browseCoursesBtn')}
-            </Link>
+            </LanguageAwareLink>
           </div>
 
           <button
@@ -64,30 +64,30 @@ const NotFound: React.FC = () => {
         <div className="mt-12 pt-8 border-t border-gray-200">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('popularPages')}</h2>
           <div className="grid grid-cols-2 gap-4 text-sm">
-            <Link
+            <LanguageAwareLink
               to="/courses"
               className="text-gray-600 hover:text-blue-600 transition-colors"
             >
               {t('allCourses')}
-            </Link>
-            <Link
+            </LanguageAwareLink>
+            <LanguageAwareLink
               to="/blog"
               className="text-gray-600 hover:text-blue-600 transition-colors"
             >
               {t('blog')}
-            </Link>
-            <Link
+            </LanguageAwareLink>
+            <LanguageAwareLink
               to="/about"
               className="text-gray-600 hover:text-blue-600 transition-colors"
             >
               {t('about')}
-            </Link>
-            <Link
+            </LanguageAwareLink>
+            <LanguageAwareLink
               to="/contact"
               className="text-gray-600 hover:text-blue-600 transition-colors"
             >
               {t('contact')}
-            </Link>
+            </LanguageAwareLink>
           </div>
         </div>
       </div>

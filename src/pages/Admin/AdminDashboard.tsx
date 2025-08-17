@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../../lib/supabase'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
 import LogViewer from '../../components/Debug/LogViewer'
+import LanguageAwareLink from '../../components/Layout/LanguageAwareLink'
 import { 
   BookOpen, 
   Users, 
@@ -202,7 +202,7 @@ const AdminDashboard: React.FC = () => {
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('quickActions')}</h2>
             <div className="space-y-4">
-              <Link
+              <LanguageAwareLink
                 to="/admin/courses"
                 className="flex items-center justify-between p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
               >
@@ -214,9 +214,9 @@ const AdminDashboard: React.FC = () => {
                   </div>
                 </div>
                 <ArrowRight className="h-5 w-5 text-blue-600" />
-              </Link>
+              </LanguageAwareLink>
 
-              <Link
+              <LanguageAwareLink
                 to="/admin/users"
                 className="flex items-center justify-between p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
               >
@@ -228,9 +228,9 @@ const AdminDashboard: React.FC = () => {
                   </div>
                 </div>
                 <ArrowRight className="h-5 w-5 text-green-600" />
-              </Link>
+              </LanguageAwareLink>
 
-              <Link
+              <LanguageAwareLink
                 to="/admin/blogs"
                 className="flex items-center justify-between p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
               >
@@ -242,9 +242,9 @@ const AdminDashboard: React.FC = () => {
                   </div>
                 </div>
                 <ArrowRight className="h-5 w-5 text-purple-600" />
-              </Link>
+              </LanguageAwareLink>
 
-              <Link
+              <LanguageAwareLink
                 to="/admin/categories"
                 className="flex items-center justify-between p-4 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors"
               >
@@ -256,9 +256,9 @@ const AdminDashboard: React.FC = () => {
                   </div>
                 </div>
                 <ArrowRight className="h-5 w-5 text-indigo-600" />
-              </Link>
+              </LanguageAwareLink>
 
-              <Link
+              <LanguageAwareLink
                 to="/admin/analytics"
                 className="flex items-center justify-between p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors"
               >
@@ -270,7 +270,7 @@ const AdminDashboard: React.FC = () => {
                   </div>
                 </div>
                 <ArrowRight className="h-5 w-5 text-orange-600" />
-              </Link>
+              </LanguageAwareLink>
 
               <button
                 onClick={() => setLogViewerOpen(true)}
@@ -292,12 +292,12 @@ const AdminDashboard: React.FC = () => {
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-gray-900">{t('recentSales')}</h2>
-              <Link
+              <LanguageAwareLink
                 to="/admin/analytics"
                 className="text-blue-600 hover:text-blue-700 text-sm font-medium"
               >
                 {t('viewAll')}
-              </Link>
+              </LanguageAwareLink>
             </div>
 
             {stats.recentSales.length === 0 ? (

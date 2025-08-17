@@ -1,7 +1,6 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
-import { useTranslation } from 'react-i18next'
 import './lib/i18n'
 import ErrorBoundary from './components/ErrorBoundary'
 import logger from './utils/logger'
@@ -9,6 +8,7 @@ import logger from './utils/logger'
 // Layout components
 import Header from './components/Layout/Header'
 import Footer from './components/Layout/Footer'
+import { LanguageRouter } from './components/Layout/LanguageRouter'
 import ProtectedRoute from './components/Auth/ProtectedRoute'
 
 // Pages
@@ -47,89 +47,96 @@ function App() {
   return (
     <ErrorBoundary>
       <Router>
-        <div className="min-h-screen bg-gray-50 flex flex-col">
-          <Header />
-          <main className="flex-1">
-            <ErrorBoundary>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/courses" element={<Courses />} />
-                <Route path="/course/:id" element={<CourseDetail />} />
-                <Route path="/checkout/:courseId" element={<Checkout />} />
-                <Route path="/checkout/success" element={<CheckoutSuccess />} />
-                <Route path="/blog" element={<Blog />} />
-                <Route path="/blog/:slug" element={<BlogPost />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/privacy" element={<Privacy />} />
-                <Route path="/terms" element={<Terms />} />
-                
-                {/* Protected Routes */}
-                <Route
-                  path="/dashboard/*"
-                  element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/admin"
-                  element={
-                    <ProtectedRoute adminOnly>
-                      <AdminDashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/admin/courses"
-                  element={
-                    <ProtectedRoute adminOnly>
-                      <AdminCourses />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/admin/blogs"
-                  element={
-                    <ProtectedRoute adminOnly>
-                      <AdminBlogs />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/admin/categories"
-                  element={
-                    <ProtectedRoute adminOnly>
-                      <AdminCategories />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/admin/users"
-                  element={
-                    <ProtectedRoute adminOnly>
-                      <AdminUsers />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/admin/analytics"
-                  element={
-                    <ProtectedRoute adminOnly>
-                      <AdminAnalytics />
-                    </ProtectedRoute>
-                  }
-                />
-                
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </ErrorBoundary>
-          </main>
-          <Footer />
-        </div>
+        <LanguageRouter>
+          <div className="min-h-screen bg-gray-50 flex flex-col">
+            <Header />
+            <main className="flex-1">
+              <ErrorBoundary>
+                <Routes>
+                  {/* Language-prefixed routes */}
+                  <Route path="/:lang" element={<Home />} />
+                  <Route path="/:lang/courses" element={<Courses />} />
+                  <Route path="/:lang/course/:id" element={<CourseDetail />} />
+                  <Route path="/:lang/checkout/:courseId" element={<Checkout />} />
+                  <Route path="/:lang/checkout/success" element={<CheckoutSuccess />} />
+                  <Route path="/:lang/blog" element={<Blog />} />
+                  <Route path="/:lang/blog/:slug" element={<BlogPost />} />
+                  <Route path="/:lang/login" element={<Login />} />
+                  <Route path="/:lang/signup" element={<Signup />} />
+                  <Route path="/:lang/about" element={<About />} />
+                  <Route path="/:lang/contact" element={<Contact />} />
+                  <Route path="/:lang/privacy" element={<Privacy />} />
+                  <Route path="/:lang/terms" element={<Terms />} />
+                  
+                  {/* Protected Routes */}
+                  <Route
+                    path="/:lang/dashboard/*"
+                    element={
+                      <ProtectedRoute>
+                        <Dashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/:lang/admin"
+                    element={
+                      <ProtectedRoute adminOnly>
+                        <AdminDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/:lang/admin/courses"
+                    element={
+                      <ProtectedRoute adminOnly>
+                        <AdminCourses />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/:lang/admin/blogs"
+                    element={
+                      <ProtectedRoute adminOnly>
+                        <AdminBlogs />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/:lang/admin/categories"
+                    element={
+                      <ProtectedRoute adminOnly>
+                        <AdminCategories />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/:lang/admin/users"
+                    element={
+                      <ProtectedRoute adminOnly>
+                        <AdminUsers />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/:lang/admin/analytics"
+                    element={
+                      <ProtectedRoute adminOnly>
+                        <AdminAnalytics />
+                      </ProtectedRoute>
+                    }
+                  />
+                  
+                  {/* Fallback routes without language prefix - redirect to default language */}
+                  <Route path="/" element={<Home />} />
+                  <Route path="/*" element={<Home />} />
+                  
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </ErrorBoundary>
+            </main>
+            <Footer />
+          </div>
+        </LanguageRouter>
         <Toaster
           position="top-right"
           toastOptions={{

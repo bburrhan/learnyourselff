@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { supabase, Database } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
+import LanguageAwareLink from '../../components/Layout/LanguageAwareLink'
 import { BookOpen, Download, TrendingUp, Calendar, ExternalLink, Settings } from 'lucide-react'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
@@ -227,13 +228,13 @@ const DashboardHome: React.FC = () => {
             <div className="text-center py-8">
               <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <p className="text-gray-500">{t('noCoursesPurchased')}</p>
-              <Link
+              <LanguageAwareLink
                 to="/courses"
                 className="inline-flex items-center mt-4 text-blue-600 hover:text-blue-700 font-medium"
               >
                 {t('browseCoursesBtn')}
                 <ExternalLink className="h-4 w-4 ml-1" />
-              </Link>
+              </LanguageAwareLink>
             </div>
           ) : (
             <div className="space-y-4">
@@ -262,12 +263,12 @@ const DashboardHome: React.FC = () => {
                     <p className="text-sm text-gray-600">
                       Downloaded {purchase.download_count} times
                     </p>
-                    <Link
+                    <LanguageAwareLink
                       to="/dashboard/courses"
                       className="text-blue-600 hover:text-blue-700 text-sm font-medium"
                     >
                       {t('view')} Details
-                    </Link>
+                    </LanguageAwareLink>
                   </div>
                 </div>
               ))}
@@ -280,34 +281,34 @@ const DashboardHome: React.FC = () => {
       <div className="bg-white rounded-lg shadow-md p-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('quickActions')}</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Link
+          <LanguageAwareLink
             to="/courses"
             className="flex flex-col items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
           >
             <BookOpen className="h-8 w-8 text-blue-600 mb-2" />
             <span className="text-sm font-medium text-blue-900">{t('browseCoursesBtn')}</span>
-          </Link>
-          <Link
+          </LanguageAwareLink>
+          <LanguageAwareLink
             to="/dashboard/courses"
             className="flex flex-col items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
           >
             <Download className="h-8 w-8 text-green-600 mb-2" />
             <span className="text-sm font-medium text-green-900">{t('myCourses')}</span>
-          </Link>
-          <Link
+          </LanguageAwareLink>
+          <LanguageAwareLink
             to="/dashboard/settings"
             className="flex flex-col items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
           >
             <Settings className="h-8 w-8 text-purple-600 mb-2" />
             <span className="text-sm font-medium text-purple-900">{t('settings')}</span>
-          </Link>
-          <Link
+          </LanguageAwareLink>
+          <LanguageAwareLink
             to="/blog"
             className="flex flex-col items-center p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors"
           >
             <ExternalLink className="h-8 w-8 text-orange-600 mb-2" />
             <span className="text-sm font-medium text-orange-900">{t('blog')}</span>
-          </Link>
+          </LanguageAwareLink>
         </div>
       </div>
     </div>
