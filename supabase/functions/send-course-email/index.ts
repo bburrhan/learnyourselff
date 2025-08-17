@@ -1,3 +1,5 @@
+import { createClient } from 'npm:@supabase/supabase-js@2'
+
 interface EmailRequest {
   purchaseId: string;
   email: string;
@@ -41,6 +43,19 @@ Deno.serve(async (req: Request) => {
         JSON.stringify({ error: 'Missing required fields' }),
         {
           status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    // Get Resend API key from environment
+    const resendApiKey = Deno.env.get('RESEND_API_KEY');
+    if (!resendApiKey) {
+      console.error('RESEND_API_KEY not found in environment variables');
+      return new Response(
+        JSON.stringify({ error: 'Email service not configured' }),
+        {
+          status: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         }
       );
@@ -124,24 +139,40 @@ Deno.serve(async (req: Request) => {
       </html>
     `;
 
-    // In a real implementation, you would send the email using a service like:
-    // - Supabase Edge Functions with Resend
-    // - SendGrid
-    // - Mailgun
-    // - AWS SES
+    // Send email using Resend API
+    const emailPayload = {
+      from: 'LearnYourself <noreply@learnyourself.co>',
+      to: [email],
+      subject: emailContent.subject,
+      html: htmlContent,
+    };
+
+    console.log('Sending email via Resend API to:', email);
     
-    // For demo purposes, we'll simulate sending the email
-    console.log('Email would be sent to:', email);
-    console.log('Email content:', htmlContent);
-    
-    // Simulate email sending delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    const resendResponse = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${resendApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(emailPayload),
+    });
+
+    const resendResult = await resendResponse.json();
+
+    if (!resendResponse.ok) {
+      console.error('Resend API error:', resendResult);
+      throw new Error(`Resend API error: ${resendResult.message || 'Unknown error'}`);
+    }
+
+    console.log('Email sent successfully via Resend:', resendResult);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
         message: 'Course email sent successfully',
-        purchaseId 
+        purchaseId,
+        emailId: resendResult.id
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
