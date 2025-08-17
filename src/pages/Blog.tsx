@@ -34,71 +34,7 @@ const Blog: React.FC = () => {
         setPosts(data || [])
       } catch (err) {
         console.error('Error fetching blog posts:', err)
-        // Provide mock blog posts filtered by language
-        const mockPostsEn = [
-          {
-            id: 'mock-blog-1',
-            title: '5 Simple Steps to Financial Freedom',
-            content: 'Financial freedom doesn\'t have to be complicated. Here are five simple steps that anyone can follow to take control of their finances and build a secure future...',
-            excerpt: 'Discover the simple steps that can transform your financial life in just a few weeks.',
-            slug: 'financial-freedom-steps',
-            author_name: 'Sarah Johnson',
-            cover_image_url: 'https://images.pexels.com/photos/4386431/pexels-photo-4386431.jpeg',
-            tags: ['finance', 'money', 'budgeting'],
-            language: 'en',
-            is_published: true,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          },
-          {
-            id: 'mock-blog-2',
-            title: 'The Science of Stress Relief',
-            content: 'Understanding how stress affects your body and mind is the first step to managing it effectively. Learn evidence-based techniques that actually work...',
-            excerpt: 'Learn scientifically-proven methods to reduce stress and improve your mental well-being.',
-            slug: 'science-stress-relief',
-            author_name: 'Dr. Michael Chen',
-            cover_image_url: 'https://images.pexels.com/photos/3760263/pexels-photo-3760263.jpeg',
-            tags: ['wellness', 'stress', 'health'],
-            language: 'en',
-            is_published: true,
-            created_at: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
-            updated_at: new Date(Date.now() - 86400000).toISOString(),
-          }
-        ]
-        
-        const mockPostsTr = [
-          {
-            id: 'mock-blog-tr-1',
-            title: 'Finansal Özgürlüğe 5 Basit Adım',
-            content: 'Finansal özgürlük karmaşık olmak zorunda değil. İşte herkesin takip edebileceği ve finansal geleceğini kontrol altına alabileceği beş basit adım...',
-            excerpt: 'Finansal hayatınızı sadece birkaç hafta içinde dönüştürebilecek basit adımları keşfedin.',
-            slug: 'finansal-ozgurluk-adimlari',
-            author_name: 'Ayşe Demir',
-            cover_image_url: 'https://images.pexels.com/photos/4386431/pexels-photo-4386431.jpeg',
-            tags: ['finans', 'para', 'bütçe'],
-            language: 'tr',
-            is_published: true,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          },
-          {
-            id: 'mock-blog-tr-2',
-            title: 'Stres Azaltmanın Bilimi',
-            content: 'Stresin vücudunuzu ve zihninizi nasıl etkilediğini anlamak, onu etkili bir şekilde yönetmenin ilk adımıdır. Gerçekten işe yarayan kanıta dayalı teknikleri öğrenin...',
-            excerpt: 'Stresi azaltmak ve zihinsel sağlığınızı iyileştirmek için bilimsel olarak kanıtlanmış yöntemleri öğrenin.',
-            slug: 'stres-azaltma-bilimi',
-            author_name: 'Dr. Mehmet Özkan',
-            cover_image_url: 'https://images.pexels.com/photos/3760263/pexels-photo-3760263.jpeg',
-            tags: ['sağlık', 'stres', 'zihinsel sağlık'],
-            language: 'tr',
-            is_published: true,
-            created_at: new Date(Date.now() - 86400000).toISOString(),
-            updated_at: new Date(Date.now() - 86400000).toISOString(),
-          }
-        ]
-        
-        const mockPosts = i18n.language === 'tr' ? mockPostsTr : mockPostsEn
-        setPosts(mockPosts)
+        setPosts([])
       } finally {
         setLoading(false)
       }

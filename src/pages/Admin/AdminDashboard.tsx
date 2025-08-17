@@ -96,30 +96,12 @@ const AdminDashboard: React.FC = () => {
         })
       } catch (error) {
         console.error('Error fetching admin stats:', error)
-        // Provide mock admin data
         setStats({
-          totalCourses: i18n.language === 'tr' ? 2 : 3,
-          totalUsers: 15,
-          totalRevenue: i18n.language === 'tr' ? 89.91 : 149.85,
-          totalSales: i18n.language === 'tr' ? 7 : 12,
-          recentSales: [
-            {
-              id: i18n.language === 'tr' ? 'mock-sale-tr-1' : 'mock-sale-1',
-              amount: 9.99,
-              currency: 'USD',
-              email: i18n.language === 'tr' ? 'ahmet@example.com' : 'john@example.com',
-              course_title: i18n.language === 'tr' ? 'Kişisel Finans Rehberi' : 'Complete Guide to Personal Finance',
-              created_at: new Date().toISOString(),
-            },
-            {
-              id: i18n.language === 'tr' ? 'mock-sale-tr-2' : 'mock-sale-2',
-              amount: 4.99,
-              currency: 'USD',
-              email: i18n.language === 'tr' ? 'zeynep@example.com' : 'jane@example.com',
-              course_title: i18n.language === 'tr' ? '30 Dakikada Stres Yönetimi' : 'Stress Management in 30 Minutes',
-              created_at: new Date(Date.now() - 3600000).toISOString(),
-            }
-          ],
+          totalCourses: 0,
+          totalUsers: 0,
+          totalRevenue: 0,
+          totalSales: 0,
+          recentSales: [],
         })
       } finally {
         setLoading(false)

@@ -53,15 +53,7 @@ const Courses: React.FC = () => {
         setCategories(data || [])
       } catch (error) {
         console.error('Error fetching categories:', error)
-        // Fallback to default categories
-        setCategories([
-          { id: '1', slug: 'technology', name: 'Technology' },
-          { id: '2', slug: 'business', name: 'Business' },
-          { id: '3', slug: 'design', name: 'Design' },
-          { id: '4', slug: 'marketing', name: 'Marketing' },
-          { id: '5', slug: 'language', name: 'Language' },
-          { id: '6', slug: 'science', name: 'Science' }
-        ])
+        setCategories([])
       } finally {
         setCategoriesLoading(false)
       }

@@ -63,57 +63,7 @@ const AdminBlogs: React.FC = () => {
       setPosts(data || [])
     } catch (error) {
       console.error('Error fetching blog posts:', error)
-      // Provide mock blog posts for admin
-      const mockPostsEn = [
-        {
-          id: 'mock-blog-1',
-          title: '5 Simple Steps to Financial Freedom',
-          content: '<h2>Introduction</h2><p>Financial freedom doesn\'t have to be complicated. Here are five simple steps that anyone can follow to take control of their finances and build a secure future.</p><h3>1. Track Your Spending</h3><p>The first step to financial freedom is understanding where your money goes. Start by tracking every expense for at least one month.</p><h3>2. Create a Budget</h3><p>Once you know your spending patterns, create a realistic budget that allocates money for necessities, savings, and some fun.</p><h3>3. Build an Emergency Fund</h3><p>Aim to save 3-6 months of expenses in a separate savings account for unexpected situations.</p><h3>4. Pay Off High-Interest Debt</h3><p>Focus on paying off credit cards and other high-interest debt as quickly as possible.</p><h3>5. Start Investing</h3><p>Even small amounts invested regularly can grow significantly over time thanks to compound interest.</p>',
-          excerpt: 'Discover the simple steps that can transform your financial life in just a few weeks.',
-          slug: 'financial-freedom-steps',
-          author_name: 'Sarah Johnson',
-          cover_image_url: 'https://images.pexels.com/photos/4386431/pexels-photo-4386431.jpeg',
-          tags: ['finance', 'money', 'budgeting'],
-          language: 'en',
-          is_published: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 'mock-blog-2',
-          title: 'The Science of Stress Relief',
-          content: '<h2>Understanding Stress</h2><p>Understanding how stress affects your body and mind is the first step to managing it effectively. Learn evidence-based techniques that actually work.</p><h3>What Happens When You\'re Stressed?</h3><p>When you encounter stress, your body releases hormones like cortisol and adrenaline. While these are helpful in short bursts, chronic stress can lead to serious health problems.</p><h3>Proven Stress Relief Techniques:</h3><h4>1. Deep Breathing</h4><p>Simple breathing exercises can activate your parasympathetic nervous system and reduce stress hormones.</p><h4>2. Progressive Muscle Relaxation</h4><p>Systematically tensing and relaxing muscle groups helps release physical tension.</p><h4>3. Mindfulness Meditation</h4><p>Regular meditation practice has been shown to reduce cortisol levels and improve emotional regulation.</p>',
-          excerpt: 'Learn scientifically-proven methods to reduce stress and improve your mental well-being.',
-          slug: 'science-stress-relief',
-          author_name: 'Dr. Michael Chen',
-          cover_image_url: 'https://images.pexels.com/photos/3760263/pexels-photo-3760263.jpeg',
-          tags: ['wellness', 'stress', 'health'],
-          language: 'en',
-          is_published: true,
-          created_at: new Date(Date.now() - 86400000).toISOString(),
-          updated_at: new Date(Date.now() - 86400000).toISOString(),
-        }
-      ]
-      
-      const mockPostsTr = [
-        {
-          id: 'mock-blog-tr-1',
-          title: 'Finansal Özgürlüğe 5 Basit Adım',
-          content: '<h2>Giriş</h2><p>Finansal özgürlük karmaşık olmak zorunda değil. İşte herkesin takip edebileceği ve finansal geleceğini kontrol altına alabileceği beş basit adım.</p><h3>1. Harcamalarınızı Takip Edin</h3><p>Finansal özgürlüğün ilk adımı paranızın nereye gittiğini anlamaktır. En az bir ay boyunca her harcamanızı takip etmeye başlayın.</p><h3>2. Bütçe Oluşturun</h3><p>Harcama alışkanlıklarınızı öğrendikten sonra, zorunlu ihtiyaçlar, tasarruf ve eğlence için para ayıran gerçekçi bir bütçe oluşturun.</p><h3>3. Acil Durum Fonu Oluşturun</h3><p>Beklenmedik durumlar için ayrı bir tasarruf hesabında 3-6 aylık harcamanızı biriktirmeyi hedefleyin.</p>',
-          excerpt: 'Finansal hayatınızı sadece birkaç hafta içinde dönüştürebilecek basit adımları keşfedin.',
-          slug: 'finansal-ozgurluk-adimlari',
-          author_name: 'Ayşe Demir',
-          cover_image_url: 'https://images.pexels.com/photos/4386431/pexels-photo-4386431.jpeg',
-          tags: ['finans', 'para', 'bütçe'],
-          language: 'tr',
-          is_published: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        }
-      ]
-      
-      const mockPosts = i18n.language === 'tr' ? mockPostsTr : mockPostsEn
-      setPosts(mockPosts)
+      setPosts([])
     } finally {
       setLoading(false)
     }

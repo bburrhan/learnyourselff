@@ -155,46 +155,15 @@ const AdminAnalytics: React.FC = () => {
         })
       } catch (error) {
         console.error('Error fetching analytics:', error)
-        // Provide mock analytics data
+        // Set empty analytics data
         setAnalytics({
-          totalRevenue: i18n.language === 'tr' ? 89.91 : 149.85,
-          totalSales: i18n.language === 'tr' ? 7 : 12,
-          totalDownloads: i18n.language === 'tr' ? 10 : 18,
-          avgOrderValue: i18n.language === 'tr' ? 12.84 : 12.49,
-          monthlySales: [
-            { 
-              month: i18n.language === 'tr' ? 'Ara 2024' : 'Dec 2024', 
-              sales: i18n.language === 'tr' ? 3 : 5, 
-              revenue: i18n.language === 'tr' ? 29.97 : 62.45 
-            },
-            { 
-              month: i18n.language === 'tr' ? 'Oca 2025' : 'Jan 2025', 
-              sales: i18n.language === 'tr' ? 4 : 7, 
-              revenue: i18n.language === 'tr' ? 59.94 : 87.40 
-            },
-          ],
-          topCourses: [
-            { 
-              title: i18n.language === 'tr' ? 'Kişisel Finans Rehberi' : 'Complete Guide to Personal Finance', 
-              sales: i18n.language === 'tr' ? 5 : 8, 
-              revenue: i18n.language === 'tr' ? 49.95 : 79.92 
-            },
-            { 
-              title: i18n.language === 'tr' ? '30 Dakikada Stres Yönetimi' : 'Stress Management in 30 Minutes', 
-              sales: i18n.language === 'tr' ? 2 : 4, 
-              revenue: i18n.language === 'tr' ? 9.98 : 19.96 
-            },
-          ],
-          recentTransactions: [
-            {
-              id: i18n.language === 'tr' ? 'mock-trans-tr-1' : 'mock-trans-1',
-              email: i18n.language === 'tr' ? 'ahmet@example.com' : 'john@example.com',
-              amount: 9.99,
-              currency: 'USD',
-              course_title: i18n.language === 'tr' ? 'Kişisel Finans Rehberi' : 'Complete Guide to Personal Finance',
-              created_at: new Date().toISOString(),
-            }
-          ],
+          totalRevenue: 0,
+          totalSales: 0,
+          totalDownloads: 0,
+          avgOrderValue: 0,
+          monthlySales: [],
+          topCourses: [],
+          recentTransactions: [],
         })
       } finally {
         setLoading(false)

@@ -69,46 +69,7 @@ const AdminCategories: React.FC = () => {
       setCategories(data || [])
     } catch (error) {
       console.error('Error fetching categories:', error)
-      // Provide mock categories for demo
-      const mockCategories = [
-        {
-          id: 'mock-cat-1',
-          name: 'Technology',
-          slug: 'technology',
-          description: 'Programming, web development, and tech skills',
-          color: '#3B82F6',
-          icon: 'Code',
-          is_active: true,
-          sort_order: 1,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 'mock-cat-2',
-          name: 'Business',
-          slug: 'business',
-          description: 'Finance, entrepreneurship, and business skills',
-          color: '#10B981',
-          icon: 'Briefcase',
-          is_active: true,
-          sort_order: 2,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 'mock-cat-3',
-          name: 'Design',
-          slug: 'design',
-          description: 'Graphic design, UI/UX, and creative skills',
-          color: '#8B5CF6',
-          icon: 'Palette',
-          is_active: true,
-          sort_order: 3,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        }
-      ]
-      setCategories(mockCategories)
+      setCategories([])
     } finally {
       setLoading(false)
     }

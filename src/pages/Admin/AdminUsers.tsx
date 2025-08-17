@@ -63,34 +63,7 @@ const AdminUsers: React.FC = () => {
         setUsers(usersWithStats)
       } catch (error) {
         console.error('Error fetching users:', error)
-        // Provide mock user data
-        const mockUsers = [
-          {
-            id: 'mock-user-1',
-            email: 'john@example.com',
-            full_name: 'John Doe',
-            language_preference: 'en',
-            created_at: new Date(Date.now() - 86400000 * 30).toISOString(),
-            updated_at: new Date().toISOString(),
-            purchases: {
-              count: 2,
-              total_spent: 14.98,
-            },
-          },
-          {
-            id: 'mock-user-2',
-            email: 'jane@example.com',
-            full_name: 'Jane Smith',
-            language_preference: 'en',
-            created_at: new Date(Date.now() - 86400000 * 15).toISOString(),
-            updated_at: new Date().toISOString(),
-            purchases: {
-              count: 1,
-              total_spent: 9.99,
-            },
-          }
-        ]
-        setUsers(mockUsers)
+        setUsers([])
       } finally {
         setLoading(false)
       }
