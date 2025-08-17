@@ -92,42 +92,47 @@ const Checkout: React.FC = () => {
       return;
     }
 
-    // Handle free courses - skip payment and go directly to success
-    if (course.price === 0) {
-      logger.info('Processing free course enrollment', { 
-        courseId: course.id, 
-        email: formData.email 
-      })
-      
-      try {
-        // Create a temporary user for anonymous purchases
-        let userId = user?.id
-        
-        if (!user) {
-          // Create anonymous user account for free course access
-          const tempPassword = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
-          
-          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-            email: formData.email,
-            password: tempPassword,
-            options: {
-              data: {
-                full_name: formData.fullName,
-                language_preference: i18n.language,
-                is_temp_user: true, // Mark as temporary user
-              },
-            },
-          })
-          
-          if (signUpError) {
-            logger.error('Failed to create temporary user', { error: signUpError })
-            throw signUpError
-          }
-          
-          userId = signUpData.user?.id
-          logger.info('Created temporary user for free course', { userId, email: formData.email })
-        }
+    setProcessing(true);
+    setError(null);
 
+    try {
+      // Create user account if not logged in
+      let userId = user?.id
+      
+      if (!user) {
+        logger.info('Creating user account for anonymous purchase', { email: formData.email })
+        
+        // Generate a secure random password
+        const password = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+        
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email: formData.email,
+          password: password,
+          options: {
+            data: {
+              full_name: formData.fullName,
+              language_preference: i18n.language,
+            },
+          },
+        })
+        
+        if (signUpError) {
+          logger.error('Failed to create user account', { error: signUpError })
+          throw signUpError
+        }
+        
+        userId = signUpData.user?.id
+        logger.info('Created user account for purchase', { userId, email: formData.email })
+      }
+
+      // Handle free courses - create purchase record and send email
+      if (course.price === 0) {
+        logger.info('Processing free course enrollment', { 
+          courseId: course.id, 
+          email: formData.email,
+          userId 
+        })
+        
         // Create purchase record for free course
         const purchaseData = {
           user_id: userId,
@@ -195,20 +200,13 @@ const Checkout: React.FC = () => {
         // Redirect directly to success page
         navigate(`/checkout/success?free=true&course_id=${course.id}`);
         return;
-      } catch (err) {
-        logger.error('Free course enrollment failed', { error: err }, err as Error)
-        setError('Failed to enroll in free course. Please try again.');
-        return;
       }
-    }
 
-    setProcessing(true);
-    setError(null);
-
-    try {
+      // Handle paid courses - proceed with Stripe checkout
       logger.info('Starting checkout process', { 
         courseId: course.id, 
-        email: formData.email 
+        email: formData.email,
+        userId 
       })
       
       const { url } = await createCheckoutSession(
@@ -241,7 +239,7 @@ const Checkout: React.FC = () => {
         email: formData.email, 
         error: err 
       }, err as Error)
-      setError(err instanceof Error ? err.message : 'Failed to start checkout');
+      setError(err instanceof Error ? err.message : 'Failed to process checkout');
       setProcessing(false);
     }
   };
