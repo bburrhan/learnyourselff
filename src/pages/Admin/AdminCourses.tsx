@@ -4,18 +4,7 @@ import { supabase, Database } from '../../lib/supabase'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
 import logger from '../../utils/logger'
 import { handleSupabaseError, handleAsyncError } from '../../utils/errorHandler'
-import { 
-  Plus, 
-  Search, 
-  Edit, 
-  Trash2, 
-  Eye, 
-  ToggleLeft, 
-  ToggleRight,
-  Upload,
-  Save,
-  X
-} from 'lucide-react'
+import { Plus, Search, CreditCard as Edit, Trash2, Eye, ToggleLeft, ToggleRight, Upload, Save, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 type Course = Database['public']['Tables']['courses']['Row']
