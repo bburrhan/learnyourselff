@@ -275,7 +275,7 @@ const Checkout: React.FC = () => {
         {/* Header */}
         <div className="mb-8">
           <button
-            onClick={() => navigate(`/courses/${courseId}`)}
+            onClick={() => navigate(`/course/${courseId}`)}
             className="flex items-center text-gray-600 hover:text-gray-900 transition-colors mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />

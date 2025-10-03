@@ -133,7 +133,6 @@ const resources = {
       manageCoursesAccount: 'Manage your courses and account settings',
       totalCourses: 'Total Courses',
       totalDownloads: 'Total Downloads',
-      thisWeek: 'This Week',
       recentPurchases: 'Recent Purchases',
       viewAll: 'View All',
       noCoursesPurchased: 'No courses purchased yet',
@@ -172,10 +171,8 @@ const resources = {
       courses: 'courses',
       noName: 'No name',
       trackBusiness: 'Track your business performance and insights',
-      lastMonth: 'Last Month',
       last3Months: 'Last 3 Months',
       last6Months: 'Last 6 Months',
-      lastYear: 'Last Year',
       avgOrderValue: 'Avg. Order Value',
       monthlySales: 'Monthly Sales',
       topPerforming: 'Top Performing Courses',
@@ -355,7 +352,6 @@ const resources = {
       
       // Blog
       discoverInsights: 'Discover insights, tips, and stories about learning, technology, and personal development.',
-      featured: 'Featured',
       readMore: 'Read More',
       noBlogPosts: 'No blog posts yet',
       checkBackSoon: 'Check back soon for educational content and insights!',
@@ -401,6 +397,7 @@ const resources = {
       constantStress: 'Constant stress.',
       sleepingBetter: 'Sleeping better after a 12-minute stress course.',
       wellness: 'Wellness',
+      startNow: 'Start Now',
     },
   },
   tr: {
@@ -533,7 +530,6 @@ const resources = {
       manageCoursesAccount: 'Kurslarınızı ve hesap ayarlarınızı yönetin',
       totalCourses: 'Toplam Kurs',
       totalDownloads: 'Toplam İndirme',
-      thisWeek: 'Bu Hafta',
       recentPurchases: 'Son Satın Alımlar',
       viewAll: 'Tümünü Görüntüle',
       noCoursesPurchased: 'Henüz kurs satın alınmadı',
@@ -572,10 +568,8 @@ const resources = {
       courses: 'kurs',
       noName: 'İsim yok',
       trackBusiness: 'İş performansınızı ve içgörülerinizi takip edin',
-      lastMonth: 'Geçen Ay',
       last3Months: 'Son 3 Ay',
       last6Months: 'Son 6 Ay',
-      lastYear: 'Geçen Yıl',
       avgOrderValue: 'Ort. Sipariş Değeri',
       monthlySales: 'Aylık Satışlar',
       topPerforming: 'En İyi Performans Gösteren Kurslar',
@@ -755,7 +749,6 @@ const resources = {
       
       // Blog
       discoverInsights: 'Öğrenme, teknoloji ve kişisel gelişim hakkında içgörüler, ipuçları ve hikayeler keşfedin.',
-      featured: 'Öne Çıkan',
       readMore: 'Devamını Oku',
       noBlogPosts: 'Henüz blog yazısı yok',
       checkBackSoon: 'Eğitim içeriği ve içgörüler için yakında tekrar kontrol edin!',
@@ -801,6 +794,7 @@ const resources = {
       constantStress: 'Sürekli stres.',
       sleepingBetter: '12 dakikalık stres kursundan sonra daha iyi uyuyorum.',
       wellness: 'Sağlık',
+      startNow: 'Şimdi Başla',
     },
   },
 }

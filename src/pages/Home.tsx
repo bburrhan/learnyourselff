@@ -311,7 +311,7 @@ const Home: React.FC = () => {
                     className="w-full bg-royal-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-royal-blue-700 transition-all duration-300 flex items-center justify-center transform hover:scale-105"
                   >
                     <Play className="h-4 w-4 mr-2" />
-                    Start Now
+                    {t('startNow')}
                   </LanguageAwareLink>
                 </div>
               ))}
