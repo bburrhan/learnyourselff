@@ -36,12 +36,17 @@ const AdminBlogs: React.FC = () => {
 
   const [formData, setFormData] = useState({
     title: '',
+    seo_title: '',
     content: '',
     excerpt: '',
+    meta_description: '',
     slug: '',
     author_name: '',
     cover_image_url: '',
     tags: '',
+    tldr: '',
+    cta_text: '',
+    cta_link: '',
     language: 'en',
     is_published: false,
   })
@@ -87,12 +92,17 @@ const AdminBlogs: React.FC = () => {
   const resetForm = () => {
     setFormData({
       title: '',
+      seo_title: '',
       content: '',
       excerpt: '',
+      meta_description: '',
       slug: '',
       author_name: '',
       cover_image_url: '',
       tags: '',
+      tldr: '',
+      cta_text: '',
+      cta_link: '',
       language: 'en',
       is_published: false,
     })
@@ -104,12 +114,17 @@ const AdminBlogs: React.FC = () => {
     setEditingPost(post)
     setFormData({
       title: post.title,
+      seo_title: post.seo_title || '',
       content: post.content,
       excerpt: post.excerpt,
+      meta_description: post.meta_description || '',
       slug: post.slug,
       author_name: post.author_name,
       cover_image_url: post.cover_image_url || '',
       tags: post.tags?.join(', ') || '',
+      tldr: post.tldr || '',
+      cta_text: post.cta_text || '',
+      cta_link: post.cta_link || '',
       language: post.language,
       is_published: post.is_published || false,
     })
@@ -404,8 +419,8 @@ const AdminBlogs: React.FC = () => {
                       value={formData.title}
                       onChange={(e) => {
                         const title = e.target.value
-                        setFormData({ 
-                          ...formData, 
+                        setFormData({
+                          ...formData,
                           title,
                           slug: formData.slug || generateSlug(title)
                         })
@@ -417,25 +432,41 @@ const AdminBlogs: React.FC = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Slug *
+                      SEO Title
                     </label>
                     <input
                       type="text"
-                      required
-                      value={formData.slug}
-                      onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                      value={formData.seo_title}
+                      onChange={(e) => setFormData({ ...formData, seo_title: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="url-friendly-slug"
+                      placeholder="Optimized title for search engines"
                     />
                     <p className="mt-1 text-xs text-gray-500">
-                      URL-friendly version of the title (auto-generated from title)
+                      Leave blank to use the main title
                     </p>
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Excerpt *
+                    URL Slug *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.slug}
+                    onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="url-friendly-slug"
+                  />
+                  <p className="mt-1 text-xs text-gray-500">
+                    URL-friendly version of the title (auto-generated from title)
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Excerpt/Introduction *
                   </label>
                   <textarea
                     required
@@ -445,6 +476,23 @@ const AdminBlogs: React.FC = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Brief description of the blog post"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Meta Description
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={formData.meta_description}
+                    onChange={(e) => setFormData({ ...formData, meta_description: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="How is AI transforming marketing? Discover how automation can boost sales..."
+                    maxLength={160}
+                  />
+                  <p className="mt-1 text-xs text-gray-500">
+                    SEO meta description (max 160 characters). Leave blank to use excerpt.
+                  </p>
                 </div>
 
                 <div>
@@ -533,15 +581,61 @@ const AdminBlogs: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Tags (comma-separated)
+                    Tags / Keywords (comma-separated)
                   </label>
                   <input
                     type="text"
                     value={formData.tags}
                     onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="finance, money, budgeting"
+                    placeholder="artificial intelligence, marketing, automation, data analysis, chatbot"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    TL;DR (Quick Summary)
+                  </label>
+                  <textarea
+                    rows={4}
+                    value={formData.tldr}
+                    onChange={(e) => setFormData({ ...formData, tldr: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="• AI = marketing powered by data and personalization&#10;• Lower costs with better targeting&#10;• Chatbots + automation = efficiency boost"
+                  />
+                  <p className="mt-1 text-xs text-gray-500">
+                    Bullet-point summary for quick reading. Use • or - for bullets.
+                  </p>
+                </div>
+
+                <div className="border-t pt-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Call to Action (CTA)</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        CTA Text
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={formData.cta_text}
+                        onChange={(e) => setFormData({ ...formData, cta_text: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="👉 To master AI-driven marketing, check out our 'The Ultimate Ad Platform Strategy' ebook."
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        CTA Link (slug or full URL)
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.cta_link}
+                        onChange={(e) => setFormData({ ...formData, cta_link: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="/courses/ultimate-ad-platform-strategy or https://example.com"
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 <div className="flex items-center">

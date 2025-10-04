@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { supabase, Database } from '../lib/supabase'
 import LoadingSpinner from '../components/UI/LoadingSpinner'
 import LanguageAwareLink from '../components/Layout/LanguageAwareLink'
-import { Calendar, User, Tag, ArrowLeft, Share2 } from 'lucide-react'
+import { Calendar, User, Tag, ArrowLeft, Share2, BookOpen } from 'lucide-react'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
 
@@ -99,6 +99,14 @@ const BlogPost: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* SEO Meta Tags */}
+      {post && (
+        <>
+          <title>{post.seo_title || post.title}</title>
+          <meta name="description" content={post.meta_description || post.excerpt} />
+        </>
+      )}
+
       {/* Breadcrumb */}
       <div className="bg-white border-b">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -179,22 +187,56 @@ const BlogPost: React.FC = () => {
           />
         </div>
 
+        {/* TL;DR Section */}
+        {post.tldr && (
+          <div className="mt-8 bg-yellow-50 border-l-4 border-yellow-400 p-6">
+            <div className="flex items-start">
+              <BookOpen className="h-5 w-5 text-yellow-600 mt-1 mr-3 flex-shrink-0" />
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">TL;DR</h3>
+                <div
+                  className="text-gray-700 leading-relaxed whitespace-pre-line"
+                  dangerouslySetInnerHTML={{ __html: post.tldr.replace(/\n/g, '<br />') }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* CTA Section */}
-        <div className="mt-12 bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
-            {t('readyStartLearning')}
-          </h3>
-          <p className="text-gray-600 mb-4">
-            {t('exploreCollection')}
-          </p>
-          <LanguageAwareLink
-            to="/courses"
-            className="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-          >
-            {t('browseCoursesBtn')}
-            <ArrowLeft className="h-4 w-4 ml-2 rotate-180" />
-          </LanguageAwareLink>
-        </div>
+        {post.cta_text && post.cta_link ? (
+          <div className="mt-12 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-6">
+            <div
+              className="text-gray-800 mb-4"
+              dangerouslySetInnerHTML={{ __html: post.cta_text.replace(/\n/g, '<br />') }}
+            />
+            <LanguageAwareLink
+              to={post.cta_link.startsWith('http') ? post.cta_link : post.cta_link}
+              className="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              target={post.cta_link.startsWith('http') ? '_blank' : undefined}
+              rel={post.cta_link.startsWith('http') ? 'noopener noreferrer' : undefined}
+            >
+              {t('learnMore')}
+              <ArrowLeft className="h-4 w-4 ml-2 rotate-180" />
+            </LanguageAwareLink>
+          </div>
+        ) : (
+          <div className="mt-12 bg-blue-50 border border-blue-200 rounded-lg p-6">
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              {t('readyStartLearning')}
+            </h3>
+            <p className="text-gray-600 mb-4">
+              {t('exploreCollection')}
+            </p>
+            <LanguageAwareLink
+              to="/courses"
+              className="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            >
+              {t('browseCoursesBtn')}
+              <ArrowLeft className="h-4 w-4 ml-2 rotate-180" />
+            </LanguageAwareLink>
+          </div>
+        )}
       </article>
     </div>
   )
