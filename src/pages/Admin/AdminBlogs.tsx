@@ -2,19 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { supabase, Database } from '../../lib/supabase'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
-import { 
-  Plus, 
-  Search, 
-  Edit, 
-  Trash2, 
-  Eye, 
-  ToggleLeft, 
-  ToggleRight,
-  Save,
-  X,
-  Calendar,
-  User
-} from 'lucide-react'
+import { Plus, Search, CreditCard as Edit, Trash2, Eye, ToggleLeft, ToggleRight, Save, X, Calendar, User } from 'lucide-react'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
 
