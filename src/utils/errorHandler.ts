@@ -99,7 +99,7 @@ export const withErrorHandling = <T extends any[], R>(
 }
 
 // Supabase error handler
-export const handleSupabaseError = (error: any, context?: string) => {
+export const handleSupabaseError = (error: any, context?: string, showToast = true) => {
   let message = 'Database operation failed'
   let code = 'SUPABASE_ERROR'
 
@@ -110,6 +110,11 @@ export const handleSupabaseError = (error: any, context?: string) => {
     } else if (error.message.includes('refresh_token_not_found') || error.message.includes('Invalid Refresh Token')) {
       message = 'Session expired. Please log in again.'
       code = 'SESSION_EXPIRED'
+    } else if (error.message.includes('Auth session missing')) {
+      // This is not really an error - just means there's no session to sign out
+      message = 'No active session'
+      code = 'NO_SESSION'
+      showToast = false // Don't show toast for this case
     } else if (error.message.includes('Row Level Security')) {
       message = 'Access denied. You don\'t have permission for this action.'
       code = 'ACCESS_DENIED'
@@ -124,7 +129,7 @@ export const handleSupabaseError = (error: any, context?: string) => {
     }
   }
 
-  return handleError(new CustomError(message, code, error.status), context)
+  return handleError(new CustomError(message, code, error.status), context, showToast)
 }
 
 // Network error handler

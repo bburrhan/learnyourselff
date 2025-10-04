@@ -115,17 +115,25 @@ export const useAuth = () => {
     try {
       logger.info('Sign out attempt')
       const { error } = await supabase.auth.signOut()
-      
+
       if (error) {
+        // If there's no session, treat it as success (already signed out)
+        if (error.message?.includes('Auth session missing')) {
+          logger.info('Sign out skipped - no active session')
+          setUser(null)
+          return { error: null }
+        }
+
         logger.warn('Sign out failed', { error: error.message })
-        return { error: handleSupabaseError(error, 'signOut') }
+        return { error: handleSupabaseError(error, 'signOut', false) }
       }
-      
+
       logger.info('Sign out successful')
-      return { error }
+      return { error: null }
     } catch (error) {
       logger.error('Sign out error', { error }, error as Error)
-      return { error }
+      setUser(null) // Clear user state even if signOut fails
+      return { error: null }
     }
   }
 
