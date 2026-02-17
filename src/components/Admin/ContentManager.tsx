@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { FileText, Music, Video, Trash2, GripVertical, Plus } from 'lucide-react'
+import { FileText, Music, Video, Trash2, GripVertical, CheckCircle2 } from 'lucide-react'
 import { supabase, Database, ContentType } from '../../lib/supabase'
 import FileUploader from '../UI/FileUploader'
 import toast from 'react-hot-toast'
@@ -11,31 +11,63 @@ interface ContentManagerProps {
   onContentTypesChange: (types: ContentType[]) => void
 }
 
-const CONTENT_CONFIG: Record<ContentType, { label: string; icon: React.ReactNode; accept: string; maxSize: number }> = {
+const CONTENT_CONFIG: Record<ContentType, {
+  label: string
+  description: string
+  icon: React.ReactNode
+  accept: string
+  maxSize: number
+  maxSizeLabel: string
+  formats: string
+  bgColor: string
+  borderColor: string
+  textColor: string
+  iconBg: string
+}> = {
   ebook: {
     label: 'Ebook / PDF',
-    icon: <FileText className="h-4 w-4" />,
+    description: 'Upload a PDF document for reading',
+    icon: <FileText className="h-5 w-5" />,
     accept: 'application/pdf',
     maxSize: 50 * 1024 * 1024,
+    maxSizeLabel: '50 MB',
+    formats: 'PDF',
+    bgColor: 'bg-blue-50 hover:bg-blue-100/70',
+    borderColor: 'border-blue-200',
+    textColor: 'text-blue-700',
+    iconBg: 'bg-blue-100',
   },
   audio: {
     label: 'Audio',
-    icon: <Music className="h-4 w-4" />,
+    description: 'Upload an audio file for listening',
+    icon: <Music className="h-5 w-5" />,
     accept: 'audio/mpeg,audio/mp4,audio/wav,audio/ogg',
     maxSize: 100 * 1024 * 1024,
+    maxSizeLabel: '100 MB',
+    formats: 'MP3, M4A, WAV, OGG',
+    bgColor: 'bg-emerald-50 hover:bg-emerald-100/70',
+    borderColor: 'border-emerald-200',
+    textColor: 'text-emerald-700',
+    iconBg: 'bg-emerald-100',
   },
   video: {
     label: 'Video',
-    icon: <Video className="h-4 w-4" />,
+    description: 'Upload a video file for watching',
+    icon: <Video className="h-5 w-5" />,
     accept: 'video/mp4,video/webm,video/ogg',
     maxSize: 500 * 1024 * 1024,
+    maxSizeLabel: '500 MB',
+    formats: 'MP4, WebM, OGG',
+    bgColor: 'bg-orange-50 hover:bg-orange-100/70',
+    borderColor: 'border-orange-200',
+    textColor: 'text-orange-700',
+    iconBg: 'bg-orange-100',
   },
 }
 
 const ContentManager: React.FC<ContentManagerProps> = ({ courseId, onContentTypesChange }) => {
   const [contents, setContents] = useState<CourseContent[]>([])
   const [loading, setLoading] = useState(true)
-  const [addingType, setAddingType] = useState<ContentType | null>(null)
 
   useEffect(() => {
     fetchContents()
@@ -65,7 +97,7 @@ const ContentManager: React.FC<ContentManagerProps> = ({ courseId, onContentType
       .insert({
         course_id: courseId,
         content_type: type,
-        title: `${CONTENT_CONFIG[type].label}`,
+        title: CONTENT_CONFIG[type].label,
         sort_order: contents.length,
       })
       .select()
@@ -81,7 +113,6 @@ const ContentManager: React.FC<ContentManagerProps> = ({ courseId, onContentType
       setContents(updated)
       updateContentTypes(updated)
     }
-    setAddingType(null)
   }
 
   const handleFileUploaded = async (contentId: string, fileUrl: string, fileName: string, fileSize: number) => {
@@ -141,41 +172,56 @@ const ContentManager: React.FC<ContentManagerProps> = ({ courseId, onContentType
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-800">Course Content</h3>
-        {availableTypes.length > 0 && (
-          <div className="relative">
+    <div className="space-y-5">
+      <div>
+        <h3 className="text-sm font-bold text-gray-900 mb-1">Course Content Files</h3>
+        <p className="text-xs text-gray-500">
+          Add up to one file per type. Click a card below to add that content type.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-3 gap-3">
+        {(Object.keys(CONTENT_CONFIG) as ContentType[]).map(type => {
+          const config = CONTENT_CONFIG[type]
+          const isAdded = existingTypes.includes(type)
+
+          return (
             <button
+              key={type}
               type="button"
-              onClick={() => setAddingType(addingType ? null : availableTypes[0])}
-              className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700"
+              disabled={isAdded}
+              onClick={() => handleAddContent(type)}
+              className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all text-center ${
+                isAdded
+                  ? `${config.borderColor} ${config.bgColor.split(' ')[0]} opacity-75 cursor-default`
+                  : `${config.borderColor} ${config.bgColor} cursor-pointer border-dashed`
+              }`}
             >
-              <Plus className="h-4 w-4" />
-              Add Content
-            </button>
-            {addingType !== null && (
-              <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 py-1 min-w-[160px]">
-                {availableTypes.map(type => (
-                  <button
-                    key={type}
-                    type="button"
-                    onClick={() => handleAddContent(type)}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                  >
-                    {CONTENT_CONFIG[type].icon}
-                    {CONTENT_CONFIG[type].label}
-                  </button>
-                ))}
+              {isAdded && (
+                <div className="absolute top-2 right-2">
+                  <CheckCircle2 className={`h-4 w-4 ${config.textColor}`} />
+                </div>
+              )}
+              <div className={`w-10 h-10 rounded-lg ${config.iconBg} flex items-center justify-center ${config.textColor}`}>
+                {config.icon}
               </div>
-            )}
-          </div>
-        )}
+              <div>
+                <p className={`text-sm font-semibold ${config.textColor}`}>{config.label}</p>
+                <p className="text-[11px] text-gray-500 mt-0.5">
+                  {isAdded ? 'Added' : config.formats}
+                </p>
+                {!isAdded && (
+                  <p className="text-[11px] text-gray-400">Max {config.maxSizeLabel}</p>
+                )}
+              </div>
+            </button>
+          )
+        })}
       </div>
 
       {contents.length === 0 && (
-        <div className="text-center py-6 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-          <p className="text-sm text-gray-500">No content added yet. Add ebook, audio, or video content.</p>
+        <div className="text-center py-4 text-sm text-gray-400">
+          Click a card above to start adding content
         </div>
       )}
 
@@ -183,15 +229,11 @@ const ContentManager: React.FC<ContentManagerProps> = ({ courseId, onContentType
         {contents.map(item => {
           const config = CONTENT_CONFIG[item.content_type as ContentType]
           return (
-            <div key={item.id} className="border border-gray-200 rounded-lg p-4 bg-white">
+            <div key={item.id} className={`border rounded-xl p-4 bg-white ${config.borderColor}`}>
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <GripVertical className="h-4 w-4 text-gray-300" />
-                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${
-                    item.content_type === 'ebook' ? 'bg-blue-100 text-blue-700' :
-                    item.content_type === 'audio' ? 'bg-green-100 text-green-700' :
-                    'bg-orange-100 text-orange-700'
-                  }`}>
+                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold ${config.iconBg} ${config.textColor}`}>
                     {config.icon}
                     {config.label}
                   </span>
@@ -202,7 +244,7 @@ const ContentManager: React.FC<ContentManagerProps> = ({ courseId, onContentType
                 <button
                   type="button"
                   onClick={() => handleDelete(item.id)}
-                  className="text-gray-400 hover:text-red-500 transition-colors"
+                  className="text-gray-400 hover:text-red-500 transition-colors p-1 rounded-lg hover:bg-red-50"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -210,23 +252,23 @@ const ContentManager: React.FC<ContentManagerProps> = ({ courseId, onContentType
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Title</label>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Title</label>
                   <input
                     type="text"
                     value={item.title}
                     onChange={(e) => handleTitleChange(item.id, e.target.value)}
-                    className="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-2.5 py-1.5 text-sm border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 {(item.content_type === 'audio' || item.content_type === 'video') && (
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Duration (seconds)</label>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Duration (seconds)</label>
                     <input
                       type="number"
                       min={0}
                       value={item.duration_seconds}
                       onChange={(e) => handleDurationChange(item.id, e.target.value)}
-                      className="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-2.5 py-1.5 text-sm border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>
                 )}
