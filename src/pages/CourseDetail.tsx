@@ -267,26 +267,6 @@ const CourseDetail: React.FC = () => {
               </div>
             </div>
 
-            {/* Instructor Info */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                {t('instructor')}
-              </h2>
-              <div className="flex items-start space-x-4">
-                <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
-                  {course.instructor_name.charAt(0)}
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    {course.instructor_name}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    {course.instructor_bio}
-                  </p>
-                </div>
-              </div>
-            </div>
-
             {/* Tags */}
             {course.tags && course.tags.length > 0 && (
               <div className="bg-white rounded-lg shadow-md p-6">

@@ -213,10 +213,6 @@ const MyCourses: React.FC = () => {
                           <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-royal-blue-600 transition-colors">
                             {course.title}
                           </h3>
-                          <p className="text-sm text-gray-500 mb-3">
-                            by {course.instructor_name}
-                          </p>
-
                           <div className="flex items-center gap-3 flex-wrap mb-3">
                             {course.content_types &&
                               course.content_types.map((type) => (

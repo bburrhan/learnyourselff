@@ -49,7 +49,7 @@ export const useCourses = (filters?: {
           query = query.gte('price', filters.priceRange[0]).lte('price', filters.priceRange[1])
         }
         if (filters?.search) {
-          query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%,instructor_name.ilike.%${filters.search}%`)
+          query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`)
         }
         
         const { data: supabaseCourses, error: supabaseError } = await query

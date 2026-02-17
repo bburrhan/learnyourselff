@@ -15,7 +15,6 @@ interface Course {
   description: string;
   price: number;
   currency: string;
-  instructor_name: string;
   cover_image_url: string;
   category: string;
   difficulty_level: string;
@@ -303,7 +302,6 @@ const Checkout: React.FC = () => {
                   />
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900">{course.title}</h3>
-                    <p className="text-sm text-gray-600">by {course.instructor_name}</p>
                     <div className="flex items-center gap-2 mt-2">
                       <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
                         {course.category}

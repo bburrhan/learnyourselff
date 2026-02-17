@@ -97,8 +97,7 @@ const AdminCourses: React.FC = () => {
 
   const filteredCourses = courses.filter(course =>
     course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    course.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    course.instructor_name.toLowerCase().includes(searchTerm.toLowerCase())
+    course.category.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   const handleEdit = (course: Course) => {
@@ -250,7 +249,6 @@ const AdminCourses: React.FC = () => {
                           />
                           <div>
                             <div className="text-sm font-medium text-gray-900">{course.title}</div>
-                            <div className="text-sm text-gray-500">by {course.instructor_name}</div>
                           </div>
                         </div>
                       </td>

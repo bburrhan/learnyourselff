@@ -2,7 +2,7 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { Database } from '../../lib/supabase'
 import LanguageAwareLink from '../Layout/LanguageAwareLink'
-import { Star, Clock, Users, BookOpen, FileText, Music, Video } from 'lucide-react'
+import { Star, Clock, Users, FileText, Music, Video } from 'lucide-react'
 
 type Course = Database['public']['Tables']['courses']['Row']
 
@@ -116,13 +116,6 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, className = '' }) => {
               <Users className="h-4 w-4 mr-1" />
               <span>124</span>
             </div>
-          </div>
-        </div>
-
-        <div className="mb-6">
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <BookOpen className="h-4 w-4" />
-            <span>by {course.instructor_name}</span>
           </div>
         </div>
 

@@ -50,8 +50,6 @@ const CourseFormWizard: React.FC<CourseFormWizardProps> = ({
     price: 0,
     currency: 'USD',
     category: '',
-    instructor_name: '',
-    instructor_bio: '',
     pdf_url: '',
     cover_image_url: '',
     tags: '',
@@ -69,8 +67,6 @@ const CourseFormWizard: React.FC<CourseFormWizardProps> = ({
         price: editingCourse.price,
         currency: editingCourse.currency,
         category: editingCourse.category,
-        instructor_name: editingCourse.instructor_name,
-        instructor_bio: editingCourse.instructor_bio,
         pdf_url: editingCourse.pdf_url || '',
         cover_image_url: editingCourse.cover_image_url || '',
         tags: editingCourse.tags?.join(', ') || '',
@@ -289,41 +285,18 @@ const CourseFormWizard: React.FC<CourseFormWizardProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('instructor')} Name</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.instructor_name}
-                    onChange={(e) => setFormData({ ...formData, instructor_name: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('language')}</label>
-                  <select
-                    value={formData.language}
-                    onChange={(e) => setFormData({ ...formData, language: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
-                  >
-                    <option value="en">English</option>
-                    <option value="tr">Turkish</option>
-                    <option value="tl">Filipino</option>
-                    <option value="hi">Hindi</option>
-                  </select>
-                </div>
-              </div>
-
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('instructor')} Bio</label>
-                <textarea
-                  required
-                  rows={2}
-                  value={formData.instructor_bio}
-                  onChange={(e) => setFormData({ ...formData, instructor_bio: e.target.value })}
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('language')}</label>
+                <select
+                  value={formData.language}
+                  onChange={(e) => setFormData({ ...formData, language: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
-                />
+                >
+                  <option value="en">English</option>
+                  <option value="tr">Turkish</option>
+                  <option value="tl">Filipino</option>
+                  <option value="hi">Hindi</option>
+                </select>
               </div>
 
               <div>

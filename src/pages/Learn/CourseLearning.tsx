@@ -164,7 +164,6 @@ const CourseLearning: React.FC = () => {
               </button>
               <div>
                 <h1 className="text-lg font-semibold text-gray-900">{course.title}</h1>
-                <p className="text-sm text-gray-500">{course.instructor_name}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">

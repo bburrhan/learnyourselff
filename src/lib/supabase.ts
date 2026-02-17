@@ -23,8 +23,6 @@ export type Database = {
           price: number
           currency: string
           category: string
-          instructor_name: string
-          instructor_bio: string
           pdf_url: string | null
           cover_image_url: string
           tags: string[]
@@ -43,8 +41,6 @@ export type Database = {
           price: number
           currency?: string
           category: string
-          instructor_name: string
-          instructor_bio: string
           pdf_url?: string | null
           cover_image_url: string
           tags?: string[]
@@ -63,8 +59,6 @@ export type Database = {
           price?: number
           currency?: string
           category?: string
-          instructor_name?: string
-          instructor_bio?: string
           pdf_url?: string | null
           cover_image_url?: string
           tags?: string[]
