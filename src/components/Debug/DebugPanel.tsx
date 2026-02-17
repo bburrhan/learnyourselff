@@ -78,7 +78,7 @@ const DebugPanel: React.FC<DebugPanelProps> = ({ isOpen, onClose }) => {
                 <>
                   <p><strong>Email:</strong> {user.email}</p>
                   <p><strong>ID:</strong> {user.id}</p>
-                  <p><strong>Role:</strong> {user.user_metadata?.role || 'user'}</p>
+                  <p><strong>Role:</strong> {user.app_metadata?.role || 'user'}</p>
                 </>
               )}
             </div>

@@ -126,7 +126,7 @@ const Header: React.FC = () => {
                   >
                     {t('dashboard')}
                   </LanguageAwareLink>
-                  {user?.user_metadata?.role === 'admin' && (
+                  {user?.app_metadata?.role === 'admin' && (
                     <LanguageAwareLink
                       to="/admin"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
@@ -219,7 +219,7 @@ const Header: React.FC = () => {
                       <User className="h-4 w-4" />
                       <span>{t('dashboard')}</span>
                     </LanguageAwareLink>
-                    {user?.user_metadata?.role === 'admin' && (
+                    {user?.app_metadata?.role === 'admin' && (
                       <LanguageAwareLink
                         to="/admin"
                         onClick={() => setMobileMenuOpen(false)}
@@ -228,7 +228,7 @@ const Header: React.FC = () => {
                         <span>{t('admin')}</span>
                       </LanguageAwareLink>
                     )}
-                    {user?.user_metadata?.role === 'admin' && (
+                    {user?.app_metadata?.role === 'admin' && (
                       <LanguageAwareLink
                         to="/admin/blogs"
                         onClick={() => setMobileMenuOpen(false)}
