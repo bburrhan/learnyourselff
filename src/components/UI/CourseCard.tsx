@@ -2,7 +2,7 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { Database } from '../../lib/supabase'
 import LanguageAwareLink from '../Layout/LanguageAwareLink'
-import { Star, Clock, Users, BookOpen } from 'lucide-react'
+import { Star, Clock, Users, BookOpen, FileText, Music, Video } from 'lucide-react'
 
 type Course = Database['public']['Tables']['courses']['Row']
 
@@ -65,10 +65,29 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, className = '' }) => {
       </div>
 
       <div className="p-6 flex flex-col flex-1">
-        <div className="mb-2">
+        <div className="mb-2 flex items-center gap-2 flex-wrap">
           <span className="inline-block bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full font-medium">
             {course.category}
           </span>
+          {course.content_types && course.content_types.length > 0 && (
+            <div className="flex items-center gap-1">
+              {course.content_types.includes('ebook') && (
+                <span className="inline-flex items-center gap-0.5 bg-blue-50 text-blue-600 text-xs px-1.5 py-0.5 rounded" title="Ebook">
+                  <FileText className="h-3 w-3" />
+                </span>
+              )}
+              {course.content_types.includes('audio') && (
+                <span className="inline-flex items-center gap-0.5 bg-green-50 text-green-600 text-xs px-1.5 py-0.5 rounded" title="Audio">
+                  <Music className="h-3 w-3" />
+                </span>
+              )}
+              {course.content_types.includes('video') && (
+                <span className="inline-flex items-center gap-0.5 bg-orange-50 text-orange-600 text-xs px-1.5 py-0.5 rounded" title="Video">
+                  <Video className="h-3 w-3" />
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
         <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-royal-blue-600 transition-colors line-clamp-2">

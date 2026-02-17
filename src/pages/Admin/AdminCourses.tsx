@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { supabase, Database } from '../../lib/supabase'
+import { supabase, Database, ContentType } from '../../lib/supabase'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
 import logger from '../../utils/logger'
 import { handleSupabaseError, handleAsyncError } from '../../utils/errorHandler'
-import { Plus, Search, CreditCard as Edit, Trash2, Eye, ToggleLeft, ToggleRight, Upload, Save, X } from 'lucide-react'
+import { Plus, Search, CreditCard as Edit, Trash2, ToggleLeft, ToggleRight, Save, X, FileText, Music, Video } from 'lucide-react'
 import toast from 'react-hot-toast'
+import ContentManager from '../../components/Admin/ContentManager'
+import FileUploader from '../../components/UI/FileUploader'
 
 type Course = Database['public']['Tables']['courses']['Row']
 type Category = Database['public']['Tables']['categories']['Row']
@@ -149,7 +151,7 @@ const AdminCourses: React.FC = () => {
       category: course.category,
       instructor_name: course.instructor_name,
       instructor_bio: course.instructor_bio,
-      pdf_url: course.pdf_url,
+      pdf_url: course.pdf_url || '',
       cover_image_url: course.cover_image_url || '',
       tags: course.tags?.join(', ') || '',
       language: course.language,
@@ -416,9 +418,16 @@ const AdminCourses: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="inline-flex px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
-                        {course.category}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="inline-flex px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
+                          {course.category}
+                        </span>
+                        <div className="flex gap-1">
+                          {course.content_types?.includes('ebook') && <FileText className="h-3.5 w-3.5 text-blue-500" />}
+                          {course.content_types?.includes('audio') && <Music className="h-3.5 w-3.5 text-green-500" />}
+                          {course.content_types?.includes('video') && <Video className="h-3.5 w-3.5 text-orange-500" />}
+                        </div>
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {new Intl.NumberFormat('en-US', {
@@ -613,6 +622,8 @@ const AdminCourses: React.FC = () => {
                     >
                       <option value="en">English</option>
                       <option value="tr">Turkish</option>
+                      <option value="tl">Filipino</option>
+                      <option value="hi">Hindi</option>
                     </select>
                   </div>
                 </div>
@@ -630,80 +641,55 @@ const AdminCourses: React.FC = () => {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    PDF URL (Required)
-                  </label>
-                  <input
-                    type="url"
-                    required
-                    value={formData.pdf_url}
-                    onChange={(e) => setFormData({ ...formData, pdf_url: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="https://example.com/course.pdf"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Cover Image URL
-                  </label>
-                  <input
-                    type="url"
-                    required
-                    value={formData.cover_image_url}
-                    onChange={(e) => setFormData({ ...formData, cover_image_url: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="https://example.com/image.jpg"
-                  />
-                  <p className="mt-1 text-xs text-gray-500">
-                    Enter a direct URL to an image (JPG, PNG, WebP). Recommended size: 800x600px or larger.<br/>
-                    <strong>Note:</strong> Google Drive links don't work - use direct image hosting like Imgur, Pexels, or upload to a web server.
-                  </p>
-                  {formData.cover_image_url && (
-                    <div className="mt-2">
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Cover Image
+                    </label>
+                    <FileUploader
+                      bucket="course-covers"
+                      path="covers"
+                      accept="image/jpeg,image/png,image/webp"
+                      maxSize={10 * 1024 * 1024}
+                      currentFileUrl={formData.cover_image_url}
+                      label=""
+                      onUploadComplete={(url) => setFormData({ ...formData, cover_image_url: url })}
+                    />
+                    <p className="mt-1 text-xs text-gray-500">
+                      Or enter a URL directly:
+                    </p>
+                    <input
+                      type="text"
+                      value={formData.cover_image_url}
+                      onChange={(e) => setFormData({ ...formData, cover_image_url: e.target.value })}
+                      className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="https://images.pexels.com/..."
+                    />
+                    {formData.cover_image_url && (
                       <img
                         src={formData.cover_image_url}
                         alt="Preview"
-                        className="w-32 h-24 object-cover rounded-md border"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                          // Show error message for Google Drive links
-                          const errorMsg = document.getElementById('image-error-msg');
-                          if (formData.cover_image_url.includes('drive.google.com')) {
-                            if (errorMsg) {
-                              errorMsg.textContent = '❌ Google Drive links don\'t work. Please use a direct image URL.';
-                              errorMsg.style.display = 'block';
-                            }
-                          }
-                        }}
-                        onLoad={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'block';
-                          // Hide error message on successful load
-                          const errorMsg = document.getElementById('image-error-msg');
-                          if (errorMsg) {
-                            errorMsg.style.display = 'none';
-                          }
-                        }}
+                        className="w-32 h-24 object-cover rounded-md border mt-2"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                        onLoad={(e) => { (e.target as HTMLImageElement).style.display = 'block' }}
                       />
-                      <p id="image-error-msg" className="text-xs text-red-600 mt-1" style={{ display: 'none' }}></p>
-                      <p className="text-xs text-green-600 mt-1">✓ Image preview loaded successfully</p>
-                    </div>
-                  )}
-                  
-                  {/* Helper section for Google Drive users */}
-                  <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-md">
-                    <p className="text-xs text-blue-800 font-medium mb-2">💡 How to get a direct image URL:</p>
-                    <ul className="text-xs text-blue-700 space-y-1">
-                      <li>• <strong>Imgur:</strong> Upload to imgur.com and copy the direct link</li>
-                      <li>• <strong>Pexels:</strong> Right-click any image and "Copy image address"</li>
-                      <li>• <strong>Your website:</strong> Upload to your web server and use the direct URL</li>
-                      <li>• <strong>GitHub:</strong> Upload to a GitHub repo and use the raw file URL</li>
-                    </ul>
+                    )}
                   </div>
                 </div>
+
+                {editingCourse && (
+                  <div className="border-t border-gray-200 pt-4">
+                    <ContentManager
+                      courseId={editingCourse.id}
+                      onContentTypesChange={async (types: ContentType[]) => {
+                        await supabase
+                          .from('courses')
+                          .update({ content_types: types })
+                          .eq('id', editingCourse.id)
+                      }}
+                    />
+                  </div>
+                )}
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">

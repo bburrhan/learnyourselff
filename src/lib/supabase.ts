@@ -10,6 +10,7 @@ if (!supabaseUrl || !supabaseAnonKey || supabaseUrl.includes('placeholder') || s
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
+export type ContentType = 'ebook' | 'audio' | 'video'
 
 export type Database = {
   public: {
@@ -24,11 +25,12 @@ export type Database = {
           category: string
           instructor_name: string
           instructor_bio: string
-          pdf_url: string
+          pdf_url: string | null
           cover_image_url: string
           tags: string[]
           language: string
           difficulty_level: 'beginner' | 'intermediate' | 'advanced'
+          content_types: ContentType[]
           created_at: string
           updated_at: string
           is_featured: boolean
@@ -43,11 +45,12 @@ export type Database = {
           category: string
           instructor_name: string
           instructor_bio: string
-          pdf_url: string
+          pdf_url?: string | null
           cover_image_url: string
           tags?: string[]
           language?: string
           difficulty_level?: 'beginner' | 'intermediate' | 'advanced'
+          content_types?: ContentType[]
           created_at?: string
           updated_at?: string
           is_featured?: boolean
@@ -62,14 +65,95 @@ export type Database = {
           category?: string
           instructor_name?: string
           instructor_bio?: string
-          pdf_url?: string
+          pdf_url?: string | null
           cover_image_url?: string
           tags?: string[]
           language?: string
           difficulty_level?: 'beginner' | 'intermediate' | 'advanced'
+          content_types?: ContentType[]
           updated_at?: string
           is_featured?: boolean
           is_active?: boolean
+        }
+      }
+      course_content: {
+        Row: {
+          id: string
+          course_id: string
+          content_type: ContentType
+          file_url: string
+          file_name: string
+          file_size: number
+          duration_seconds: number
+          title: string
+          sort_order: number
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          course_id: string
+          content_type: ContentType
+          file_url?: string
+          file_name?: string
+          file_size?: number
+          duration_seconds?: number
+          title?: string
+          sort_order?: number
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          course_id?: string
+          content_type?: ContentType
+          file_url?: string
+          file_name?: string
+          file_size?: number
+          duration_seconds?: number
+          title?: string
+          sort_order?: number
+          is_active?: boolean
+          updated_at?: string
+        }
+      }
+      user_progress: {
+        Row: {
+          id: string
+          user_id: string
+          course_id: string
+          content_id: string
+          progress_seconds: number
+          progress_percent: number
+          completed: boolean
+          last_accessed_at: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          course_id: string
+          content_id: string
+          progress_seconds?: number
+          progress_percent?: number
+          completed?: boolean
+          last_accessed_at?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          course_id?: string
+          content_id?: string
+          progress_seconds?: number
+          progress_percent?: number
+          completed?: boolean
+          last_accessed_at?: string
+          updated_at?: string
         }
       }
       purchases: {

@@ -6,17 +6,20 @@ import logger from '../utils/logger'
 import { handleSupabaseError, handleAsyncError } from '../utils/errorHandler'
 import LoadingSpinner from '../components/UI/LoadingSpinner'
 import LanguageAwareLink from '../components/Layout/LanguageAwareLink'
-import { 
-  Star, 
-  Clock, 
-  Users, 
-  BookOpen, 
-  Download, 
-  Globe, 
+import {
+  Star,
+  Clock,
+  Users,
+  BookOpen,
+  Download,
+  Globe,
   Tag,
   ArrowLeft,
   ShoppingCart,
-  CreditCard
+  CreditCard,
+  FileText,
+  Music,
+  Video
 } from 'lucide-react'
 
 type Course = Database['public']['Tables']['courses']['Row']
@@ -235,10 +238,20 @@ const CourseDetail: React.FC = () => {
                   <div className="text-sm text-gray-600">{t('duration')}</div>
                 </div>
                 <div className="text-center">
-                  <div className="flex justify-center mb-2">
-                    <Download className="h-8 w-8 text-purple-600" />
+                  <div className="flex justify-center mb-2 gap-1">
+                    {(!course.content_types || course.content_types.length === 0) ? (
+                      <FileText className="h-8 w-8 text-blue-600" />
+                    ) : (
+                      <>
+                        {course.content_types.includes('ebook') && <FileText className="h-6 w-6 text-blue-600" />}
+                        {course.content_types.includes('audio') && <Music className="h-6 w-6 text-green-600" />}
+                        {course.content_types.includes('video') && <Video className="h-6 w-6 text-orange-600" />}
+                      </>
+                    )}
                   </div>
-                  <div className="text-2xl font-bold text-gray-900">PDF</div>
+                  <div className="text-2xl font-bold text-gray-900">
+                    {course.content_types && course.content_types.length > 0 ? course.content_types.length : 1}
+                  </div>
                   <div className="text-sm text-gray-600">{t('format')}</div>
                 </div>
               </div>
@@ -306,7 +319,7 @@ const CourseDetail: React.FC = () => {
                     {t('language')}
                   </span>
                   <span className="font-medium text-gray-900">
-                    {course.language === 'tr' ? 'Türkçe' : 'English'}
+                    {({ en: 'English', tr: 'Turkce', tl: 'Filipino', hi: 'Hindi' } as Record<string, string>)[course.language] || course.language}
                   </span>
                 </div>
                 <div className="flex items-center justify-between py-2 border-b border-gray-100">

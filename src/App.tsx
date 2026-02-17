@@ -30,6 +30,7 @@ import AdminBlogs from './pages/Admin/AdminBlogs'
 import AdminUsers from './pages/Admin/AdminUsers'
 import AdminAnalytics from './pages/Admin/AdminAnalytics'
 import AdminCategories from './pages/Admin/AdminCategories'
+import CourseLearning from './pages/Learn/CourseLearning'
 import About from './pages/About'
 import Contact from './pages/Contact'
 import Privacy from './pages/Privacy'
@@ -71,8 +72,16 @@ function App() {
                   <Route path="/:lang/contact" element={<Contact />} />
                   <Route path="/:lang/privacy" element={<Privacy />} />
                   <Route path="/:lang/terms" element={<Terms />} />
-                  
+
                   {/* Protected Routes */}
+                  <Route
+                    path="/:lang/learn/:courseId"
+                    element={
+                      <ProtectedRoute>
+                        <CourseLearning />
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route
                     path="/:lang/dashboard/*"
                     element={

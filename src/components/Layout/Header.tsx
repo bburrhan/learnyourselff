@@ -1,21 +1,39 @@
-import React from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { User, Globe, Menu, X, Bug } from 'lucide-react'
+import { User, Globe, Menu, X, ChevronDown } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 import LanguageAwareLink from './LanguageAwareLink'
 import { getPathWithoutLanguage } from './LanguageRouter'
-import { useState } from 'react'
+
+const LANGUAGES = [
+  { code: 'en', label: 'English', short: 'EN' },
+  { code: 'tr', label: 'Turkce', short: 'TR' },
+  { code: 'tl', label: 'Filipino', short: 'TL' },
+  { code: 'hi', label: 'Hindi', short: 'HI' },
+]
 
 const Header: React.FC = () => {
   const { t, i18n } = useTranslation()
   const { user, signOut } = useAuth()
   const location = useLocation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false)
+  const langRef = useRef<HTMLDivElement>(null)
 
-  const toggleLanguage = () => {
-    const newLang = i18n.language === 'en' ? 'tr' : 'en'
-    i18n.changeLanguage(newLang)
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (langRef.current && !langRef.current.contains(e.target as Node)) {
+        setLangDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const changeLanguage = (code: string) => {
+    i18n.changeLanguage(code)
+    setLangDropdownOpen(false)
   }
 
   const handleSignOut = async () => {
@@ -29,6 +47,8 @@ const Header: React.FC = () => {
 
   const isActive = (path: string) => location.pathname === path
 
+  const currentLang = LANGUAGES.find(l => l.code === i18n.language) || LANGUAGES[0]
+
   const navLinks = [
     { path: '/', label: t('home') },
     { path: '/courses', label: t('Courses') },
@@ -39,17 +59,15 @@ const Header: React.FC = () => {
     <header className="bg-white/95 backdrop-blur-sm shadow-md sticky top-0 z-50 border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
           <LanguageAwareLink to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-            <img 
-              src="/Learnyourself_Logo copy.svg" 
-              alt="LearnYourself Logo" 
+            <img
+              src="/Learnyourself_Logo copy.svg"
+              alt="LearnYourself Logo"
               className="h-8 w-8"
             />
             <span className="text-xl font-bold text-gray-900 hidden sm:block">LearnYourself</span>
           </LanguageAwareLink>
 
-          {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
             {navLinks.map((link) => (
               <LanguageAwareLink
@@ -66,17 +84,34 @@ const Header: React.FC = () => {
             ))}
           </nav>
 
-          {/* Right side actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <button
-              onClick={toggleLanguage}
-              className="flex items-center space-x-1 text-gray-700 hover:text-royal-blue-600 transition-colors px-3 py-2 rounded-lg hover:bg-gray-50"
-            >
-              <Globe className="h-4 w-4" />
-              <span className="text-sm font-medium">
-                {i18n.language.toUpperCase()}
-              </span>
-            </button>
+            <div className="relative" ref={langRef}>
+              <button
+                onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+                className="flex items-center space-x-1.5 text-gray-700 hover:text-royal-blue-600 transition-colors px-3 py-2 rounded-lg hover:bg-gray-50"
+              >
+                <Globe className="h-4 w-4" />
+                <span className="text-sm font-medium">{currentLang.short}</span>
+                <ChevronDown className={`h-3.5 w-3.5 transition-transform ${langDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {langDropdownOpen && (
+                <div className="absolute right-0 mt-1 w-40 bg-white rounded-lg shadow-lg py-1 border border-gray-100 z-50">
+                  {LANGUAGES.map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => changeLanguage(lang.code)}
+                      className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+                        i18n.language === lang.code
+                          ? 'bg-royal-blue-50 text-royal-blue-600 font-medium'
+                          : 'text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      {lang.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {user ? (
               <div className="relative group">
@@ -125,7 +160,6 @@ const Header: React.FC = () => {
             )}
           </div>
 
-          {/* Mobile menu button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="md:hidden p-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
@@ -134,7 +168,6 @@ const Header: React.FC = () => {
           </button>
         </div>
 
-        {/* Mobile menu */}
         {mobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-200 bg-white/95 backdrop-blur-sm">
             <div className="flex flex-col space-y-2">
@@ -152,16 +185,30 @@ const Header: React.FC = () => {
                   {link.label}
                 </LanguageAwareLink>
               ))}
-              
+
               <div className="border-t border-gray-200 pt-4 mt-4 mx-2">
-                <button
-                  onClick={toggleLanguage}
-                  className="flex items-center space-x-2 px-4 py-3 text-gray-700 hover:text-royal-blue-600 w-full text-left rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  <Globe className="h-4 w-4" />
-                  <span>{i18n.language.toUpperCase()}</span>
-                </button>
-                
+                <div className="px-4 py-2 mb-2">
+                  <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Language</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {LANGUAGES.map((lang) => (
+                      <button
+                        key={lang.code}
+                        onClick={() => {
+                          changeLanguage(lang.code)
+                          setMobileMenuOpen(false)
+                        }}
+                        className={`px-3 py-2 text-sm rounded-lg transition-colors text-left ${
+                          i18n.language === lang.code
+                            ? 'bg-royal-blue-50 text-royal-blue-600 font-medium'
+                            : 'text-gray-700 hover:bg-gray-50'
+                        }`}
+                      >
+                        {lang.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 {user ? (
                   <div className="space-y-2">
                     <LanguageAwareLink
