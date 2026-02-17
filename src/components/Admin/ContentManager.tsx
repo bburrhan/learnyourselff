@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { FileText, Music, Video, Trash2, GripVertical, CheckCircle2 } from 'lucide-react'
+import { FileText, Music, Video, Trash2, GripVertical, Plus } from 'lucide-react'
 import { supabase, Database, ContentType } from '../../lib/supabase'
 import FileUploader from '../UI/FileUploader'
 import toast from 'react-hot-toast'
@@ -26,7 +26,7 @@ const CONTENT_CONFIG: Record<ContentType, {
 }> = {
   ebook: {
     label: 'Ebook / PDF',
-    description: 'Upload a PDF document for reading',
+    description: 'Upload PDF documents for reading',
     icon: <FileText className="h-5 w-5" />,
     accept: 'application/pdf',
     maxSize: 50 * 1024 * 1024,
@@ -39,7 +39,7 @@ const CONTENT_CONFIG: Record<ContentType, {
   },
   audio: {
     label: 'Audio',
-    description: 'Upload an audio file for listening',
+    description: 'Upload audio files for listening',
     icon: <Music className="h-5 w-5" />,
     accept: 'audio/mpeg,audio/mp4,audio/wav,audio/ogg',
     maxSize: 100 * 1024 * 1024,
@@ -52,7 +52,7 @@ const CONTENT_CONFIG: Record<ContentType, {
   },
   video: {
     label: 'Video',
-    description: 'Upload a video file for watching',
+    description: 'Upload video lectures for watching',
     icon: <Video className="h-5 w-5" />,
     accept: 'video/mp4,video/webm,video/ogg',
     maxSize: 500 * 1024 * 1024,
@@ -92,12 +92,16 @@ const ContentManager: React.FC<ContentManagerProps> = ({ courseId, onContentType
   }
 
   const handleAddContent = async (type: ContentType) => {
+    const existingCount = contents.filter(c => c.content_type === type).length
+    const label = CONTENT_CONFIG[type].label
+    const defaultTitle = existingCount === 0 ? label : `${label} ${existingCount + 1}`
+
     const { data, error } = await supabase
       .from('course_content')
       .insert({
         course_id: courseId,
         content_type: type,
-        title: CONTENT_CONFIG[type].label,
+        title: defaultTitle,
         sort_order: contents.length,
       })
       .select()
@@ -116,9 +120,19 @@ const ContentManager: React.FC<ContentManagerProps> = ({ courseId, onContentType
   }
 
   const handleFileUploaded = async (contentId: string, fileUrl: string, fileName: string, fileSize: number) => {
+    const titleFromFile = fileName ? fileName.replace(/\.[^/.]+$/, '') : ''
+    const updates: Record<string, string | number> = {
+      file_url: fileUrl,
+      file_name: fileName,
+      file_size: fileSize,
+    }
+    if (titleFromFile) {
+      updates.title = titleFromFile
+    }
+
     const { error } = await supabase
       .from('course_content')
-      .update({ file_url: fileUrl, file_name: fileName, file_size: fileSize })
+      .update(updates)
       .eq('id', contentId)
 
     if (error) {
@@ -127,7 +141,7 @@ const ContentManager: React.FC<ContentManagerProps> = ({ courseId, onContentType
     }
 
     setContents(prev =>
-      prev.map(c => (c.id === contentId ? { ...c, file_url: fileUrl, file_name: fileName, file_size: fileSize } : c))
+      prev.map(c => (c.id === contentId ? { ...c, ...updates } as CourseContent : c))
     )
     toast.success('File uploaded')
   }
@@ -164,8 +178,7 @@ const ContentManager: React.FC<ContentManagerProps> = ({ courseId, onContentType
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
   }
 
-  const existingTypes = contents.map(c => c.content_type)
-  const availableTypes = (Object.keys(CONTENT_CONFIG) as ContentType[]).filter(t => !existingTypes.includes(t))
+  const getTypeCount = (type: ContentType) => contents.filter(c => c.content_type === type).length
 
   if (loading) {
     return <div className="text-sm text-gray-500 py-4">Loading content...</div>
@@ -176,30 +189,25 @@ const ContentManager: React.FC<ContentManagerProps> = ({ courseId, onContentType
       <div>
         <h3 className="text-sm font-bold text-gray-900 mb-1">Course Content Files</h3>
         <p className="text-xs text-gray-500">
-          Add up to one file per type. Click a card below to add that content type.
+          Click a card to add a file. You can add multiple files per type.
         </p>
       </div>
 
       <div className="grid grid-cols-3 gap-3">
         {(Object.keys(CONTENT_CONFIG) as ContentType[]).map(type => {
           const config = CONTENT_CONFIG[type]
-          const isAdded = existingTypes.includes(type)
+          const count = getTypeCount(type)
 
           return (
             <button
               key={type}
               type="button"
-              disabled={isAdded}
               onClick={() => handleAddContent(type)}
-              className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all text-center ${
-                isAdded
-                  ? `${config.borderColor} ${config.bgColor.split(' ')[0]} opacity-75 cursor-default`
-                  : `${config.borderColor} ${config.bgColor} cursor-pointer border-dashed`
-              }`}
+              className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all text-center cursor-pointer border-dashed ${config.borderColor} ${config.bgColor}`}
             >
-              {isAdded && (
-                <div className="absolute top-2 right-2">
-                  <CheckCircle2 className={`h-4 w-4 ${config.textColor}`} />
+              {count > 0 && (
+                <div className={`absolute top-2 right-2 w-5 h-5 rounded-full ${config.iconBg} flex items-center justify-center`}>
+                  <span className={`text-[10px] font-bold ${config.textColor}`}>{count}</span>
                 </div>
               )}
               <div className={`w-10 h-10 rounded-lg ${config.iconBg} flex items-center justify-center ${config.textColor}`}>
@@ -208,11 +216,12 @@ const ContentManager: React.FC<ContentManagerProps> = ({ courseId, onContentType
               <div>
                 <p className={`text-sm font-semibold ${config.textColor}`}>{config.label}</p>
                 <p className="text-[11px] text-gray-500 mt-0.5">
-                  {isAdded ? 'Added' : config.formats}
+                  {count > 0 ? `${count} file${count > 1 ? 's' : ''}` : config.formats}
                 </p>
-                {!isAdded && (
-                  <p className="text-[11px] text-gray-400">Max {config.maxSizeLabel}</p>
-                )}
+                <p className="text-[11px] text-gray-400 flex items-center justify-center gap-0.5">
+                  <Plus className="h-3 w-3" />
+                  Add {count > 0 ? 'another' : ''}
+                </p>
               </div>
             </button>
           )

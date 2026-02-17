@@ -396,8 +396,8 @@ const CourseFormWizard: React.FC<CourseFormWizardProps> = ({
                   <div className="text-sm text-blue-700">
                     <p className="font-medium">Upload content after saving</p>
                     <p className="mt-0.5 text-blue-600">
-                      After you save the course details, you will be able to upload
-                      ebook (PDF), audio, and video files in the next step.
+                      After you save the course details, you can upload multiple
+                      PDFs, audio tracks, and video lectures in the next step.
                     </p>
                   </div>
                 </div>
