@@ -148,19 +148,6 @@ const CourseDetail: React.FC = () => {
     }).format(price)
   }
 
-  const getDifficultyColor = (level: string) => {
-    switch (level) {
-      case 'beginner':
-        return 'bg-green-100 text-green-800'
-      case 'intermediate':
-        return 'bg-yellow-100 text-yellow-800'
-      case 'advanced':
-        return 'bg-red-100 text-red-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Breadcrumb */}
@@ -201,9 +188,6 @@ const CourseDetail: React.FC = () => {
                   <div className="flex flex-wrap gap-2 mb-4">
                     <span className="bg-white/90 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">
                       {course.category}
-                    </span>
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getDifficultyColor(course.difficulty_level)}`}>
-                      {course.difficulty_level}
                     </span>
                   </div>
                   <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">

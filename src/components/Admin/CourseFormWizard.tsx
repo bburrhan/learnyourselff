@@ -54,7 +54,6 @@ const CourseFormWizard: React.FC<CourseFormWizardProps> = ({
     cover_image_url: '',
     tags: '',
     language: 'en',
-    difficulty_level: 'beginner' as const,
     is_featured: false,
     is_active: true,
   })
@@ -71,7 +70,6 @@ const CourseFormWizard: React.FC<CourseFormWizardProps> = ({
         cover_image_url: editingCourse.cover_image_url || '',
         tags: editingCourse.tags?.join(', ') || '',
         language: editingCourse.language,
-        difficulty_level: editingCourse.difficulty_level,
         is_featured: editingCourse.is_featured,
         is_active: editingCourse.is_active,
       })
@@ -246,7 +244,7 @@ const CourseFormWizard: React.FC<CourseFormWizardProps> = ({
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('price')}</label>
                   <input
@@ -269,18 +267,6 @@ const CourseFormWizard: React.FC<CourseFormWizardProps> = ({
                     <option value="USD">USD</option>
                     <option value="EUR">EUR</option>
                     <option value="TRY">TRY</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('difficulty')}</label>
-                  <select
-                    value={formData.difficulty_level}
-                    onChange={(e) => setFormData({ ...formData, difficulty_level: e.target.value as 'beginner' | 'intermediate' | 'advanced' })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
-                  >
-                    <option value="beginner">Beginner</option>
-                    <option value="intermediate">Intermediate</option>
-                    <option value="advanced">Advanced</option>
                   </select>
                 </div>
               </div>

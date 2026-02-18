@@ -24,19 +24,6 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, className = '' }) => {
     }).format(price)
   }
 
-  const getDifficultyColor = (level: string) => {
-    switch (level) {
-      case 'beginner':
-        return 'bg-green-100 text-green-800'
-      case 'intermediate':
-        return 'bg-yellow-100 text-yellow-800'
-      case 'advanced':
-        return 'bg-red-100 text-red-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
-
   return (
     <div className={`bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group transform hover:-translate-y-2 flex flex-col h-full ${className}`}>
       <div className="relative">
@@ -52,11 +39,6 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, className = '' }) => {
             }
           }}
         />
-        <div className="absolute top-4 left-4">
-          <span className={`px-3 py-1 rounded-full text-xs font-medium shadow-sm ${getDifficultyColor(course.difficulty_level)}`}>
-            {course.difficulty_level}
-          </span>
-        </div>
         <div className="absolute top-4 right-4">
           <span className="bg-royal-blue-600 text-white px-3 py-2 rounded-md text-sm font-bold shadow-sm">
             {formatPrice(course.price, course.currency)}

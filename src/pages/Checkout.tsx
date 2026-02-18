@@ -17,7 +17,6 @@ interface Course {
   currency: string;
   cover_image_url: string;
   category: string;
-  difficulty_level: string;
 }
 
 const Checkout: React.FC = () => {
@@ -305,9 +304,6 @@ const Checkout: React.FC = () => {
                     <div className="flex items-center gap-2 mt-2">
                       <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
                         {course.category}
-                      </span>
-                      <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-                        {course.difficulty_level}
                       </span>
                     </div>
                   </div>

@@ -25,7 +25,6 @@ const Courses: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '')
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all')
   const [selectedLanguage, setSelectedLanguage] = useState(searchParams.get('language') || 'all')
-  const [selectedDifficulty, setSelectedDifficulty] = useState(searchParams.get('difficulty') || 'all')
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 500])
 
   // Build filters object
@@ -33,9 +32,8 @@ const Courses: React.FC = () => {
     search: searchTerm || undefined,
     category: selectedCategory !== 'all' ? selectedCategory : undefined,
     language: selectedLanguage !== 'all' ? selectedLanguage : undefined,
-    difficulty: selectedDifficulty !== 'all' ? selectedDifficulty : undefined,
     priceRange: priceRange,
-  }), [searchTerm, selectedCategory, selectedLanguage, selectedDifficulty, priceRange])
+  }), [searchTerm, selectedCategory, selectedLanguage, priceRange])
 
   const { courses, loading, error } = useCourses(filters)
 
@@ -68,7 +66,6 @@ const Courses: React.FC = () => {
     if (searchTerm) params.set('search', searchTerm)
     if (selectedCategory !== 'all') params.set('category', selectedCategory)
     if (selectedLanguage !== 'all') params.set('language', selectedLanguage)
-    if (selectedDifficulty !== 'all') params.set('difficulty', selectedDifficulty)
     setSearchParams(params)
   }
 
@@ -76,15 +73,13 @@ const Courses: React.FC = () => {
     setSearchTerm('')
     setSelectedCategory('all')
     setSelectedLanguage('all')
-    setSelectedDifficulty('all')
     setPriceRange([0, 500])
     setSearchParams({})
   }
 
   const languages = ['all', 'en', 'tr', 'es', 'fr']
-  const difficulties = ['all', 'beginner', 'intermediate', 'advanced']
 
-  const hasActiveFilters = searchTerm || selectedCategory !== 'all' || selectedLanguage !== 'all' || selectedDifficulty !== 'all'
+  const hasActiveFilters = searchTerm || selectedCategory !== 'all' || selectedLanguage !== 'all'
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -129,7 +124,7 @@ const Courses: React.FC = () => {
 
           {/* Filters */}
           <div className={`${showFilters ? 'block' : 'hidden'} lg:block mt-6 pt-6 border-t border-gray-100`}>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {/* Category Filter */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -163,25 +158,6 @@ const Courses: React.FC = () => {
                   {languages.slice(1).map((language) => (
                     <option key={language} value={language}>
                       {language.toUpperCase()}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Difficulty Filter */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  {t('filterByDifficulty')}
-                </label>
-                <select
-                  value={selectedDifficulty}
-                  onChange={(e) => setSelectedDifficulty(e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent transition-all duration-200"
-                >
-                  <option value="all">{t('allLevels')}</option>
-                  {difficulties.slice(1).map((difficulty) => (
-                    <option key={difficulty} value={difficulty}>
-                      {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
                     </option>
                   ))}
                 </select>

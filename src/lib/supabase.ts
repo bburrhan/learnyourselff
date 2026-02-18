@@ -27,7 +27,6 @@ export type Database = {
           cover_image_url: string
           tags: string[]
           language: string
-          difficulty_level: 'beginner' | 'intermediate' | 'advanced'
           content_types: ContentType[]
           created_at: string
           updated_at: string
@@ -45,7 +44,6 @@ export type Database = {
           cover_image_url: string
           tags?: string[]
           language?: string
-          difficulty_level?: 'beginner' | 'intermediate' | 'advanced'
           content_types?: ContentType[]
           created_at?: string
           updated_at?: string
@@ -63,7 +61,6 @@ export type Database = {
           cover_image_url?: string
           tags?: string[]
           language?: string
-          difficulty_level?: 'beginner' | 'intermediate' | 'advanced'
           content_types?: ContentType[]
           updated_at?: string
           is_featured?: boolean

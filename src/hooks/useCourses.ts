@@ -9,7 +9,6 @@ type Course = Database['public']['Tables']['courses']['Row']
 export const useCourses = (filters?: {
   category?: string
   language?: string
-  difficulty?: string
   search?: string
   priceRange?: [number, number]
 }) => {
@@ -41,9 +40,6 @@ export const useCourses = (filters?: {
         // Apply filters
         if (filters?.category && filters.category !== 'all') {
           query = query.eq('category', filters.category)
-        }
-        if (filters?.difficulty && filters.difficulty !== 'all') {
-          query = query.eq('difficulty_level', filters.difficulty)
         }
         if (filters?.priceRange) {
           query = query.gte('price', filters.priceRange[0]).lte('price', filters.priceRange[1])
@@ -81,7 +77,7 @@ export const useCourses = (filters?: {
     }
 
     fetchCourses()
-  }, [filters?.category, filters?.difficulty, filters?.search, filters?.priceRange?.[0], filters?.priceRange?.[1], i18n.language])
+  }, [filters?.category, filters?.search, filters?.priceRange?.[0], filters?.priceRange?.[1], i18n.language])
 
   return { courses, loading, error }
 }
