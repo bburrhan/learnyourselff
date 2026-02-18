@@ -7,19 +7,17 @@ import { handleSupabaseError, handleAsyncError } from '../utils/errorHandler'
 import LoadingSpinner from '../components/UI/LoadingSpinner'
 import LanguageAwareLink from '../components/Layout/LanguageAwareLink'
 import {
-  Star,
-  Clock,
-  Users,
   BookOpen,
   Download,
   Globe,
   Tag,
   ArrowLeft,
-  ShoppingCart,
   CreditCard,
   FileText,
   Music,
-  Video
+  Video,
+  Star,
+  Users
 } from 'lucide-react'
 
 type Course = Database['public']['Tables']['courses']['Row']
@@ -35,11 +33,6 @@ const CourseDetail: React.FC = () => {
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [id])
-
-  const isValidUUID = (str: string) => {
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
-    return uuidRegex.test(str)
-  }
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -128,7 +121,7 @@ const CourseDetail: React.FC = () => {
           <p className="text-gray-600 mb-4">{error || 'Course not found'}</p>
           <LanguageAwareLink
             to="/courses"
-            className="inline-flex items-center text-blue-600 hover:text-blue-700"
+            className="inline-flex items-center text-royal-blue-600 hover:text-royal-blue-700"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             {t('back')} to {t('courses')}
@@ -224,47 +217,28 @@ const CourseDetail: React.FC = () => {
               </div>
             </div>
 
-            {/* Course Stats */}
+            {/* Course Info */}
             <div className="bg-white rounded-lg shadow-md p-6">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div className="text-center">
-                  <div className="flex justify-center mb-2">
-                    <Star className="h-8 w-8 text-yellow-500" />
-                  </div>
-                  <div className="text-2xl font-bold text-gray-900">4.2</div>
-                  <div className="text-sm text-gray-600">{t('rating')}</div>
-                </div>
-                <div className="text-center">
-                  <div className="flex justify-center mb-2">
-                    <Users className="h-8 w-8 text-royal-blue-600" />
-                  </div>
-                  <div className="text-2xl font-bold text-gray-900">124</div>
-                  <div className="text-sm text-gray-600">{t('students')}</div>
-                </div>
-                <div className="text-center">
-                  <div className="flex justify-center mb-2">
-                    <Clock className="h-8 w-8 text-green-600" />
-                  </div>
-                  <div className="text-2xl font-bold text-gray-900">2-3h</div>
-                  <div className="text-sm text-gray-600">{t('duration')}</div>
-                </div>
-                <div className="text-center">
-                  <div className="flex justify-center mb-2 gap-1">
-                    {(!course.content_types || course.content_types.length === 0) ? (
-                      <FileText className="h-8 w-8 text-blue-600" />
-                    ) : (
-                      <>
-                        {course.content_types.includes('ebook') && <FileText className="h-6 w-6 text-blue-600" />}
-                        {course.content_types.includes('audio') && <Music className="h-6 w-6 text-green-600" />}
-                        {course.content_types.includes('video') && <Video className="h-6 w-6 text-orange-600" />}
-                      </>
+              <div className="flex flex-wrap gap-4">
+                {course.content_types && course.content_types.length > 0 && (
+                  <div className="flex items-center gap-3">
+                    {course.content_types.includes('ebook') && (
+                      <span className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 text-sm px-3 py-1.5 rounded-full font-medium">
+                        <FileText className="h-4 w-4" /> Ebook
+                      </span>
+                    )}
+                    {course.content_types.includes('audio') && (
+                      <span className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 text-sm px-3 py-1.5 rounded-full font-medium">
+                        <Music className="h-4 w-4" /> Audio
+                      </span>
+                    )}
+                    {course.content_types.includes('video') && (
+                      <span className="inline-flex items-center gap-1.5 bg-orange-50 text-orange-700 text-sm px-3 py-1.5 rounded-full font-medium">
+                        <Video className="h-4 w-4" /> Video
+                      </span>
                     )}
                   </div>
-                  <div className="text-2xl font-bold text-gray-900">
-                    {course.content_types && course.content_types.length > 0 ? course.content_types.length : 1}
-                  </div>
-                  <div className="text-sm text-gray-600">{t('format')}</div>
-                </div>
+                )}
               </div>
             </div>
 
@@ -338,19 +312,14 @@ const CourseDetail: React.FC = () => {
                 <LanguageAwareLink
                   to={`/checkout/${course.id}`}
                   className={`w-full py-4 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center ${
-                    course.price === 0 
-                      ? 'bg-green-600 text-white hover:bg-green-700' 
+                    course.price === 0
+                      ? 'bg-green-600 text-white hover:bg-green-700'
                       : 'bg-royal-blue-600 text-white hover:bg-royal-blue-700'
                   }`}
                 >
                   <CreditCard className="h-5 w-5 mr-2" />
                   {course.price === 0 ? t('getForFree') : t('buyNow')}
                 </LanguageAwareLink>
-                
-                <button className="w-full bg-gray-100 text-gray-700 py-3 px-6 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center justify-center">
-                  <ShoppingCart className="h-5 w-5 mr-2" />
-                  {t('addWishlist')}
-                </button>
               </div>
 
               <div className="mt-6 pt-6 border-t border-gray-200">
@@ -387,6 +356,29 @@ const CourseDetail: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Sticky Mobile CTA */}
+      <div className="fixed bottom-0 left-0 right-0 lg:hidden bg-white border-t border-gray-200 p-3 z-40 shadow-[0_-4px_12px_rgba(0,0,0,0.1)]">
+        <div className="flex items-center justify-between gap-3 max-w-7xl mx-auto">
+          <div className="flex-shrink-0">
+            <div className="text-xl font-bold text-gray-900">
+              {formatPrice(course.price, course.currency)}
+            </div>
+            <p className="text-xs text-gray-500">{t('oneTimePayment')}</p>
+          </div>
+          <LanguageAwareLink
+            to={`/checkout/${course.id}`}
+            className={`flex-1 max-w-xs py-3 px-6 rounded-lg font-semibold text-center transition-colors ${
+              course.price === 0
+                ? 'bg-green-600 text-white hover:bg-green-700'
+                : 'bg-royal-blue-600 text-white hover:bg-royal-blue-700'
+            }`}
+          >
+            {course.price === 0 ? t('getForFree') : t('buyNow')}
+          </LanguageAwareLink>
+        </div>
+      </div>
+      <div className="h-20 lg:hidden" />
     </div>
   )
 }

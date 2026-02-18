@@ -13,7 +13,7 @@ const Privacy: React.FC = () => {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <Shield className="h-16 w-16 text-blue-600 mx-auto mb-4" />
+          <Shield className="h-16 w-16 text-royal-blue-600 mx-auto mb-4" />
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             Privacy Policy
           </h1>
@@ -34,7 +34,7 @@ const Privacy: React.FC = () => {
 
           <div>
             <div className="flex items-center mb-4">
-              <Database className="h-6 w-6 text-blue-600 mr-2" />
+              <Database className="h-6 w-6 text-royal-blue-600 mr-2" />
               <h2 className="text-2xl font-semibold text-gray-900">Information We Collect</h2>
             </div>
             

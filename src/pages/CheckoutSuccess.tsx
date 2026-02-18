@@ -79,12 +79,12 @@ const CheckoutSuccess: React.FC = () => {
           )}
 
           {/* Email Notice */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <div className="bg-royal-blue-50 border border-royal-blue-200 rounded-lg p-4 mb-6">
             <div className="flex items-center justify-center mb-2">
-              <Mail className="h-5 w-5 text-blue-600 mr-2" />
-              <span className="font-medium text-blue-900">Check Your Email</span>
+              <Mail className="h-5 w-5 text-royal-blue-600 mr-2" />
+              <span className="font-medium text-royal-blue-900">Check Your Email</span>
             </div>
-            <p className="text-sm text-blue-700">
+            <p className="text-sm text-royal-blue-700">
               {t('emailSentInstructions')}{' '}
               <strong>{checkoutInfo?.email || 'your email address'}</strong>
             </p>
@@ -105,7 +105,7 @@ const CheckoutSuccess: React.FC = () => {
           <div className="flex flex-col gap-3">
             <LanguageAwareLink
               to="/courses"
-              className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-all duration-300 flex items-center justify-center transform hover:scale-105"
+              className="w-full bg-royal-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-royal-blue-700 transition-all duration-300 flex items-center justify-center transform hover:scale-105"
             >
               {t('browseMoreCourses')}
               <ArrowRight className="h-4 w-4 ml-2" />

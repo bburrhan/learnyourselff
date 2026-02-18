@@ -54,7 +54,7 @@ const Footer: React.FC = () => {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-6 text-white">Quick Links</h3>
+            <h3 className="text-lg font-semibold mb-6 text-white">{t('quickLinks')}</h3>
             <ul className="space-y-2">
               <li>
                 <LanguageAwareLink to="/courses" className="text-gray-400 hover:text-white transition-colors">
@@ -81,26 +81,26 @@ const Footer: React.FC = () => {
 
           {/* Categories */}
           <div>
-            <h3 className="text-lg font-semibold mb-6 text-white">Categories</h3>
+            <h3 className="text-lg font-semibold mb-6 text-white">{t('categories')}</h3>
             <ul className="space-y-2">
               <li>
                 <LanguageAwareLink to="/courses?category=technology" className="text-gray-400 hover:text-white transition-colors">
-                  Technology
+                  {t('technology')}
                 </LanguageAwareLink>
               </li>
               <li>
                 <LanguageAwareLink to="/courses?category=business" className="text-gray-400 hover:text-white transition-colors">
-                  Business
+                  {t('business')}
                 </LanguageAwareLink>
               </li>
               <li>
                 <LanguageAwareLink to="/courses?category=design" className="text-gray-400 hover:text-white transition-colors">
-                  Design
+                  {t('design')}
                 </LanguageAwareLink>
               </li>
               <li>
                 <LanguageAwareLink to="/courses?category=marketing" className="text-gray-400 hover:text-white transition-colors">
-                  Marketing
+                  {t('marketing')}
                 </LanguageAwareLink>
               </li>
             </ul>
@@ -108,26 +108,21 @@ const Footer: React.FC = () => {
 
           {/* Support */}
           <div>
-            <h3 className="text-lg font-semibold mb-6 text-white">Support</h3>
+            <h3 className="text-lg font-semibold mb-6 text-white">{t('support')}</h3>
             <ul className="space-y-2">
               <li>
-                <LanguageAwareLink to="/help" className="text-gray-400 hover:text-white transition-colors">
-                  {t('helpCenter')}
+                <LanguageAwareLink to="/contact" className="text-gray-400 hover:text-white transition-colors">
+                  {t('contact')}
                 </LanguageAwareLink>
               </li>
               <li>
                 <LanguageAwareLink to="/privacy" className="text-gray-400 hover:text-white transition-colors">
-                  {t('privacy')} Policy
+                  {t('privacy')}
                 </LanguageAwareLink>
               </li>
               <li>
                 <LanguageAwareLink to="/terms" className="text-gray-400 hover:text-white transition-colors">
-                  {t('terms')} of Service
-                </LanguageAwareLink>
-              </li>
-              <li>
-                <LanguageAwareLink to="/refund" className="text-gray-400 hover:text-white transition-colors">
-                  {t('refundPolicy')}
+                  {t('terms')}
                 </LanguageAwareLink>
               </li>
             </ul>

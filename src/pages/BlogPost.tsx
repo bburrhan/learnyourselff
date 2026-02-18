@@ -87,7 +87,7 @@ const BlogPost: React.FC = () => {
           <p className="text-gray-600 mb-4">{error || 'Blog post not found'}</p>
           <LanguageAwareLink
             to="/blog"
-            className="inline-flex items-center text-blue-600 hover:text-blue-700"
+            className="inline-flex items-center text-royal-blue-600 hover:text-royal-blue-700"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Blog
@@ -131,7 +131,7 @@ const BlogPost: React.FC = () => {
             {post.tags?.map((tag, index) => (
               <span
                 key={index}
-                className="inline-flex items-center bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full"
+                className="inline-flex items-center bg-royal-blue-100 text-royal-blue-800 text-xs px-2 py-1 rounded-full"
               >
                 <Tag className="h-3 w-3 mr-1" />
                 #{tag}
@@ -160,7 +160,7 @@ const BlogPost: React.FC = () => {
             </div>
             <button
               onClick={handleShare}
-              className="flex items-center space-x-1 text-blue-600 hover:text-blue-700 transition-colors"
+              className="flex items-center space-x-1 text-royal-blue-600 hover:text-royal-blue-700 transition-colors"
             >
               <Share2 className="h-4 w-4" />
               <span>{t('share')}</span>
@@ -205,14 +205,14 @@ const BlogPost: React.FC = () => {
 
         {/* CTA Section */}
         {post.cta_text && post.cta_link ? (
-          <div className="mt-12 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-6">
+          <div className="mt-12 bg-gradient-to-r from-royal-blue-50 to-royal-blue-100 border border-royal-blue-200 rounded-lg p-6">
             <div
               className="text-gray-800 mb-4"
               dangerouslySetInnerHTML={{ __html: post.cta_text.replace(/\n/g, '<br />') }}
             />
             <LanguageAwareLink
               to={post.cta_link.startsWith('http') ? post.cta_link : post.cta_link}
-              className="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center bg-royal-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-royal-blue-700 transition-colors"
               target={post.cta_link.startsWith('http') ? '_blank' : undefined}
               rel={post.cta_link.startsWith('http') ? 'noopener noreferrer' : undefined}
             >
@@ -221,7 +221,7 @@ const BlogPost: React.FC = () => {
             </LanguageAwareLink>
           </div>
         ) : (
-          <div className="mt-12 bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <div className="mt-12 bg-royal-blue-50 border border-royal-blue-200 rounded-lg p-6">
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
               {t('readyStartLearning')}
             </h3>
@@ -230,7 +230,7 @@ const BlogPost: React.FC = () => {
             </p>
             <LanguageAwareLink
               to="/courses"
-              className="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center bg-royal-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-royal-blue-700 transition-colors"
             >
               {t('browseCoursesBtn')}
               <ArrowLeft className="h-4 w-4 ml-2 rotate-180" />

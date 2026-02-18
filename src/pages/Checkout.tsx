@@ -258,7 +258,7 @@ const Checkout: React.FC = () => {
           <p className="text-gray-600 mb-6">{error}</p>
           <button
             onClick={() => navigate('/courses')}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            className="bg-royal-blue-600 text-white px-6 py-2 rounded-lg hover:bg-royal-blue-700 transition-colors"
           >
             {t('backToCourses')}
           </button>
@@ -302,7 +302,7 @@ const Checkout: React.FC = () => {
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900">{course.title}</h3>
                     <div className="flex items-center gap-2 mt-2">
-                      <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                      <span className="px-2 py-1 bg-royal-blue-100 text-royal-blue-800 text-xs rounded-full">
                         {course.category}
                       </span>
                     </div>
@@ -313,7 +313,7 @@ const Checkout: React.FC = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">{t('coursePrice')}</span>
                     <span className={`text-2xl font-bold ${course.price === 0 ? 'text-green-600' : 'text-gray-900'}`}>
-                      {course.price === 0 ? 'FREE' : `$${course.price} ${course.currency}`}
+                      {course.price === 0 ? 'FREE' : new Intl.NumberFormat('en-US', { style: 'currency', currency: course.currency || 'USD' }).format(course.price)}
                     </span>
                   </div>
                 </div>
@@ -336,7 +336,7 @@ const Checkout: React.FC = () => {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent"
                   placeholder="your@email.com"
                 />
               </div>
@@ -351,7 +351,7 @@ const Checkout: React.FC = () => {
                   required
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent"
                   placeholder={t('fullName')}
                 />
               </div>
@@ -368,7 +368,7 @@ const Checkout: React.FC = () => {
                 className={`w-full text-white py-3 px-4 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2 transform hover:scale-105 ${
                   course?.price === 0 
                     ? 'bg-green-600 hover:bg-green-700' 
-                    : 'bg-blue-600 hover:bg-blue-700'
+                    : 'bg-royal-blue-600 hover:bg-royal-blue-700'
                 }`}
               >
                 {processing ? (

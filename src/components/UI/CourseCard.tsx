@@ -2,7 +2,7 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { Database } from '../../lib/supabase'
 import LanguageAwareLink from '../Layout/LanguageAwareLink'
-import { Star, Clock, Users, FileText, Music, Video } from 'lucide-react'
+import { FileText, Music, Video } from 'lucide-react'
 
 type Course = Database['public']['Tables']['courses']['Row']
 
@@ -84,27 +84,6 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, className = '' }) => {
           <p className="text-gray-600 text-sm mb-2 sm:mb-3 line-clamp-1 sm:line-clamp-2 leading-relaxed">
             {course.description}
           </p>
-
-          <div className="hidden sm:flex items-center justify-between mb-3">
-            <div className="flex items-center space-x-1 text-yellow-500">
-              <Star className="h-3.5 w-3.5 fill-current" />
-              <Star className="h-3.5 w-3.5 fill-current" />
-              <Star className="h-3.5 w-3.5 fill-current" />
-              <Star className="h-3.5 w-3.5 fill-current" />
-              <Star className="h-3.5 w-3.5" />
-              <span className="text-gray-500 text-xs ml-1 font-medium">(4.2)</span>
-            </div>
-            <div className="flex items-center space-x-3 text-gray-500 text-xs">
-              <div className="flex items-center">
-                <Clock className="h-3.5 w-3.5 mr-1" />
-                <span>2-3h</span>
-              </div>
-              <div className="flex items-center">
-                <Users className="h-3.5 w-3.5 mr-1" />
-                <span>124</span>
-              </div>
-            </div>
-          </div>
 
           <div className="hidden sm:flex flex-wrap gap-1.5 mb-3">
             {course.tags?.slice(0, 3).map((tag, index) => (

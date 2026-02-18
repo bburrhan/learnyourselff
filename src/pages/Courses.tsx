@@ -6,7 +6,7 @@ import { Search, Filter, X, AlertCircle } from 'lucide-react'
 import { useCourses } from '../hooks/useCourses'
 import { supabase } from '../lib/supabase'
 import CourseCard from '../components/UI/CourseCard'
-import LoadingSpinner from '../components/UI/LoadingSpinner'
+import { CourseCardSkeleton } from '../components/UI/Skeleton'
 
 const Courses: React.FC = () => {
   const { t } = useTranslation()
@@ -77,7 +77,14 @@ const Courses: React.FC = () => {
     setSearchParams({})
   }
 
-  const languages = ['all', 'en', 'tr', 'es', 'fr']
+  const languages = ['all', 'en', 'tr', 'tl', 'hi']
+
+  const languageLabels: Record<string, string> = {
+    en: 'English',
+    tr: 'Turkce',
+    tl: 'Filipino',
+    hi: 'Hindi',
+  }
 
   const hasActiveFilters = searchTerm || selectedCategory !== 'all' || selectedLanguage !== 'all'
 
@@ -157,7 +164,7 @@ const Courses: React.FC = () => {
                   <option value="all">{t('allLanguages')}</option>
                   {languages.slice(1).map((language) => (
                     <option key={language} value={language}>
-                      {language.toUpperCase()}
+                      {languageLabels[language] || language.toUpperCase()}
                     </option>
                   ))}
                 </select>
@@ -224,8 +231,10 @@ const Courses: React.FC = () => {
 
         {/* Loading State */}
         {loading && (
-          <div className="flex justify-center py-16">
-            <LoadingSpinner size="lg" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-12">
+            {[...Array(4)].map((_, i) => (
+              <CourseCardSkeleton key={i} />
+            ))}
           </div>
         )}
 

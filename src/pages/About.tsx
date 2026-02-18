@@ -14,12 +14,12 @@ const About: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-600 to-purple-700 text-white py-20">
+      <section className="bg-gradient-to-br from-royal-blue-600 to-purple-700 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
             About LearnYourself
           </h1>
-          <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto">
+          <p className="text-xl md:text-2xl text-royal-blue-100 mb-8 max-w-3xl mx-auto">
             We believe that everyone deserves access to quality education, regardless of their economic situation or location.
           </p>
         </div>
@@ -40,8 +40,8 @@ const About: React.FC = () => {
 
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
-                <Target className="h-8 w-8 text-blue-600" />
+              <div className="bg-royal-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
+                <Target className="h-8 w-8 text-royal-blue-600" />
               </div>
               <h3 className="text-xl font-semibold mb-4">Accessibility</h3>
               <p className="text-gray-600">
@@ -131,7 +131,7 @@ const About: React.FC = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="text-center">
-              <BookOpen className="h-12 w-12 text-blue-400 mx-auto mb-4" />
+              <BookOpen className="h-12 w-12 text-royal-blue-400 mx-auto mb-4" />
               <h3 className="text-xl font-semibold mb-2">Education First</h3>
               <p className="text-gray-300 text-sm">
                 We prioritize educational value over profit, ensuring every course delivers genuine learning outcomes.
@@ -206,7 +206,7 @@ const About: React.FC = () => {
                   loading="lazy"
                 />
                 <h3 className="text-xl font-semibold text-gray-900 mb-1">{member.name}</h3>
-                <p className="text-blue-600 font-medium mb-2">{member.role}</p>
+                <p className="text-royal-blue-600 font-medium mb-2">{member.role}</p>
                 <p className="text-gray-600 text-sm">{member.bio}</p>
               </div>
             ))}
@@ -215,7 +215,7 @@ const About: React.FC = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-blue-50">
+      <section className="py-16 bg-royal-blue-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             Join Our Mission
@@ -231,7 +231,7 @@ const About: React.FC = () => {
                 e.preventDefault()
                 window.location.href = '/courses'
               }}
-              className="inline-flex items-center justify-center px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center justify-center px-8 py-3 bg-royal-blue-600 text-white rounded-lg font-semibold hover:bg-royal-blue-700 transition-colors"
             >
               Start Learning Today
             </a>
@@ -241,7 +241,7 @@ const About: React.FC = () => {
                 e.preventDefault()
                 window.location.href = '/contact'
               }}
-              className="inline-flex items-center justify-center px-8 py-3 border-2 border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-600 hover:text-white transition-colors"
+              className="inline-flex items-center justify-center px-8 py-3 border-2 border-royal-blue-600 text-royal-blue-600 rounded-lg font-semibold hover:bg-royal-blue-600 hover:text-white transition-colors"
             >
               Get in Touch
             </a>

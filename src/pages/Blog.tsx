@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { supabase, Database } from '../lib/supabase'
-import LoadingSpinner from '../components/UI/LoadingSpinner'
+import { BlogCardSkeleton } from '../components/UI/Skeleton'
 import LanguageAwareLink from '../components/Layout/LanguageAwareLink'
 import { Calendar, User, Tag, ArrowRight } from 'lucide-react'
 import { format } from 'date-fns'
@@ -45,8 +45,18 @@ const Blog: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <LoadingSpinner size="lg" />
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <div className="h-10 w-32 bg-gray-200 rounded animate-pulse mx-auto mb-4" />
+            <div className="h-5 w-64 bg-gray-200 rounded animate-pulse mx-auto" />
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[...Array(6)].map((_, i) => (
+              <BlogCardSkeleton key={i} />
+            ))}
+          </div>
+        </div>
       </div>
     )
   }
@@ -89,14 +99,14 @@ const Blog: React.FC = () => {
                 </div>
                 <div className="md:w-1/2 p-8">
                   <div className="flex items-center mb-4">
-                    <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium">
+                    <span className="bg-royal-blue-100 text-royal-blue-800 text-xs px-2 py-1 rounded-full font-medium">
                       {t('featured')}
                     </span>
                   </div>
                   <h2 className="text-2xl font-bold text-gray-900 mb-4">
                     <LanguageAwareLink
                       to={`/blog/${posts[0].slug}`}
-                      className="hover:text-blue-600 transition-colors"
+                      className="hover:text-royal-blue-600 transition-colors"
                     >
                       {posts[0].title}
                     </LanguageAwareLink>
@@ -117,7 +127,7 @@ const Blog: React.FC = () => {
                     </div>
                     <LanguageAwareLink
                       to={`/blog/${posts[0].slug}`}
-                      className="text-blue-600 hover:text-blue-700 font-medium flex items-center"
+                      className="text-royal-blue-600 hover:text-royal-blue-700 font-medium flex items-center"
                     >
                       {t('readMore')}
                       <ArrowRight className="h-4 w-4 ml-1" />
@@ -162,7 +172,7 @@ const Blog: React.FC = () => {
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">
                   <LanguageAwareLink
                     to={`/blog/${post.slug}`}
-                    className="hover:text-blue-600 transition-colors"
+                    className="hover:text-royal-blue-600 transition-colors"
                   >
                     {post.title}
                   </LanguageAwareLink>

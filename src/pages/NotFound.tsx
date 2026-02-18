@@ -36,7 +36,7 @@ const NotFound: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <LanguageAwareLink
               to="/"
-              className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+              className="inline-flex items-center justify-center px-6 py-3 bg-royal-blue-600 text-white rounded-lg hover:bg-royal-blue-700 transition-colors font-semibold"
             >
               <Home className="h-4 w-4 mr-2" />
               {t('goHome')}
@@ -44,7 +44,7 @@ const NotFound: React.FC = () => {
             
             <LanguageAwareLink
               to="/courses"
-              className="inline-flex items-center justify-center px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-colors font-semibold"
+              className="inline-flex items-center justify-center px-6 py-3 border-2 border-royal-blue-600 text-royal-blue-600 rounded-lg hover:bg-royal-blue-600 hover:text-white transition-colors font-semibold"
             >
               <BookOpen className="h-4 w-4 mr-2" />
               {t('browseCoursesBtn')}
@@ -66,25 +66,25 @@ const NotFound: React.FC = () => {
           <div className="grid grid-cols-2 gap-4 text-sm">
             <LanguageAwareLink
               to="/courses"
-              className="text-gray-600 hover:text-blue-600 transition-colors"
+              className="text-gray-600 hover:text-royal-blue-600 transition-colors"
             >
               {t('allCourses')}
             </LanguageAwareLink>
             <LanguageAwareLink
               to="/blog"
-              className="text-gray-600 hover:text-blue-600 transition-colors"
+              className="text-gray-600 hover:text-royal-blue-600 transition-colors"
             >
               {t('blog')}
             </LanguageAwareLink>
             <LanguageAwareLink
               to="/about"
-              className="text-gray-600 hover:text-blue-600 transition-colors"
+              className="text-gray-600 hover:text-royal-blue-600 transition-colors"
             >
               {t('about')}
             </LanguageAwareLink>
             <LanguageAwareLink
               to="/contact"
-              className="text-gray-600 hover:text-blue-600 transition-colors"
+              className="text-gray-600 hover:text-royal-blue-600 transition-colors"
             >
               {t('contact')}
             </LanguageAwareLink>

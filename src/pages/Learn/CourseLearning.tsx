@@ -124,7 +124,7 @@ const CourseLearning: React.FC = () => {
           <h2 className="text-xl font-semibold text-gray-900 mb-2">{t('courseNotFound')}</h2>
           <button
             onClick={() => navigate(createLanguageLink('/courses'))}
-            className="text-blue-600 hover:text-blue-700"
+            className="text-royal-blue-600 hover:text-royal-blue-700"
           >
             {t('backToCourses')}
           </button>
@@ -141,7 +141,7 @@ const CourseLearning: React.FC = () => {
           <p className="text-gray-600 mb-4">You need to purchase this course to access the content.</p>
           <button
             onClick={() => navigate(createLanguageLink(`/course/${courseId}`))}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 bg-royal-blue-600 text-white rounded-lg hover:bg-royal-blue-700 transition-colors"
           >
             {t('backToCourse')}
           </button>
@@ -170,7 +170,7 @@ const CourseLearning: React.FC = () => {
               <div className="text-sm text-gray-500">{overallPercent}% complete</div>
               <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-blue-600 rounded-full transition-all duration-500"
+                  className="h-full bg-royal-blue-600 rounded-full transition-all duration-500"
                   style={{ width: `${overallPercent}%` }}
                 />
               </div>
@@ -198,7 +198,7 @@ const CourseLearning: React.FC = () => {
                       key={item.id}
                       onClick={() => setActiveContentId(item.id)}
                       className={`w-full text-left p-3 flex items-start gap-3 transition-colors ${
-                        isActive ? 'bg-blue-50 border-l-2 border-blue-600' : 'hover:bg-gray-50 border-l-2 border-transparent'
+                        isActive ? 'bg-royal-blue-50 border-l-2 border-royal-blue-600' : 'hover:bg-gray-50 border-l-2 border-transparent'
                       }`}
                     >
                       <div className={`mt-0.5 flex-shrink-0 ${isComplete ? 'text-green-500' : 'text-gray-400'}`}>
@@ -209,7 +209,7 @@ const CourseLearning: React.FC = () => {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className={`text-sm truncate ${isActive ? 'font-medium text-blue-900' : 'text-gray-700'}`}>
+                        <p className={`text-sm truncate ${isActive ? 'font-medium text-royal-blue-900' : 'text-gray-700'}`}>
                           {item.title}
                         </p>
                         <div className="flex items-center gap-2 mt-0.5">
@@ -224,7 +224,7 @@ const CourseLearning: React.FC = () => {
                         {progress && !isComplete && progress.progress_percent > 0 && (
                           <div className="w-full h-1 bg-gray-200 rounded-full mt-1.5">
                             <div
-                              className="h-full bg-blue-500 rounded-full"
+                              className="h-full bg-royal-blue-500 rounded-full"
                               style={{ width: `${progress.progress_percent}%` }}
                             />
                           </div>
@@ -293,8 +293,8 @@ const ContentViewer: React.FC<ContentViewerProps> = ({
     return (
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
         <div className="text-center max-w-md mx-auto">
-          <div className="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
-            <FileText className="h-10 w-10 text-blue-600" />
+          <div className="w-20 h-20 bg-royal-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <FileText className="h-10 w-10 text-royal-blue-600" />
           </div>
           <h3 className="text-xl font-semibold text-gray-900 mb-2">{content.title}</h3>
           <p className="text-gray-500 mb-6">
@@ -302,7 +302,7 @@ const ContentViewer: React.FC<ContentViewerProps> = ({
           </p>
           <button
             onClick={() => onDownload(content)}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-royal-blue-600 text-white rounded-lg hover:bg-royal-blue-700 transition-colors"
           >
             <Download className="h-5 w-5" />
             Download PDF

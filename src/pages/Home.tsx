@@ -2,21 +2,20 @@ import React from 'react'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCourses } from '../hooks/useCourses'
-import LoadingSpinner from '../components/UI/LoadingSpinner'
+import { HomeCourseCardSkeleton } from '../components/UI/Skeleton'
 import LanguageAwareLink from '../components/Layout/LanguageAwareLink'
 import { 
-  ArrowRight, 
-  Clock, 
-  DollarSign, 
-  Sparkles, 
+  ArrowRight,
+  DollarSign,
+  Sparkles,
   Star,
   CheckCircle,
   Play,
+  Clock,
   Users,
   TrendingUp,
   Heart,
   Briefcase,
-  Brain,
   Baby,
   Zap
 } from 'lucide-react'
@@ -52,11 +51,11 @@ const Home: React.FC = () => {
     { titleKey: "saveMoney", icon: DollarSign, color: "bg-emerald-100 text-emerald-600" },
     { titleKey: "makeExtraIncome", icon: TrendingUp, color: "bg-royal-blue-100 text-royal-blue-600" },
     { titleKey: "feelLessStressed", icon: Heart, color: "bg-pink-100 text-pink-600" },
-    { titleKey: "nailJobInterviews", icon: Briefcase, color: "bg-purple-100 text-purple-600" },
+    { titleKey: "nailJobInterviews", icon: Briefcase, color: "bg-sky-100 text-sky-600" },
     { titleKey: "boostDigitalSkills", icon: Zap, color: "bg-yellow-100 text-yellow-600" },
     { titleKey: "organizeLifeFaster", icon: CheckCircle, color: "bg-green-100 text-green-600" },
     { titleKey: "parentSmarter", icon: Baby, color: "bg-orange-100 text-orange-600" },
-    { titleKey: "unlockOpportunities", icon: Star, color: "bg-indigo-100 text-indigo-600" }
+    { titleKey: "unlockOpportunities", icon: Star, color: "bg-teal-100 text-teal-600" }
   ]
 
   // Get first 3 affordable courses for sample section
@@ -274,8 +273,10 @@ const Home: React.FC = () => {
           </div>
 
           {sampleLoading ? (
-            <div className="flex justify-center py-8">
-              <LoadingSpinner size="lg" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[...Array(3)].map((_, i) => (
+                <HomeCourseCardSkeleton key={i} />
+              ))}
             </div>
           ) : displaySampleCourses.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -285,7 +286,7 @@ const Home: React.FC = () => {
                   to={`/course/${course.id}`}
                   className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden flex flex-col"
                 >
-                  <div className="aspect-[3/4] overflow-hidden">
+                  <div className="aspect-[4/3] sm:aspect-[3/4] overflow-hidden">
                     <img
                       src={course.cover_image_url || 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg'}
                       alt={course.title}
@@ -294,15 +295,12 @@ const Home: React.FC = () => {
                     />
                   </div>
                   <div className="p-5 flex flex-col flex-1">
-                    <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center mb-3">
                       <span className="bg-royal-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">
                         {new Intl.NumberFormat('en-US', {
                           style: 'currency',
                           currency: course.currency || 'USD',
                         }).format(course.price)}
-                      </span>
-                      <span className="bg-warm-orange-100 text-warm-orange-800 px-3 py-1 rounded-full text-sm font-medium">
-                        2-3h
                       </span>
                     </div>
                     <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-royal-blue-600 transition-colors line-clamp-2">
@@ -323,21 +321,14 @@ const Home: React.FC = () => {
             </div>
           ) : (
             <div className="text-center py-8">
-              <p className="text-gray-600">No courses available at the moment.</p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
-                <LanguageAwareLink
-                  to="/courses"
-                  className="inline-flex items-center justify-center px-8 py-4 bg-warm-orange-500 text-white rounded-xl font-bold text-lg hover:bg-warm-orange-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-                >
-                  {t('startYourTransformation')}
-                </LanguageAwareLink>
-                <LanguageAwareLink
-                  to="/courses"
-                  className="inline-flex items-center justify-center px-8 py-4 border-2 border-warm-orange-500 text-warm-orange-600 rounded-xl font-semibold text-lg hover:bg-warm-orange-500 hover:text-white transition-all duration-300"
-                >
-                  {t('browseCourses')}
-                </LanguageAwareLink>
-              </div>
+              <p className="text-gray-600 mb-6">{t('noCourses')}</p>
+              <LanguageAwareLink
+                to="/courses"
+                className="inline-flex items-center justify-center px-8 py-4 bg-warm-orange-500 text-white rounded-xl font-bold text-lg hover:bg-warm-orange-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              >
+                {t('browseCourses')}
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </LanguageAwareLink>
             </div>
           )}
         </div>

@@ -19,16 +19,31 @@ const Header: React.FC = () => {
   const location = useLocation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [langDropdownOpen, setLangDropdownOpen] = useState(false)
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false)
   const langRef = useRef<HTMLDivElement>(null)
+  const userRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (langRef.current && !langRef.current.contains(e.target as Node)) {
         setLangDropdownOpen(false)
       }
+      if (userRef.current && !userRef.current.contains(e.target as Node)) {
+        setUserDropdownOpen(false)
+      }
+    }
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setLangDropdownOpen(false)
+        setUserDropdownOpen(false)
+      }
     }
     document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleEscape)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleEscape)
+    }
   }, [])
 
   const changeLanguage = (code: string) => {
@@ -88,6 +103,9 @@ const Header: React.FC = () => {
             <div className="relative" ref={langRef}>
               <button
                 onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+                aria-expanded={langDropdownOpen}
+                aria-haspopup="listbox"
+                aria-label="Select language"
                 className="flex items-center space-x-1.5 text-gray-700 hover:text-royal-blue-600 transition-colors px-3 py-2 rounded-lg hover:bg-gray-50"
               >
                 <span className="text-base leading-none">{currentLang.flag}</span>
@@ -115,33 +133,43 @@ const Header: React.FC = () => {
             </div>
 
             {user ? (
-              <div className="relative group">
-                <button className="flex items-center space-x-2 text-gray-700 hover:text-royal-blue-600 px-3 py-2 rounded-lg hover:bg-gray-50 transition-all">
+              <div className="relative" ref={userRef}>
+                <button
+                  onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                  aria-expanded={userDropdownOpen}
+                  aria-haspopup="true"
+                  className="flex items-center space-x-2 text-gray-700 hover:text-royal-blue-600 px-3 py-2 rounded-lg hover:bg-gray-50 transition-all"
+                >
                   <User className="h-5 w-5" />
                   <span className="text-sm font-medium truncate max-w-32">{user.email}</span>
+                  <ChevronDown className={`h-3.5 w-3.5 transition-transform ${userDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border border-gray-100">
-                  <LanguageAwareLink
-                    to="/dashboard"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                  >
-                    {t('dashboard')}
-                  </LanguageAwareLink>
-                  {user?.app_metadata?.role === 'admin' && (
+                {userDropdownOpen && (
+                  <div className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg py-2 border border-gray-100 z-50">
                     <LanguageAwareLink
-                      to="/admin"
+                      to="/dashboard"
+                      onClick={() => setUserDropdownOpen(false)}
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                     >
-                      {t('admin')}
+                      {t('dashboard')}
                     </LanguageAwareLink>
-                  )}
-                  <button
-                    onClick={handleSignOut}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                  >
-                    {t('logout')}
-                  </button>
-                </div>
+                    {user?.app_metadata?.role === 'admin' && (
+                      <LanguageAwareLink
+                        to="/admin"
+                        onClick={() => setUserDropdownOpen(false)}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      >
+                        {t('admin')}
+                      </LanguageAwareLink>
+                    )}
+                    <button
+                      onClick={() => { setUserDropdownOpen(false); handleSignOut(); }}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      {t('logout')}
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="flex items-center space-x-2">
@@ -163,6 +191,8 @@ const Header: React.FC = () => {
 
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-expanded={mobileMenuOpen}
+            aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
             className="md:hidden p-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
           >
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}

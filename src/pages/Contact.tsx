@@ -88,7 +88,7 @@ const Contact: React.FC = () => {
               <div className="space-y-6">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
-                    <Mail className="h-6 w-6 text-blue-600" />
+                    <Mail className="h-6 w-6 text-royal-blue-600" />
                   </div>
                   <div className="ml-3">
                     <p className="text-sm font-medium text-gray-900">{t('email')}</p>
@@ -99,7 +99,7 @@ const Contact: React.FC = () => {
 
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
-                    <Phone className="h-6 w-6 text-blue-600" />
+                    <Phone className="h-6 w-6 text-royal-blue-600" />
                   </div>
                   <div className="ml-3">
                     <p className="text-sm font-medium text-gray-900">{t('phone')}</p>
@@ -109,7 +109,7 @@ const Contact: React.FC = () => {
 
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
-                    <MapPin className="h-6 w-6 text-blue-600" />
+                    <MapPin className="h-6 w-6 text-royal-blue-600" />
                   </div>
                   <div className="ml-3">
                     <p className="text-sm font-medium text-gray-900">{t('office')}</p>
@@ -131,7 +131,7 @@ const Contact: React.FC = () => {
               <div className="space-y-4">
                 <div>
                   <h4 className="text-sm font-medium text-gray-900 flex items-center">
-                    <HelpCircle className="h-4 w-4 mr-2 text-blue-600" />
+                    <HelpCircle className="h-4 w-4 mr-2 text-royal-blue-600" />
                     {t('howDownloadCourse')}
                   </h4>
                   <p className="text-sm text-gray-600 ml-6 mt-1">
@@ -140,7 +140,7 @@ const Contact: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="text-sm font-medium text-gray-900 flex items-center">
-                    <HelpCircle className="h-4 w-4 mr-2 text-blue-600" />
+                    <HelpCircle className="h-4 w-4 mr-2 text-royal-blue-600" />
                     {t('refundPolicy')}
                   </h4>
                   <p className="text-sm text-gray-600 ml-6 mt-1">
@@ -149,7 +149,7 @@ const Contact: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="text-sm font-medium text-gray-900 flex items-center">
-                    <HelpCircle className="h-4 w-4 mr-2 text-blue-600" />
+                    <HelpCircle className="h-4 w-4 mr-2 text-royal-blue-600" />
                     {t('offerCertificates')}
                   </h4>
                   <p className="text-sm text-gray-600 ml-6 mt-1">
@@ -176,7 +176,7 @@ const Contact: React.FC = () => {
                     <input
                       {...register('name')}
                       type="text"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent"
                       placeholder="Your full name"
                     />
                     {errors.name && (
@@ -191,7 +191,7 @@ const Contact: React.FC = () => {
                     <input
                       {...register('email')}
                       type="email"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent"
                       placeholder="your@email.com"
                     />
                     {errors.email && (
@@ -207,7 +207,7 @@ const Contact: React.FC = () => {
                   <input
                     {...register('subject')}
                     type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent"
                     placeholder="What is this regarding?"
                   />
                   {errors.subject && (
@@ -222,7 +222,7 @@ const Contact: React.FC = () => {
                   <textarea
                     {...register('message')}
                     rows={6}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent"
                     placeholder="Please provide details about your inquiry..."
                   />
                   {errors.message && (
@@ -233,7 +233,7 @@ const Contact: React.FC = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-semibold"
+                  className="w-full flex items-center justify-center px-6 py-3 bg-royal-blue-600 text-white rounded-md hover:bg-royal-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-semibold"
                 >
                   {loading ? (
                     t('sendingMessage')
@@ -256,12 +256,12 @@ const Contact: React.FC = () => {
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="bg-white rounded-lg shadow-md p-6">
-              <MessageCircle className="h-12 w-12 text-blue-600 mx-auto mb-4" />
+              <MessageCircle className="h-12 w-12 text-royal-blue-600 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('liveChat')}</h3>
               <p className="text-gray-600 text-sm mb-4">
                 {t('getLiveChat')}
               </p>
-              <button className="text-blue-600 hover:text-blue-700 font-medium">
+              <button className="text-royal-blue-600 hover:text-royal-blue-700 font-medium">
                 {t('startChat')}
               </button>
             </div>

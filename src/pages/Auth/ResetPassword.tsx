@@ -87,7 +87,7 @@ const ResetPassword: React.FC = () => {
           </p>
           <LanguageAwareLink
             to="/forgot-password"
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            className="bg-royal-blue-600 text-white px-6 py-2 rounded-lg hover:bg-royal-blue-700 transition-colors"
           >
             Request New Reset Link
           </LanguageAwareLink>
