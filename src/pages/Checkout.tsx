@@ -163,7 +163,8 @@ const Checkout: React.FC = () => {
 
         logger.info('Free course purchase record created', { purchaseId: purchaseResult.id })
 
-        // Send course materials via edge function
+        const courseUrl = `${window.location.origin}/${i18n.language}/learn/${course.id}`
+
         const emailResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-course-email`, {
           method: 'POST',
           headers: {
@@ -176,7 +177,7 @@ const Checkout: React.FC = () => {
             fullName: formData.fullName,
             courseTitle: course.title,
             courseId: course.id,
-            pdfUrl: course.pdf_url,
+            courseUrl,
             isFree: true,
             language: i18n.language,
           }),

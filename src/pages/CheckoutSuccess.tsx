@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import LanguageAwareLink from '../components/Layout/LanguageAwareLink'
-import { CheckCircle, Download, Mail, ArrowRight } from 'lucide-react'
+import { CheckCircle, BookOpen, Mail, ArrowRight } from 'lucide-react'
 
 const CheckoutSuccess: React.FC = () => {
   const { t } = useTranslation()
@@ -90,16 +90,25 @@ const CheckoutSuccess: React.FC = () => {
             </p>
           </div>
 
-          {/* Download Notice */}
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-            <div className="flex items-center justify-center mb-2">
-              <Download className="h-5 w-5 text-green-600 mr-2" />
-              <span className="font-medium text-green-900">Instant Access</span>
+          {/* Access Course */}
+          {checkoutInfo?.courseId && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+              <div className="flex items-center justify-center mb-2">
+                <BookOpen className="h-5 w-5 text-green-600 mr-2" />
+                <span className="font-medium text-green-900">{t('instantAccess')}</span>
+              </div>
+              <p className="text-sm text-green-700 mb-3">
+                {t('pdfReadyDownload')}
+              </p>
+              <LanguageAwareLink
+                to={`/learn/${checkoutInfo.courseId}`}
+                className="inline-flex items-center justify-center w-full bg-green-600 text-white py-2.5 px-4 rounded-lg font-semibold hover:bg-green-700 transition-all duration-300 transform hover:scale-105"
+              >
+                <BookOpen className="h-4 w-4 mr-2" />
+                {t('startLearning')}
+              </LanguageAwareLink>
             </div>
-            <p className="text-sm text-green-700">
-              {t('pdfReadyDownload')}
-            </p>
-          </div>
+          )}
 
           {/* Actions */}
           <div className="flex flex-col gap-3">

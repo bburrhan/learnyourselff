@@ -1,4 +1,4 @@
-import { createClient } from 'npm:@supabase/supabase-js@2'
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 interface EmailRequest {
   purchaseId: string;
@@ -6,7 +6,7 @@ interface EmailRequest {
   fullName: string;
   courseTitle: string;
   courseId: string;
-  pdfUrl: string;
+  courseUrl: string;
   isFree?: boolean;
   language?: string;
 }
@@ -14,7 +14,7 @@ interface EmailRequest {
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
 };
 
 Deno.serve(async (req: Request) => {
@@ -32,13 +32,12 @@ Deno.serve(async (req: Request) => {
       fullName,
       courseTitle,
       courseId,
-      pdfUrl,
+      courseUrl,
       isFree = false,
       language = 'en'
     }: EmailRequest = await req.json();
 
-    // Validate required fields
-    if (!purchaseId || !email || !courseTitle || !pdfUrl) {
+    if (!purchaseId || !email || !courseTitle || !courseUrl) {
       return new Response(
         JSON.stringify({ error: 'Missing required fields' }),
         {
@@ -48,7 +47,6 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // Get Resend API key from environment
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
     if (!resendApiKey) {
       console.error('RESEND_API_KEY not found in environment variables');
@@ -61,30 +59,28 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // Create email content based on language
     const emailContent = language === 'tr' ? {
-      subject: `${isFree ? 'Ücretsiz Kurs' : 'Kurs Satın Alımı'} - ${courseTitle}`,
-      greeting: `Merhaba ${fullName || 'Değerli Öğrenci'},`,
-      thankYou: isFree 
-        ? `${courseTitle} adlı ücretsiz kursa kaydolduğunuz için teşekkür ederiz!`
-        : `${courseTitle} adlı kursu satın aldığınız için teşekkür ederiz!`,
-      accessInfo: 'Kurs materyallerinize aşağıdaki bağlantıdan erişebilirsiniz:',
-      downloadButton: 'Kursu İndir',
-      supportInfo: 'Herhangi bir sorunuz varsa, support@learnyourself.co adresinden bize ulaşabilirsiniz.',
-      regards: 'Saygılarımızla,<br>LearnYourself Ekibi'
+      subject: `${isFree ? 'Ucretsiz Kurs' : 'Kurs Satin Alimi'} - ${courseTitle}`,
+      greeting: `Merhaba ${fullName || 'Degerli Ogrenci'},`,
+      thankYou: isFree
+        ? `${courseTitle} adli ucretsiz kursa kaydoldugunuz icin tesekkur ederiz!`
+        : `${courseTitle} adli kursu satin aldiginiz icin tesekkur ederiz!`,
+      accessInfo: 'Kurs materyallerinize asagidaki baglantidan erisebilirsiniz:',
+      accessButton: 'Kursa Eris',
+      supportInfo: 'Herhangi bir sorunuz varsa, support@learnyourself.co adresinden bize ulasabilirsiniz.',
+      regards: 'Saygilarimizla,<br>LearnYourself Ekibi'
     } : {
       subject: `${isFree ? 'Free Course' : 'Course Purchase'} - ${courseTitle}`,
       greeting: `Hello ${fullName || 'Valued Student'},`,
-      thankYou: isFree 
+      thankYou: isFree
         ? `Thank you for enrolling in the free course: ${courseTitle}!`
         : `Thank you for purchasing: ${courseTitle}!`,
       accessInfo: 'You can access your course materials using the link below:',
-      downloadButton: 'Download Course',
+      accessButton: 'Access Course',
       supportInfo: 'If you have any questions, please contact us at support@learnyourself.co',
       regards: 'Best regards,<br>The LearnYourself Team'
     };
 
-    // Create HTML email template
     const htmlContent = `
       <!DOCTYPE html>
       <html>
@@ -95,10 +91,10 @@ Deno.serve(async (req: Request) => {
         <style>
           body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: linear-gradient(135deg, #3B82F6, #8B5CF6); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+          .header { background: linear-gradient(135deg, #2563EB, #1D4ED8); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
           .content { background: white; padding: 30px; border: 1px solid #e5e7eb; }
           .footer { background: #f9fafb; padding: 20px; text-align: center; border-radius: 0 0 8px 8px; border: 1px solid #e5e7eb; border-top: none; }
-          .button { display: inline-block; background: #10B981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 20px 0; }
+          .button { display: inline-block; background: #10B981; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 20px 0; font-size: 16px; }
           .course-info { background: #f3f4f6; padding: 20px; border-radius: 6px; margin: 20px 0; }
           .logo { font-size: 24px; font-weight: bold; margin-bottom: 10px; }
         </style>
@@ -109,37 +105,36 @@ Deno.serve(async (req: Request) => {
             <div class="logo">LearnYourself</div>
             <h1>${emailContent.subject}</h1>
           </div>
-          
+
           <div class="content">
             <p>${emailContent.greeting}</p>
-            
+
             <p>${emailContent.thankYou}</p>
-            
+
             <div class="course-info">
               <h3>${courseTitle}</h3>
-              <p><strong>${language === 'tr' ? 'Satın Alma ID' : 'Purchase ID'}:</strong> ${purchaseId}</p>
-              ${isFree ? `<p><strong>${language === 'tr' ? 'Kurs Türü' : 'Course Type'}:</strong> ${language === 'tr' ? 'Ücretsiz' : 'Free'}</p>` : ''}
+              <p><strong>${language === 'tr' ? 'Satin Alma ID' : 'Purchase ID'}:</strong> ${purchaseId}</p>
+              ${isFree ? `<p><strong>${language === 'tr' ? 'Kurs Turu' : 'Course Type'}:</strong> ${language === 'tr' ? 'Ucretsiz' : 'Free'}</p>` : ''}
             </div>
-            
+
             <p>${emailContent.accessInfo}</p>
-            
+
             <div style="text-align: center;">
-              <a href="${pdfUrl}" class="button">${emailContent.downloadButton}</a>
+              <a href="${courseUrl}" class="button">${emailContent.accessButton}</a>
             </div>
-            
+
             <p><small>${emailContent.supportInfo}</small></p>
           </div>
-          
+
           <div class="footer">
             <p>${emailContent.regards}</p>
-            <p><small>© 2025 LearnYourself.co - ${language === 'tr' ? 'Tüm hakları saklıdır' : 'All rights reserved'}</small></p>
+            <p><small>&copy; 2025 LearnYourself.co - ${language === 'tr' ? 'Tum haklari saklidir' : 'All rights reserved'}</small></p>
           </div>
         </div>
       </body>
       </html>
     `;
 
-    // Send email using Resend API
     const emailPayload = {
       from: 'LearnYourself <noreply@learnyourself.co>',
       to: [email],
@@ -148,7 +143,7 @@ Deno.serve(async (req: Request) => {
     };
 
     console.log('Sending email via Resend API to:', email);
-    
+
     const resendResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -168,8 +163,8 @@ Deno.serve(async (req: Request) => {
     console.log('Email sent successfully via Resend:', resendResult);
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
+      JSON.stringify({
+        success: true,
         message: 'Course email sent successfully',
         purchaseId,
         emailId: resendResult.id
@@ -181,9 +176,9 @@ Deno.serve(async (req: Request) => {
 
   } catch (error) {
     console.error('Error sending course email:', error);
-    
+
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         error: 'Failed to send course email',
         details: error instanceof Error ? error.message : 'Unknown error'
       }),
