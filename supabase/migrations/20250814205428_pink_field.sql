@@ -49,7 +49,7 @@ INSERT INTO courses (
 ),
 (
   'Make Your First $10 Online',
-  'Perfect for beginners—no tech skills needed. Discover simple ways to earn your first income online using just your smartphone or computer.',
+  'Perfect for beginners, no tech skills needed. Discover simple ways to earn your first income online using just your smartphone or computer.',
   4.99,
   'USD',
   'online-income',
