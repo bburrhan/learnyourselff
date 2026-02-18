@@ -29,32 +29,25 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, className = '' }) => {
       to={`/course/${course.id}`}
       className={`block bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group transform hover:-translate-y-1 ${className}`}
     >
-      <div className="flex flex-col sm:flex-row h-full">
-        <div className="relative flex-shrink-0 w-full sm:w-40 md:w-44">
-          <div className="aspect-[3/4] sm:h-full">
-            <img
-              src={course.cover_image_url}
-              alt={course.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              loading="lazy"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                if (target.src !== 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg') {
-                  target.src = 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg';
-                }
-              }}
-            />
-            <div className="absolute top-3 left-3 sm:hidden">
-              <span className="bg-royal-blue-600 text-white px-2.5 py-1 rounded-md text-sm font-bold shadow-sm">
-                {formatPrice(course.price, course.currency)}
-              </span>
-            </div>
-          </div>
+      <div className="flex flex-row h-full">
+        <div className="relative flex-shrink-0 w-28 sm:w-40 md:w-44 overflow-hidden">
+          <img
+            src={course.cover_image_url}
+            alt={course.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            loading="lazy"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              if (target.src !== 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg') {
+                target.src = 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg';
+              }
+            }}
+          />
         </div>
 
-        <div className="flex-1 p-4 sm:p-5 flex flex-col min-w-0">
-          <div className="hidden sm:block mb-2">
-            <span className="bg-royal-blue-600 text-white px-2.5 py-1 rounded-md text-sm font-bold">
+        <div className="flex-1 p-3 sm:p-5 flex flex-col min-w-0">
+          <div className="mb-2">
+            <span className="bg-royal-blue-600 text-white px-2.5 py-1 rounded-md text-xs sm:text-sm font-bold">
               {formatPrice(course.price, course.currency)}
             </span>
           </div>
@@ -88,11 +81,11 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, className = '' }) => {
             {course.title}
           </h3>
 
-          <p className="text-gray-600 text-sm mb-3 line-clamp-2 leading-relaxed">
+          <p className="text-gray-600 text-sm mb-2 sm:mb-3 line-clamp-1 sm:line-clamp-2 leading-relaxed">
             {course.description}
           </p>
 
-          <div className="flex items-center justify-between mb-3">
+          <div className="hidden sm:flex items-center justify-between mb-3">
             <div className="flex items-center space-x-1 text-yellow-500">
               <Star className="h-3.5 w-3.5 fill-current" />
               <Star className="h-3.5 w-3.5 fill-current" />
@@ -113,7 +106,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, className = '' }) => {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-1.5 mb-3">
+          <div className="hidden sm:flex flex-wrap gap-1.5 mb-3">
             {course.tags?.slice(0, 3).map((tag, index) => (
               <span
                 key={index}
