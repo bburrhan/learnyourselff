@@ -278,42 +278,47 @@ const Home: React.FC = () => {
               <LoadingSpinner size="lg" />
             </div>
           ) : displaySampleCourses.length > 0 ? (
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {displaySampleCourses.map((course) => (
-                <div key={course.id} className="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-                  <div className="aspect-video mb-4 overflow-hidden rounded-lg">
+                <LanguageAwareLink
+                  key={course.id}
+                  to={`/course/${course.id}`}
+                  className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden flex flex-col"
+                >
+                  <div className="aspect-[3/4] overflow-hidden">
                     <img
                       src={course.cover_image_url || 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg'}
                       alt={course.title}
-                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"
                     />
                   </div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="bg-royal-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">
-                      {new Intl.NumberFormat('en-US', {
-                        style: 'currency',
-                        currency: course.currency || 'USD',
-                      }).format(course.price)}
-                    </span>
-                    <span className="bg-warm-orange-100 text-warm-orange-800 px-3 py-1 rounded-full text-sm font-medium">
-                      2-3h
-                    </span>
+                  <div className="p-5 flex flex-col flex-1">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="bg-royal-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">
+                        {new Intl.NumberFormat('en-US', {
+                          style: 'currency',
+                          currency: course.currency || 'USD',
+                        }).format(course.price)}
+                      </span>
+                      <span className="bg-warm-orange-100 text-warm-orange-800 px-3 py-1 rounded-full text-sm font-medium">
+                        2-3h
+                      </span>
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-royal-blue-600 transition-colors line-clamp-2">
+                      {course.title}
+                    </h3>
+                    <p className="text-gray-600 mb-5 line-clamp-2 leading-relaxed text-sm">
+                      {course.description}
+                    </p>
+                    <div className="mt-auto">
+                      <span className="w-full bg-royal-blue-600 text-white py-3 px-6 rounded-lg font-semibold group-hover:bg-royal-blue-700 transition-all duration-300 flex items-center justify-center">
+                        <Play className="h-4 w-4 mr-2" />
+                        {t('startNow')}
+                      </span>
+                    </div>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">
-                    {course.title}
-                  </h3>
-                  <p className="text-gray-600 mb-6 line-clamp-3 leading-relaxed">
-                    {course.description}
-                  </p>
-                  <LanguageAwareLink
-                    to={`/course/${course.id}`}
-                    className="w-full bg-royal-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-royal-blue-700 transition-all duration-300 flex items-center justify-center transform hover:scale-105"
-                  >
-                    <Play className="h-4 w-4 mr-2" />
-                    {t('startNow')}
-                  </LanguageAwareLink>
-                </div>
+                </LanguageAwareLink>
               ))}
             </div>
           ) : (

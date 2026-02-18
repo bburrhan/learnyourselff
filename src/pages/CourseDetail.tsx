@@ -172,27 +172,54 @@ const CourseDetail: React.FC = () => {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Course Header */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="relative">
-                <img
-                  src={course.cover_image_url}
-                  alt={course.title}
-                  className="w-full h-64 md:h-80 object-cover"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg';
-                  }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                <div className="absolute bottom-6 left-6 right-6">
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    <span className="bg-white/90 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">
+            <div className="bg-white rounded-lg shadow-md overflow-hidden p-6">
+              <div className="flex flex-col sm:flex-row gap-6">
+                <div className="flex-shrink-0 mx-auto sm:mx-0">
+                  <div className="w-48 sm:w-52 rounded-lg overflow-hidden shadow-lg">
+                    <div className="aspect-[3/4]">
+                      <img
+                        src={course.cover_image_url}
+                        alt={course.title}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg';
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="flex-1 flex flex-col justify-center">
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    <span className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">
                       {course.category}
                     </span>
+                    {course.content_types && course.content_types.length > 0 && (
+                      <div className="flex items-center gap-1.5">
+                        {course.content_types.includes('ebook') && (
+                          <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-600 text-xs px-2 py-1 rounded-full font-medium">
+                            <FileText className="h-3.5 w-3.5" /> Ebook
+                          </span>
+                        )}
+                        {course.content_types.includes('audio') && (
+                          <span className="inline-flex items-center gap-1 bg-green-50 text-green-600 text-xs px-2 py-1 rounded-full font-medium">
+                            <Music className="h-3.5 w-3.5" /> Audio
+                          </span>
+                        )}
+                        {course.content_types.includes('video') && (
+                          <span className="inline-flex items-center gap-1 bg-orange-50 text-orange-600 text-xs px-2 py-1 rounded-full font-medium">
+                            <Video className="h-3.5 w-3.5" /> Video
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
-                  <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
                     {course.title}
                   </h1>
+                  <p className="text-gray-600 leading-relaxed line-clamp-4">
+                    {course.description}
+                  </p>
                 </div>
               </div>
             </div>

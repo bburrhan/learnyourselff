@@ -186,25 +186,27 @@ const MyCourses: React.FC = () => {
                   className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-all duration-300 group"
                 >
                   <div className="flex flex-col sm:flex-row">
-                    <div className="sm:w-48 h-32 sm:h-auto flex-shrink-0 relative overflow-hidden">
-                      <img
-                        src={course.cover_image_url}
-                        alt={course.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement
-                          target.src =
-                            'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg'
-                        }}
-                      />
-                      {isComplete && (
-                        <div className="absolute inset-0 bg-green-900/60 flex items-center justify-center">
-                          <div className="text-center text-white">
-                            <CheckCircle2 className="h-8 w-8 mx-auto mb-1" />
-                            <span className="text-xs font-medium">Complete</span>
+                    <div className="flex-shrink-0 relative overflow-hidden w-full sm:w-28">
+                      <div className="aspect-[3/4] sm:h-full">
+                        <img
+                          src={course.cover_image_url}
+                          alt={course.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement
+                            target.src =
+                              'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg'
+                          }}
+                        />
+                        {isComplete && (
+                          <div className="absolute inset-0 bg-green-900/60 flex items-center justify-center">
+                            <div className="text-center text-white">
+                              <CheckCircle2 className="h-8 w-8 mx-auto mb-1" />
+                              <span className="text-xs font-medium">Complete</span>
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
 
                     <div className="flex-1 p-5">

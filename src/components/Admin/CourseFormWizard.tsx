@@ -308,7 +308,7 @@ const CourseFormWizard: React.FC<CourseFormWizardProps> = ({
                   <img
                     src={formData.cover_image_url}
                     alt="Preview"
-                    className="w-32 h-24 object-cover rounded-lg border mt-2"
+                    className="w-24 h-32 object-cover rounded-lg border mt-2 shadow-sm"
                     onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                     onLoad={(e) => { (e.target as HTMLImageElement).style.display = 'block' }}
                   />
@@ -371,7 +371,7 @@ const CourseFormWizard: React.FC<CourseFormWizardProps> = ({
                   <img
                     src={formData.cover_image_url}
                     alt=""
-                    className="w-10 h-10 rounded-lg object-cover"
+                    className="w-8 h-11 rounded object-cover shadow-sm"
                     onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                   />
                 )}

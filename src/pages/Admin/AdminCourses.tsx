@@ -241,7 +241,7 @@ const AdminCourses: React.FC = () => {
                           <img
                             src={course.cover_image_url}
                             alt={course.title}
-                            className="w-10 h-10 rounded-lg object-cover mr-4"
+                            className="w-8 h-11 rounded object-cover mr-4 shadow-sm"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
                               target.src = 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg';
