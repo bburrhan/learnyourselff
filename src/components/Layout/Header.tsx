@@ -1,16 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { User, Globe, Menu, X, ChevronDown } from 'lucide-react'
+import { User, Menu, X, ChevronDown } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 import LanguageAwareLink from './LanguageAwareLink'
 import { getPathWithoutLanguage } from './LanguageRouter'
 
 const LANGUAGES = [
-  { code: 'en', label: 'English', short: 'EN' },
-  { code: 'tr', label: 'Turkce', short: 'TR' },
-  { code: 'tl', label: 'Filipino', short: 'TL' },
-  { code: 'hi', label: 'Hindi', short: 'HI' },
+  { code: 'en', label: 'English', short: 'EN', flag: '\u{1F1FA}\u{1F1F8}' },
+  { code: 'tr', label: 'Turkce', short: 'TR', flag: '\u{1F1F9}\u{1F1F7}' },
+  { code: 'tl', label: 'Filipino', short: 'TL', flag: '\u{1F1F5}\u{1F1ED}' },
+  { code: 'hi', label: 'Hindi', short: 'HI', flag: '\u{1F1EE}\u{1F1F3}' },
 ]
 
 const Header: React.FC = () => {
@@ -90,7 +90,7 @@ const Header: React.FC = () => {
                 onClick={() => setLangDropdownOpen(!langDropdownOpen)}
                 className="flex items-center space-x-1.5 text-gray-700 hover:text-royal-blue-600 transition-colors px-3 py-2 rounded-lg hover:bg-gray-50"
               >
-                <Globe className="h-4 w-4" />
+                <span className="text-base leading-none">{currentLang.flag}</span>
                 <span className="text-sm font-medium">{currentLang.short}</span>
                 <ChevronDown className={`h-3.5 w-3.5 transition-transform ${langDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
@@ -100,13 +100,14 @@ const Header: React.FC = () => {
                     <button
                       key={lang.code}
                       onClick={() => changeLanguage(lang.code)}
-                      className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+                      className={`w-full text-left px-4 py-2 text-sm transition-colors flex items-center space-x-2.5 ${
                         i18n.language === lang.code
                           ? 'bg-royal-blue-50 text-royal-blue-600 font-medium'
                           : 'text-gray-700 hover:bg-gray-50'
                       }`}
                     >
-                      {lang.label}
+                      <span className="text-base leading-none">{lang.flag}</span>
+                      <span>{lang.label}</span>
                     </button>
                   ))}
                 </div>
@@ -197,13 +198,14 @@ const Header: React.FC = () => {
                           changeLanguage(lang.code)
                           setMobileMenuOpen(false)
                         }}
-                        className={`px-3 py-2 text-sm rounded-lg transition-colors text-left ${
+                        className={`px-3 py-2 text-sm rounded-lg transition-colors text-left flex items-center space-x-2 ${
                           i18n.language === lang.code
                             ? 'bg-royal-blue-50 text-royal-blue-600 font-medium'
                             : 'text-gray-700 hover:bg-gray-50'
                         }`}
                       >
-                        {lang.label}
+                        <span className="text-base leading-none">{lang.flag}</span>
+                        <span>{lang.label}</span>
                       </button>
                     ))}
                   </div>
