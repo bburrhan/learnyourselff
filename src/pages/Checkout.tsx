@@ -33,10 +33,18 @@ const Checkout: React.FC = () => {
     fullName: '',
   });
 
-  // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
+
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        email: prev.email || user.email || '',
+        fullName: prev.fullName || user.user_metadata?.full_name || '',
+      }));
+    }
+  }, [user]);
 
   useEffect(() => {
     if (!courseId) {
@@ -334,9 +342,10 @@ const Checkout: React.FC = () => {
                   type="email"
                   id="email"
                   required
+                  readOnly={!!user}
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent"
+                  className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent ${user ? 'bg-gray-50 text-gray-600 cursor-default' : ''}`}
                   placeholder="your@email.com"
                 />
               </div>
