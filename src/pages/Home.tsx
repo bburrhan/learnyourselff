@@ -85,7 +85,7 @@ const Home: React.FC = () => {
           <div className="relative z-10 text-center">
             <div className="w-full">
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-8">
-                {t('heroTitleHome').split(' ').slice(0, -1).join(' ')} <span className="text-yellow-300">{t('heroTitleHome').split(' ').slice(-1)[0]}</span>
+                {t('heroTitleHome').split(' ').slice(0, -1).join(' ')} <span className="text-warm-orange-400">{t('heroTitleHome').split(' ').slice(-1)[0]}</span>
               </h1>
               <p className="text-xl md:text-2xl text-blue-100 mb-10 leading-relaxed max-w-4xl mx-auto">
                 {t('heroSubtitleHome')}
