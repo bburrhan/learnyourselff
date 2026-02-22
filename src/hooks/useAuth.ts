@@ -3,22 +3,22 @@ import { User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 import logger from '../utils/logger'
 import { handleSupabaseError } from '../utils/errorHandler'
-import { nativeApp } from '../lib/nativeBridge'
-import { isNative } from '../utils/platform'
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // Get initial session
     const getSession = async () => {
       try {
         logger.debug('Getting initial session')
         const { data: { session }, error } = await supabase.auth.getSession()
-
+        
         if (error) {
           const errorResult = handleSupabaseError(error, 'getSession')
-
+          
+          // If session is expired or refresh token is invalid, clear the session
           if (errorResult.code === 'SESSION_EXPIRED') {
             logger.info('Session expired, clearing invalid session data')
             await supabase.auth.signOut()
@@ -26,13 +26,14 @@ export const useAuth = () => {
           }
         } else {
           setUser(session?.user ?? null)
-          logger.info('Session retrieved', {
+          logger.info('Session retrieved', { 
             hasUser: !!session?.user,
-            userId: session?.user?.id
+            userId: session?.user?.id 
           })
         }
       } catch (error) {
         logger.error('Failed to get session', { error }, error as Error)
+        // Clear any potentially corrupted session data
         try {
           await supabase.auth.signOut()
           setUser(null)
@@ -46,43 +47,20 @@ export const useAuth = () => {
 
     getSession()
 
+    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        logger.info('Auth state changed', {
-          event,
+      async (event, session) => {
+        logger.info('Auth state changed', { 
+          event, 
           hasUser: !!session?.user,
-          userId: session?.user?.id
+          userId: session?.user?.id 
         })
         setUser(session?.user ?? null)
         setLoading(false)
       }
     )
 
-    let removeUrlListener = () => {}
-    if (isNative()) {
-      removeUrlListener = nativeApp.onUrlOpen((url) => {
-        logger.info('Deep link received', { url })
-        const parsed = new URL(url)
-        const params = new URLSearchParams(parsed.hash.replace('#', '?'))
-        const accessToken = params.get('access_token')
-        const refreshToken = params.get('refresh_token')
-        if (accessToken && refreshToken) {
-          ;(async () => {
-            try {
-              await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken })
-              logger.info('Session set from deep link')
-            } catch (err) {
-              logger.error('Failed to set session from deep link', { err }, err as Error)
-            }
-          })()
-        }
-      })
-    }
-
-    return () => {
-      subscription.unsubscribe()
-      removeUrlListener()
-    }
+    return () => subscription.unsubscribe()
   }, [])
 
   const signIn = async (email: string, password: string) => {

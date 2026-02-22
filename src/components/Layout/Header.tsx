@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { User, Menu, X, ChevronDown } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
-import { isNative } from '../../utils/platform'
 import LanguageAwareLink from './LanguageAwareLink'
 import { getPathWithoutLanguage } from './LanguageRouter'
 
@@ -72,10 +71,7 @@ const Header: React.FC = () => {
   ]
 
   return (
-    <header
-      className="bg-white/95 backdrop-blur-sm shadow-md sticky top-0 z-50 border-b border-gray-100"
-      style={{ paddingTop: isNative() ? 'env(safe-area-inset-top, 0px)' : undefined }}
-    >
+    <header className="bg-white/95 backdrop-blur-sm shadow-md sticky top-0 z-50 border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <LanguageAwareLink to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">

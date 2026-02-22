@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { Play, Pause, Volume2, VolumeX, Maximize, Minimize } from 'lucide-react'
-import { isIOS, isNative } from '../../utils/platform'
 
 interface VideoPlayerProps {
   src: string
@@ -137,13 +136,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   }
 
   const toggleFullscreen = () => {
-    if (isNative() && isIOS() && videoRef.current) {
-      const video = videoRef.current as HTMLVideoElement & { webkitEnterFullscreen?: () => void }
-      if (video.webkitEnterFullscreen) {
-        video.webkitEnterFullscreen()
-        return
-      }
-    }
     if (!containerRef.current) return
     if (isFullscreen) {
       document.exitFullscreen()
@@ -176,8 +168,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         className="w-full aspect-video cursor-pointer"
         onClick={togglePlay}
         preload="metadata"
-        playsInline
-        webkit-playsinline=""
       />
 
       {!playing && (

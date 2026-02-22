@@ -1,10 +1,9 @@
 import React from 'react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Mail, Globe, Heart } from 'lucide-react'
+import { Mail, Globe, Heart, Bug } from 'lucide-react'
 import LanguageAwareLink from './LanguageAwareLink'
 import DebugPanel from '../Debug/DebugPanel'
-import { isNative } from '../../utils/platform'
 
 const Footer: React.FC = () => {
   const { t } = useTranslation()
@@ -24,7 +23,7 @@ const Footer: React.FC = () => {
 
   return (
     <>
-      <footer className={`bg-gray-900 text-white border-t border-gray-800 ${isNative() ? 'pb-20' : ''}`}>
+      <footer className="bg-gray-900 text-white border-t border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
