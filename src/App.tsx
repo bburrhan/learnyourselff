@@ -4,12 +4,16 @@ import { Toaster } from 'react-hot-toast'
 import './lib/i18n'
 import ErrorBoundary from './components/ErrorBoundary'
 import logger from './utils/logger'
+import { isNative } from './utils/platform'
+import { offlineManager } from './services/offlineManager'
 
-// Layout components
 import Header from './components/Layout/Header'
 import Footer from './components/Layout/Footer'
 import { LanguageRouter } from './components/Layout/LanguageRouter'
 import ProtectedRoute from './components/Auth/ProtectedRoute'
+import BottomTabs from './components/Mobile/BottomTabs'
+import NetworkBanner from './components/Mobile/NetworkBanner'
+import { usePushNotifications } from './hooks/usePushNotifications'
 
 // Pages
 import Home from './pages/Home'
@@ -38,20 +42,27 @@ import Terms from './pages/Terms'
 import NotFound from './pages/NotFound'
 
 function App() {
-  // Log app initialization
+  const native = isNative()
+  usePushNotifications()
+
   React.useEffect(() => {
     logger.info('Application initialized', {
       version: '1.0.0',
       environment: import.meta.env.MODE,
+      platform: native ? 'native' : 'web',
       timestamp: new Date().toISOString(),
     })
-  }, [])
+
+    offlineManager.init()
+    return () => offlineManager.destroy()
+  }, [native])
 
   return (
     <ErrorBoundary>
       <Router>
         <LanguageRouter>
-          <div className="min-h-screen bg-gray-50 flex flex-col">
+          <div className={`min-h-screen bg-gray-50 flex flex-col ${native ? 'pb-16' : ''}`}>
+            <NetworkBanner />
             <Header />
             <main className="flex-1">
               <ErrorBoundary>
@@ -150,6 +161,7 @@ function App() {
               </ErrorBoundary>
             </main>
             <Footer />
+            {native && <BottomTabs />}
           </div>
         </LanguageRouter>
         <Toaster

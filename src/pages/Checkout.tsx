@@ -8,6 +8,8 @@ import logger from '../utils/logger';
 import { handleSupabaseError, handleAsyncError } from '../utils/errorHandler';
 import LoadingSpinner from '../components/UI/LoadingSpinner';
 import { ArrowLeft, CreditCard, Shield, Clock, CheckCircle } from 'lucide-react';
+import { nativeBrowser, nativeStorage } from '../lib/nativeBridge';
+import { isNative } from '../utils/platform';
 
 interface Course {
   id: string;
@@ -191,8 +193,7 @@ const Checkout: React.FC = () => {
 
         logger.info('Course email sent successfully', { email: formData.email })
 
-        // Store checkout info for success page
-        localStorage.setItem('checkoutInfo', JSON.stringify({
+        const checkoutInfo = JSON.stringify({
           courseId: course.id,
           courseTitle: course.title,
           email: formData.email,
@@ -202,9 +203,9 @@ const Checkout: React.FC = () => {
           language: i18n.language,
           isFree: true,
           purchaseId: purchaseResult.id,
-        }));
-        
-        // Redirect directly to success page
+        });
+        await nativeStorage.set('checkoutInfo', checkoutInfo);
+
         navigate(`/checkout/success?free=true&course_id=${course.id}`);
         return;
       }
@@ -225,17 +226,21 @@ const Checkout: React.FC = () => {
 
       if (url) {
         logger.info('Redirecting to Stripe checkout', { url })
-        // Store checkout info in localStorage for success page
-        localStorage.setItem('checkoutInfo', JSON.stringify({
+        const checkoutData = JSON.stringify({
           courseId: course.id,
           courseTitle: course.title,
           email: formData.email,
           fullName: formData.fullName,
           amount: course.price,
           currency: course.currency,
-          language: i18n.language
-        }));
-        window.location.href = url;
+          language: i18n.language,
+        });
+        await nativeStorage.set('checkoutInfo', checkoutData);
+        if (isNative()) {
+          await nativeBrowser.open(url);
+        } else {
+          window.location.href = url;
+        }
       } else {
         logger.error('No checkout URL received from Stripe')
         throw new Error('No checkout URL received');

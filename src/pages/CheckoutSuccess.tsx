@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import LanguageAwareLink from '../components/Layout/LanguageAwareLink'
 import { CheckCircle, BookOpen, Mail, ArrowRight } from 'lucide-react'
+import { nativeStorage } from '../lib/nativeBridge'
 
 const CheckoutSuccess: React.FC = () => {
   const { t } = useTranslation()
@@ -15,22 +16,17 @@ const CheckoutSuccess: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    // Get checkout info from localStorage
     const isSuccess = searchParams.get('success') === 'true'
     const isFree = searchParams.get('free') === 'true'
-    
+
     if (isSuccess || isFree) {
-      const storedInfo = localStorage.getItem('checkoutInfo')
-      if (storedInfo) {
-        setCheckoutInfo(JSON.parse(storedInfo))
-        if (isFree) {
-          // toast.success('Free course enrolled successfully! Check your email for access instructions.')
-        } else {
-          // toast.success(isDemo ? 'Demo purchase completed! In production, you would receive an email with download links.' : 'Purchase completed successfully!')
+      ;(async () => {
+        const storedInfo = await nativeStorage.get('checkoutInfo')
+        if (storedInfo) {
+          setCheckoutInfo(JSON.parse(storedInfo))
+          await nativeStorage.remove('checkoutInfo')
         }
-        // Clear the stored info
-        localStorage.removeItem('checkoutInfo')
-      }
+      })()
     }
   }, [])
 

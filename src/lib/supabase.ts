@@ -1,14 +1,35 @@
 import { createClient } from '@supabase/supabase-js'
+import { Preferences } from '@capacitor/preferences'
+import { isNative } from '../utils/platform'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || ''
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 
-// Only create client if we have valid environment variables
 if (!supabaseUrl || !supabaseAnonKey || supabaseUrl.includes('placeholder') || supabaseAnonKey.includes('placeholder')) {
   throw new Error('Supabase configuration is missing. Please set up your Supabase project by clicking "Connect to Supabase" in the top right corner.')
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+const capacitorStorage = {
+  async getItem(key: string): Promise<string | null> {
+    const { value } = await Preferences.get({ key })
+    return value
+  },
+  async setItem(key: string, value: string): Promise<void> {
+    await Preferences.set({ key, value })
+  },
+  async removeItem(key: string): Promise<void> {
+    await Preferences.remove({ key })
+  },
+}
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    ...(isNative() ? { storage: capacitorStorage } : {}),
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: !isNative(),
+  },
+})
 
 export type ContentType = 'ebook' | 'audio' | 'video'
 
@@ -289,6 +310,37 @@ export type Database = {
           icon?: string
           is_active?: boolean
           sort_order?: number
+          updated_at?: string
+        }
+      }
+      push_tokens: {
+        Row: {
+          id: string
+          user_id: string
+          token: string
+          platform: string
+          device_id: string
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          token: string
+          platform: string
+          device_id?: string
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          token?: string
+          platform?: string
+          device_id?: string
+          is_active?: boolean
           updated_at?: string
         }
       }
