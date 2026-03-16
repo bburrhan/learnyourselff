@@ -182,7 +182,7 @@ const Home: React.FC = () => {
 
                   {/* Before Card */}
                   <div className="bg-white rounded-xl shadow-md border-l-4 border-red-400 p-6 mb-4 group-hover:shadow-lg transition-all duration-300 flex-1 flex flex-col justify-center min-h-[120px]">
-                    <div className="flex items-center space-x-4 h-full">
+                    <div className="flex items-center gap-x-4 h-full">
                       <div className="flex-shrink-0">
                         <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
                           <span className="text-red-600 font-bold text-sm">{t('before')}</span>
@@ -205,7 +205,7 @@ const Home: React.FC = () => {
 
                   {/* After Card */}
                   <div className="bg-white rounded-xl shadow-md border-l-4 border-green-400 p-6 group-hover:shadow-lg transition-all duration-300 flex-1 flex flex-col justify-center min-h-[120px]">
-                    <div className="flex items-center space-x-4 h-full">
+                    <div className="flex items-center gap-x-4 h-full">
                       <div className="flex-shrink-0">
                         <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                           <CheckCircle className="h-5 w-5 text-green-600" />

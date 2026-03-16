@@ -115,13 +115,13 @@ const Blog: React.FC = () => {
                     {posts[0].excerpt}
                   </p>
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4 text-sm text-gray-500">
+                    <div className="flex items-center gap-x-4 text-sm text-gray-500">
                       <div className="flex items-center">
-                        <User className="h-4 w-4 mr-1" />
+                        <User className="h-4 w-4 me-1" />
                         {posts[0].author_name}
                       </div>
                       <div className="flex items-center">
-                        <Calendar className="h-4 w-4 mr-1" />
+                        <Calendar className="h-4 w-4 me-1" />
                         {format(new Date(posts[0].created_at), 'MMM d, yyyy')}
                       </div>
                     </div>
@@ -130,7 +130,7 @@ const Blog: React.FC = () => {
                       className="text-royal-blue-600 hover:text-royal-blue-700 font-medium flex items-center"
                     >
                       {t('readMore')}
-                      <ArrowRight className="h-4 w-4 ml-1" />
+                      <ArrowRight className="h-4 w-4 ms-1" />
                     </LanguageAwareLink>
                   </div>
                 </div>
@@ -182,11 +182,11 @@ const Blog: React.FC = () => {
                 </p>
                 <div className="flex items-center justify-between text-sm text-gray-500">
                   <div className="flex items-center">
-                    <User className="h-4 w-4 mr-1" />
+                    <User className="h-4 w-4 me-1" />
                     {post.author_name}
                   </div>
                   <div className="flex items-center">
-                    <Calendar className="h-4 w-4 mr-1" />
+                    <Calendar className="h-4 w-4 me-1" />
                     {format(new Date(post.created_at), 'MMM d')}
                   </div>
                 </div>

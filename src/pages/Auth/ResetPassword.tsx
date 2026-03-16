@@ -100,7 +100,7 @@ const ResetPassword: React.FC = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <LanguageAwareLink to="/" className="flex items-center space-x-2">
+          <LanguageAwareLink to="/" className="flex items-center gap-x-2">
             <img 
               src="/Learnyourself_Logo copy.svg" 
               alt="LearnYourself Logo" 
@@ -129,12 +129,12 @@ const ResetPassword: React.FC = () => {
                   {...register('password')}
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="new-password"
-                  className="appearance-none block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-royal-blue-500 focus:border-royal-blue-500 sm:text-sm"
+                  className="appearance-none block w-full px-3 py-2 pe-10 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-royal-blue-500 focus:border-royal-blue-500 sm:text-sm"
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute inset-y-0 end-0 pe-3 flex items-center"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
@@ -158,12 +158,12 @@ const ResetPassword: React.FC = () => {
                   {...register('confirmPassword')}
                   type={showConfirmPassword ? 'text' : 'password'}
                   autoComplete="new-password"
-                  className="appearance-none block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-royal-blue-500 focus:border-royal-blue-500 sm:text-sm"
+                  className="appearance-none block w-full px-3 py-2 pe-10 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-royal-blue-500 focus:border-royal-blue-500 sm:text-sm"
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute inset-y-0 end-0 pe-3 flex items-center"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 >
                   {showConfirmPassword ? (
@@ -194,7 +194,7 @@ const ResetPassword: React.FC = () => {
               to="/login"
               className="flex items-center justify-center text-sm text-gray-600 hover:text-gray-900"
             >
-              <ArrowLeft className="h-4 w-4 mr-2" />
+              <ArrowLeft className="h-4 w-4 me-2" />
               Back to Login
             </LanguageAwareLink>
           </div>

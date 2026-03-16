@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { supabase, Database } from '../lib/supabase'
 import LoadingSpinner from '../components/UI/LoadingSpinner'
 import LanguageAwareLink from '../components/Layout/LanguageAwareLink'
-import { Calendar, User, Tag, ArrowLeft, Share2, BookOpen } from 'lucide-react'
+import { Calendar, User, Tag, ArrowLeft, ArrowRight, Share2, BookOpen } from 'lucide-react'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
 
@@ -89,7 +89,7 @@ const BlogPost: React.FC = () => {
             to="/blog"
             className="inline-flex items-center text-royal-blue-600 hover:text-royal-blue-700"
           >
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <ArrowLeft className="h-4 w-4 me-2" />
             Back to Blog
           </LanguageAwareLink>
         </div>
@@ -110,7 +110,7 @@ const BlogPost: React.FC = () => {
       {/* Breadcrumb */}
       <div className="bg-white border-b">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <nav className="flex items-center space-x-2 text-sm">
+          <nav className="flex items-center gap-x-2 text-sm">
             <LanguageAwareLink to="/" className="text-gray-500 hover:text-gray-700">
               {t('home')}
             </LanguageAwareLink>
@@ -133,7 +133,7 @@ const BlogPost: React.FC = () => {
                 key={index}
                 className="inline-flex items-center bg-royal-blue-100 text-royal-blue-800 text-xs px-2 py-1 rounded-full"
               >
-                <Tag className="h-3 w-3 mr-1" />
+                <Tag className="h-3 w-3 me-1" />
                 #{tag}
               </span>
             ))}
@@ -148,19 +148,19 @@ const BlogPost: React.FC = () => {
           </p>
           
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4 text-sm text-gray-500">
+            <div className="flex items-center gap-x-4 text-sm text-gray-500">
               <div className="flex items-center">
-                <User className="h-4 w-4 mr-1" />
+                <User className="h-4 w-4 me-1" />
                 {post.author_name}
               </div>
               <div className="flex items-center">
-                <Calendar className="h-4 w-4 mr-1" />
+                <Calendar className="h-4 w-4 me-1" />
                 {format(new Date(post.created_at), 'MMMM d, yyyy')}
               </div>
             </div>
             <button
               onClick={handleShare}
-              className="flex items-center space-x-1 text-royal-blue-600 hover:text-royal-blue-700 transition-colors"
+              className="flex items-center gap-x-1 text-royal-blue-600 hover:text-royal-blue-700 transition-colors"
             >
               <Share2 className="h-4 w-4" />
               <span>{t('share')}</span>
@@ -191,7 +191,7 @@ const BlogPost: React.FC = () => {
         {post.tldr && (
           <div className="mt-8 bg-yellow-50 border-l-4 border-yellow-400 p-6">
             <div className="flex items-start">
-              <BookOpen className="h-5 w-5 text-yellow-600 mt-1 mr-3 flex-shrink-0" />
+              <BookOpen className="h-5 w-5 text-yellow-600 mt-1 me-3 flex-shrink-0" />
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">TL;DR</h3>
                 <div
@@ -217,7 +217,7 @@ const BlogPost: React.FC = () => {
               rel={post.cta_link.startsWith('http') ? 'noopener noreferrer' : undefined}
             >
               {t('learnMore')}
-              <ArrowLeft className="h-4 w-4 ml-2 rotate-180" />
+              <ArrowRight className="h-4 w-4 ms-2" />
             </LanguageAwareLink>
           </div>
         ) : (
@@ -233,7 +233,7 @@ const BlogPost: React.FC = () => {
               className="inline-flex items-center bg-royal-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-royal-blue-700 transition-colors"
             >
               {t('browseCoursesBtn')}
-              <ArrowLeft className="h-4 w-4 ml-2 rotate-180" />
+              <ArrowRight className="h-4 w-4 ms-2" />
             </LanguageAwareLink>
           </div>
         )}

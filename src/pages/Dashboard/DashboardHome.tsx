@@ -106,7 +106,7 @@ const DashboardHome: React.FC = () => {
             <div className="p-2 bg-blue-100 rounded-lg">
               <BookOpen className="h-6 w-6 text-blue-600" />
             </div>
-            <div className="ml-4">
+            <div className="ms-4">
               <p className="text-sm text-gray-600">{t('totalCourses')}</p>
               <p className="text-2xl font-bold text-gray-900">{stats.totalCourses}</p>
             </div>
@@ -118,7 +118,7 @@ const DashboardHome: React.FC = () => {
             <div className="p-2 bg-green-100 rounded-lg">
               <Download className="h-6 w-6 text-green-600" />
             </div>
-            <div className="ml-4">
+            <div className="ms-4">
               <p className="text-sm text-gray-600">{t('totalDownloads')}</p>
               <p className="text-2xl font-bold text-gray-900">{stats.totalDownloads}</p>
             </div>
@@ -130,7 +130,7 @@ const DashboardHome: React.FC = () => {
             <div className="p-2 bg-purple-100 rounded-lg">
               <TrendingUp className="h-6 w-6 text-purple-600" />
             </div>
-            <div className="ml-4">
+            <div className="ms-4">
               <p className="text-sm text-gray-600">{t('thisWeek')}</p>
               <p className="text-2xl font-bold text-gray-900">{stats.recentActivity}</p>
             </div>
@@ -161,7 +161,7 @@ const DashboardHome: React.FC = () => {
                 className="inline-flex items-center mt-4 text-blue-600 hover:text-blue-700 font-medium"
               >
                 {t('browseCoursesBtn')}
-                <ExternalLink className="h-4 w-4 ml-1" />
+                <ExternalLink className="h-4 w-4 ms-1" />
               </LanguageAwareLink>
             </div>
           ) : (
@@ -171,7 +171,7 @@ const DashboardHome: React.FC = () => {
                   key={purchase.id}
                   className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
                 >
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center gap-x-4">
                     <img
                       src={purchase.courses.cover_image_url || 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg'}
                       alt={purchase.courses.title}
@@ -182,7 +182,7 @@ const DashboardHome: React.FC = () => {
                         {purchase.courses.title}
                       </h3>
                       <p className="text-sm text-gray-600 flex items-center">
-                        <Calendar className="h-4 w-4 mr-1" />
+                        <Calendar className="h-4 w-4 me-1" />
                         {t('purchased')} {format(new Date(purchase.created_at), 'MMM d, yyyy')}
                       </p>
                     </div>

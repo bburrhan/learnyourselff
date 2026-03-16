@@ -285,7 +285,7 @@ const Checkout: React.FC = () => {
             onClick={() => navigate(`/course/${courseId}`)}
             className="flex items-center text-gray-600 hover:text-gray-900 transition-colors mb-4"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
+            <ArrowLeft className="w-4 h-4 me-2" />
             {t('backToCourse')}
           </button>
           <h1 className="text-3xl font-bold text-gray-900">{t('completePurchaseTitle')}</h1>

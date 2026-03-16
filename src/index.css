@@ -6,10 +6,14 @@
   html {
     scroll-behavior: smooth;
   }
-  
+
   body {
     font-family: 'Roboto', ui-sans-serif, system-ui, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  [dir="rtl"] body {
+    font-family: 'Noto Naskh Arabic', 'Noto Sans Arabic', 'Roboto', ui-sans-serif, system-ui, sans-serif;
   }
 }
 

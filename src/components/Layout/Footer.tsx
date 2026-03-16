@@ -28,8 +28,8 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="space-y-4">
-            <div 
-              className="flex items-center space-x-2 mb-4 cursor-pointer"
+            <div
+              className="flex items-center gap-x-2 mb-4 cursor-pointer"
               onClick={handleLogoClick}
             >
               <img 
@@ -42,7 +42,7 @@ const Footer: React.FC = () => {
             <p className="text-gray-400 text-sm leading-relaxed">
               Democratizing access to quality education through affordable digital courses.
             </p>
-            <div className="flex space-x-4 pt-2">
+            <div className="flex gap-x-4 pt-2">
               <div className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 cursor-pointer transition-colors">
                 <Mail className="h-5 w-5 text-gray-400 hover:text-royal-blue-400 transition-colors" />
               </div>
@@ -129,12 +129,12 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+        <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-y-4 md:gap-y-0">
           <p className="text-gray-400 text-sm">
             © 2025 LearnYourself.co. All rights reserved.
           </p>
-          <p className="text-gray-400 text-sm flex items-center order-first md:order-last">
-            Made with <Heart className="h-4 w-4 text-red-500 mx-1" /> for learners worldwide
+          <p className="text-gray-400 text-sm flex items-center gap-x-1 order-first md:order-last">
+            Made with <Heart className="h-4 w-4 text-red-500" /> for learners worldwide
           </p>
         </div>
       </div>

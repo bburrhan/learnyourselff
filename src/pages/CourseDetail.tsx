@@ -123,7 +123,7 @@ const CourseDetail: React.FC = () => {
             to="/courses"
             className="inline-flex items-center text-royal-blue-600 hover:text-royal-blue-700"
           >
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <ArrowLeft className="h-4 w-4 me-2" />
             {t('back')} to {t('courses')}
           </LanguageAwareLink>
         </div>
@@ -146,7 +146,7 @@ const CourseDetail: React.FC = () => {
       {/* Breadcrumb */}
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <nav className="flex items-center space-x-2 text-sm">
+          <nav className="flex items-center gap-x-2 text-sm">
             <LanguageAwareLink to="/" className="text-gray-500 hover:text-gray-700">
               {t('home')}
             </LanguageAwareLink>
@@ -264,7 +264,7 @@ const CourseDetail: React.FC = () => {
                       key={index}
                       className="inline-flex items-center bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm"
                     >
-                      <Tag className="h-3 w-3 mr-1" />
+                      <Tag className="h-3 w-3 me-1" />
                       #{tag}
                     </span>
                   ))}
@@ -280,7 +280,7 @@ const CourseDetail: React.FC = () => {
               <div className="space-y-4 mb-6">
                 <div className="flex items-center justify-between py-2 border-b border-gray-100">
                   <span className="text-gray-600 flex items-center">
-                    <Globe className="h-4 w-4 mr-2" />
+                    <Globe className="h-4 w-4 me-2" />
                     {t('language')}
                   </span>
                   <span className="font-medium text-gray-900">
@@ -289,7 +289,7 @@ const CourseDetail: React.FC = () => {
                 </div>
                 <div className="flex items-center justify-between py-2 border-b border-gray-100">
                   <span className="text-gray-600 flex items-center">
-                    <BookOpen className="h-4 w-4 mr-2" />
+                    <BookOpen className="h-4 w-4 me-2" />
                     {t('category')}
                   </span>
                   <span className="font-medium text-gray-900">
@@ -317,7 +317,7 @@ const CourseDetail: React.FC = () => {
                       : 'bg-royal-blue-600 text-white hover:bg-royal-blue-700'
                   }`}
                 >
-                  <CreditCard className="h-5 w-5 mr-2" />
+                  <CreditCard className="h-5 w-5 me-2" />
                   {course.price === 0 ? t('getForFree') : t('buyNow')}
                 </LanguageAwareLink>
               </div>
@@ -336,19 +336,19 @@ const CourseDetail: React.FC = () => {
               </h3>
               <ul className="space-y-3">
                 <li className="flex items-start">
-                  <Download className="h-5 w-5 text-green-600 mt-0.5 mr-3 flex-shrink-0" />
+                  <Download className="h-5 w-5 text-green-600 mt-0.5 me-3 flex-shrink-0" />
                   <span className="text-gray-700">{t('instantDownload')}</span>
                 </li>
                 <li className="flex items-start">
-                  <BookOpen className="h-5 w-5 text-green-600 mt-0.5 mr-3 flex-shrink-0" />
+                  <BookOpen className="h-5 w-5 text-green-600 mt-0.5 me-3 flex-shrink-0" />
                   <span className="text-gray-700">{t('completeMaterials')}</span>
                 </li>
                 <li className="flex items-start">
-                  <Users className="h-5 w-5 text-green-600 mt-0.5 mr-3 flex-shrink-0" />
+                  <Users className="h-5 w-5 text-green-600 mt-0.5 me-3 flex-shrink-0" />
                   <span className="text-gray-700">{t('accessCommunity')}</span>
                 </li>
                 <li className="flex items-start">
-                  <Star className="h-5 w-5 text-green-600 mt-0.5 mr-3 flex-shrink-0" />
+                  <Star className="h-5 w-5 text-green-600 mt-0.5 me-3 flex-shrink-0" />
                   <span className="text-gray-700">{t('certificateCompletion')}</span>
                 </li>
               </ul>

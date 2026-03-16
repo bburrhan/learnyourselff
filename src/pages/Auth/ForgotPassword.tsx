@@ -106,7 +106,7 @@ const ForgotPassword: React.FC = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <LanguageAwareLink to="/" className="flex items-center space-x-2">
+          <LanguageAwareLink to="/" className="flex items-center gap-x-2">
             <img 
               src="/Learnyourself_Logo copy.svg" 
               alt="LearnYourself Logo" 
@@ -161,7 +161,7 @@ const ForgotPassword: React.FC = () => {
               to="/login"
               className="flex items-center justify-center text-sm text-gray-600 hover:text-gray-900"
             >
-              <ArrowLeft className="h-4 w-4 mr-2" />
+              <ArrowLeft className="h-4 w-4 me-2" />
               Back to Login
             </LanguageAwareLink>
           </div>

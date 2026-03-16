@@ -81,7 +81,7 @@ const CheckoutSuccess: React.FC = () => {
           {/* Email Notice */}
           <div className="bg-royal-blue-50 border border-royal-blue-200 rounded-lg p-4 mb-6">
             <div className="flex items-center justify-center mb-2">
-              <Mail className="h-5 w-5 text-royal-blue-600 mr-2" />
+              <Mail className="h-5 w-5 text-royal-blue-600 me-2" />
               <span className="font-medium text-royal-blue-900">Check Your Email</span>
             </div>
             <p className="text-sm text-royal-blue-700">
@@ -94,7 +94,7 @@ const CheckoutSuccess: React.FC = () => {
           {checkoutInfo?.courseId && (
             <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
               <div className="flex items-center justify-center mb-2">
-                <BookOpen className="h-5 w-5 text-green-600 mr-2" />
+                <BookOpen className="h-5 w-5 text-green-600 me-2" />
                 <span className="font-medium text-green-900">{t('instantAccess')}</span>
               </div>
               <p className="text-sm text-green-700 mb-3">
@@ -104,7 +104,7 @@ const CheckoutSuccess: React.FC = () => {
                 to={`/learn/${checkoutInfo.courseId}`}
                 className="inline-flex items-center justify-center w-full bg-green-600 text-white py-2.5 px-4 rounded-lg font-semibold hover:bg-green-700 transition-all duration-300 transform hover:scale-105"
               >
-                <BookOpen className="h-4 w-4 mr-2" />
+                <BookOpen className="h-4 w-4 me-2" />
                 {t('startLearning')}
               </LanguageAwareLink>
             </div>
@@ -117,7 +117,7 @@ const CheckoutSuccess: React.FC = () => {
               className="w-full bg-royal-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-royal-blue-700 transition-all duration-300 flex items-center justify-center transform hover:scale-105"
             >
               {t('browseMoreCourses')}
-              <ArrowRight className="h-4 w-4 ml-2" />
+              <ArrowRight className="h-4 w-4 ms-2" />
             </LanguageAwareLink>
             
             <LanguageAwareLink

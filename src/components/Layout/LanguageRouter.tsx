@@ -8,6 +8,15 @@ interface LanguageRouterProps {
 
 const SUPPORTED_LANGUAGES = ['en', 'tr', 'tl', 'hi', 'id', 'bn', 'vi', 'ur']
 const DEFAULT_LANGUAGE = 'en'
+const RTL_LANGUAGES = ['ur', 'ar', 'he', 'fa']
+
+export const isRTL = (lang: string): boolean => RTL_LANGUAGES.includes(lang)
+
+const applyDirection = (lang: string) => {
+  const dir = isRTL(lang) ? 'rtl' : 'ltr'
+  document.documentElement.dir = dir
+  document.documentElement.lang = lang
+}
 
 export const LanguageRouter: React.FC<LanguageRouterProps> = ({ children }) => {
   const { i18n } = useTranslation()
@@ -18,15 +27,14 @@ export const LanguageRouter: React.FC<LanguageRouterProps> = ({ children }) => {
     const pathSegments = location.pathname.split('/').filter(Boolean)
     const langFromUrl = pathSegments[0]
 
-    // Check if URL starts with a language code
     if (SUPPORTED_LANGUAGES.includes(langFromUrl)) {
-      // URL has language prefix, set i18n language if different
       if (i18n.language !== langFromUrl) {
         i18n.changeLanguage(langFromUrl)
       }
+      applyDirection(langFromUrl)
     } else {
-      // URL doesn't have language prefix, redirect to include it
       const currentLang = i18n.language || DEFAULT_LANGUAGE
+      applyDirection(currentLang)
       const newPath = `/${currentLang}${location.pathname}${location.search}`
       navigate(newPath, { replace: true })
     }
@@ -35,16 +43,15 @@ export const LanguageRouter: React.FC<LanguageRouterProps> = ({ children }) => {
   // Listen for language changes and update URL
   useEffect(() => {
     const handleLanguageChange = (lng: string) => {
+      applyDirection(lng)
       const pathSegments = location.pathname.split('/').filter(Boolean)
       const currentLangFromUrl = pathSegments[0]
 
       if (SUPPORTED_LANGUAGES.includes(currentLangFromUrl)) {
-        // Replace the language in the URL
         pathSegments[0] = lng
         const newPath = `/${pathSegments.join('/')}${location.search}`
         navigate(newPath, { replace: true })
       } else {
-        // Add language prefix to current path
         const newPath = `/${lng}${location.pathname}${location.search}`
         navigate(newPath, { replace: true })
       }

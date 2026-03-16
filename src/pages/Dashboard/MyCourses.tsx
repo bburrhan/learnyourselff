@@ -167,7 +167,7 @@ const MyCourses: React.FC = () => {
               to="/courses"
               className="inline-flex items-center px-5 py-2.5 bg-royal-blue-600 text-white rounded-lg hover:bg-royal-blue-700 transition-colors font-medium text-sm"
             >
-              <ExternalLink className="h-4 w-4 mr-2" />
+              <ExternalLink className="h-4 w-4 me-2" />
               {t('browseCoursesBtn')}
             </LanguageAwareLink>
           </div>

@@ -96,14 +96,14 @@ const AccountSettings: React.FC = () => {
       {/* Profile Settings */}
       <div className="bg-white rounded-lg shadow-md p-6">
         <div className="flex items-center mb-6">
-          <User className="h-5 w-5 text-gray-400 mr-2" />
+          <User className="h-5 w-5 text-gray-400 me-2" />
           <h2 className="text-xl font-semibold text-gray-900">{t('profileSettings')}</h2>
         </div>
 
         <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-4">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-              <Mail className="inline h-4 w-4 mr-1" />
+              <Mail className="inline h-4 w-4 me-1" />
               {t('emailAddress')}
             </label>
             <input
@@ -133,7 +133,7 @@ const AccountSettings: React.FC = () => {
 
           <div>
             <label htmlFor="languagePreference" className="block text-sm font-medium text-gray-700 mb-2">
-              <Globe className="inline h-4 w-4 mr-1" />
+              <Globe className="inline h-4 w-4 me-1" />
               {t('languagePreference')}
             </label>
             <select
@@ -154,7 +154,7 @@ const AccountSettings: React.FC = () => {
               t('saving')
             ) : (
               <>
-                <Save className="h-4 w-4 mr-2" />
+                <Save className="h-4 w-4 me-2" />
                 {t('saveProfile')}
               </>
             )}
@@ -165,7 +165,7 @@ const AccountSettings: React.FC = () => {
       {/* Password Settings */}
       <div className="bg-white rounded-lg shadow-md p-6">
         <div className="flex items-center mb-6">
-          <Lock className="h-5 w-5 text-gray-400 mr-2" />
+          <Lock className="h-5 w-5 text-gray-400 me-2" />
           <h2 className="text-xl font-semibold text-gray-900">{t('changePassword')}</h2>
         </div>
 
@@ -227,7 +227,7 @@ const AccountSettings: React.FC = () => {
               t('updating')
             ) : (
               <>
-                <Lock className="h-4 w-4 mr-2" />
+                <Lock className="h-4 w-4 me-2" />
                 {t('updatePassword')}
               </>
             )}

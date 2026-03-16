@@ -128,7 +128,7 @@ const Courses: React.FC = () => {
               onClick={() => setShowFilters(!showFilters)}
               className="lg:hidden flex items-center justify-center px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
             >
-              <Filter className="h-5 w-5 mr-2" />
+              <Filter className="h-5 w-5 me-2" />
               {t('filters')}
             </button>
           </div>
@@ -208,7 +208,7 @@ const Courses: React.FC = () => {
                   onClick={clearFilters}
                   className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors flex items-center font-medium"
                 >
-                  <X className="h-4 w-4 mr-2" />
+                  <X className="h-4 w-4 me-2" />
                   {t('clearFilters')}
                 </button>
               )}

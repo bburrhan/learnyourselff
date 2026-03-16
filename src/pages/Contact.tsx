@@ -90,7 +90,7 @@ const Contact: React.FC = () => {
                   <div className="flex-shrink-0">
                     <Mail className="h-6 w-6 text-royal-blue-600" />
                   </div>
-                  <div className="ml-3">
+                  <div className="ms-3">
                     <p className="text-sm font-medium text-gray-900">{t('email')}</p>
                     <p className="text-sm text-gray-600">support@learnyourself.co</p>
                     <p className="text-sm text-gray-600">hello@learnyourself.co</p>
@@ -101,7 +101,7 @@ const Contact: React.FC = () => {
                   <div className="flex-shrink-0">
                     <Phone className="h-6 w-6 text-royal-blue-600" />
                   </div>
-                  <div className="ml-3">
+                  <div className="ms-3">
                     <p className="text-sm font-medium text-gray-900">{t('phone')}</p>
                     <p className="text-sm text-gray-600">+1 (555) 123-4567</p>
                   </div>
@@ -111,7 +111,7 @@ const Contact: React.FC = () => {
                   <div className="flex-shrink-0">
                     <MapPin className="h-6 w-6 text-royal-blue-600" />
                   </div>
-                  <div className="ml-3">
+                  <div className="ms-3">
                     <p className="text-sm font-medium text-gray-900">{t('office')}</p>
                     <p className="text-sm text-gray-600">
                       123 Education Street<br />
@@ -131,28 +131,28 @@ const Contact: React.FC = () => {
               <div className="space-y-4">
                 <div>
                   <h4 className="text-sm font-medium text-gray-900 flex items-center">
-                    <HelpCircle className="h-4 w-4 mr-2 text-royal-blue-600" />
+                    <HelpCircle className="h-4 w-4 me-2 text-royal-blue-600" />
                     {t('howDownloadCourse')}
                   </h4>
-                  <p className="text-sm text-gray-600 ml-6 mt-1">
+                  <p className="text-sm text-gray-600 ms-6 mt-1">
                     {t('howDownloadCourseAnswer')}
                   </p>
                 </div>
                 <div>
                   <h4 className="text-sm font-medium text-gray-900 flex items-center">
-                    <HelpCircle className="h-4 w-4 mr-2 text-royal-blue-600" />
+                    <HelpCircle className="h-4 w-4 me-2 text-royal-blue-600" />
                     {t('refundPolicy')}
                   </h4>
-                  <p className="text-sm text-gray-600 ml-6 mt-1">
+                  <p className="text-sm text-gray-600 ms-6 mt-1">
                     {t('refundPolicyAnswer')}
                   </p>
                 </div>
                 <div>
                   <h4 className="text-sm font-medium text-gray-900 flex items-center">
-                    <HelpCircle className="h-4 w-4 mr-2 text-royal-blue-600" />
+                    <HelpCircle className="h-4 w-4 me-2 text-royal-blue-600" />
                     {t('offerCertificates')}
                   </h4>
-                  <p className="text-sm text-gray-600 ml-6 mt-1">
+                  <p className="text-sm text-gray-600 ms-6 mt-1">
                     {t('offerCertificatesAnswer')}
                   </p>
                 </div>
@@ -239,7 +239,7 @@ const Contact: React.FC = () => {
                     t('sendingMessage')
                   ) : (
                     <>
-                      <Send className="h-4 w-4 mr-2" />
+                      <Send className="h-4 w-4 me-2" />
                       {t('sendMessage')}
                     </>
                   )}
