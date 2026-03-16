@@ -11,6 +11,10 @@ const LANGUAGES = [
   { code: 'tr', label: 'Turkce', short: 'TR', flag: '\u{1F1F9}\u{1F1F7}' },
   { code: 'tl', label: 'Filipino', short: 'TL', flag: '\u{1F1F5}\u{1F1ED}' },
   { code: 'hi', label: 'Hindi', short: 'HI', flag: '\u{1F1EE}\u{1F1F3}' },
+  { code: 'id', label: 'Indonesia', short: 'ID', flag: '\u{1F1EE}\u{1F1E9}' },
+  { code: 'bn', label: 'বাংলা', short: 'BN', flag: '\u{1F1E7}\u{1F1E9}' },
+  { code: 'vi', label: 'Tiếng Việt', short: 'VI', flag: '\u{1F1FB}\u{1F1F3}' },
+  { code: 'ur', label: 'اردو', short: 'UR', flag: '\u{1F1F5}\u{1F1F0}' },
 ]
 
 const Header: React.FC = () => {
@@ -220,7 +224,7 @@ const Header: React.FC = () => {
               <div className="border-t border-gray-200 pt-4 mt-4 mx-2">
                 <div className="px-4 py-2 mb-2">
                   <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Language</p>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-4 gap-2">
                     {LANGUAGES.map((lang) => (
                       <button
                         key={lang.code}

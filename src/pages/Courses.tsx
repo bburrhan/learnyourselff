@@ -77,13 +77,17 @@ const Courses: React.FC = () => {
     setSearchParams({})
   }
 
-  const languages = ['all', 'en', 'tr', 'tl', 'hi']
+  const languages = ['all', 'en', 'tr', 'tl', 'hi', 'id', 'bn', 'vi', 'ur']
 
   const languageLabels: Record<string, string> = {
     en: 'English',
     tr: 'Turkce',
     tl: 'Filipino',
     hi: 'Hindi',
+    id: 'Indonesia',
+    bn: 'বাংলা',
+    vi: 'Tiếng Việt',
+    ur: 'اردو',
   }
 
   const hasActiveFilters = searchTerm || selectedCategory !== 'all' || selectedLanguage !== 'all'
