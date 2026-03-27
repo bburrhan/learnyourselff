@@ -284,7 +284,7 @@ const CourseDetail: React.FC = () => {
                     {t('language')}
                   </span>
                   <span className="font-medium text-gray-900">
-                    {({ en: 'English', tr: 'Turkce', tl: 'Filipino', hi: 'Hindi' } as Record<string, string>)[course.language] || course.language}
+                    {({ en: 'English', tr: 'Turkce', hi: 'Hindi' } as Record<string, string>)[course.language] || course.language}
                   </span>
                 </div>
                 <div className="flex items-center justify-between py-2 border-b border-gray-100">

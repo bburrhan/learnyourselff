@@ -6,7 +6,7 @@ interface LanguageRouterProps {
   children: React.ReactNode
 }
 
-const SUPPORTED_LANGUAGES = ['en', 'tr', 'tl', 'hi', 'id', 'bn', 'vi', 'ur']
+const SUPPORTED_LANGUAGES = ['en', 'tr', 'hi', 'id', 'bn', 'vi', 'ur']
 const DEFAULT_LANGUAGE = 'en'
 const RTL_LANGUAGES = ['ur', 'ar', 'he', 'fa']
 

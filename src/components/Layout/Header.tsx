@@ -9,7 +9,6 @@ import { getPathWithoutLanguage } from './LanguageRouter'
 const LANGUAGES = [
   { code: 'en', label: 'English', short: 'EN', flag: '\u{1F1FA}\u{1F1F8}' },
   { code: 'tr', label: 'Turkce', short: 'TR', flag: '\u{1F1F9}\u{1F1F7}' },
-  { code: 'tl', label: 'Filipino', short: 'TL', flag: '\u{1F1F5}\u{1F1ED}' },
   { code: 'hi', label: 'Hindi', short: 'HI', flag: '\u{1F1EE}\u{1F1F3}' },
   { code: 'id', label: 'Indonesia', short: 'ID', flag: '\u{1F1EE}\u{1F1E9}' },
   { code: 'bn', label: 'বাংলা', short: 'BN', flag: '\u{1F1E7}\u{1F1E9}' },

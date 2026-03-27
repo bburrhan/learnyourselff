@@ -280,7 +280,6 @@ const CourseFormWizard: React.FC<CourseFormWizardProps> = ({
                 >
                   <option value="en">English</option>
                   <option value="tr">Turkish</option>
-                  <option value="tl">Filipino</option>
                   <option value="hi">Hindi</option>
                 </select>
               </div>

@@ -77,12 +77,11 @@ const Courses: React.FC = () => {
     setSearchParams({})
   }
 
-  const languages = ['all', 'en', 'tr', 'tl', 'hi', 'id', 'bn', 'vi', 'ur']
+  const languages = ['all', 'en', 'tr', 'hi', 'id', 'bn', 'vi', 'ur']
 
   const languageLabels: Record<string, string> = {
     en: 'English',
     tr: 'Turkce',
-    tl: 'Filipino',
     hi: 'Hindi',
     id: 'Indonesia',
     bn: 'বাংলা',
