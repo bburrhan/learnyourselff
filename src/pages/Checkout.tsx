@@ -165,7 +165,7 @@ const Checkout: React.FC = () => {
 
         const courseUrl = `${window.location.origin}/${i18n.language}/learn/${course.id}`
 
-        const emailResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-course-email`, {
+        fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-course-email`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
@@ -181,15 +181,16 @@ const Checkout: React.FC = () => {
             isFree: true,
             language: i18n.language,
           }),
+        }).then(async (res) => {
+          if (!res.ok) {
+            const emailError = await res.json().catch(() => ({}))
+            logger.error('Failed to send course email', { error: emailError })
+          } else {
+            logger.info('Course email sent successfully', { email: formData.email })
+          }
+        }).catch((err) => {
+          logger.error('Course email request failed', { error: err })
         })
-
-        if (!emailResponse.ok) {
-          const emailError = await emailResponse.json()
-          logger.error('Failed to send course email', { error: emailError })
-          throw new Error('Failed to send course materials')
-        }
-
-        logger.info('Course email sent successfully', { email: formData.email })
 
         // Store checkout info for success page
         localStorage.setItem('checkoutInfo', JSON.stringify({
