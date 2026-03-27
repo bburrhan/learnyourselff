@@ -62,7 +62,7 @@ Deno.serve(async (req: Request) => {
     }
 
     // Generate password reset token
-    const { data: resetData, error: resetError } = await supabase.auth.admin.generateLink({
+    const { data: resetData, error: resetError } = await supabaseAdmin.auth.admin.generateLink({
       type: 'recovery',
       email: email,
       options: {
