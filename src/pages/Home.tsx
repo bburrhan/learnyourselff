@@ -273,20 +273,20 @@ const Home: React.FC = () => {
           </div>
 
           {sampleLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {[...Array(3)].map((_, i) => (
                 <HomeCourseCardSkeleton key={i} />
               ))}
             </div>
           ) : displaySampleCourses.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {displaySampleCourses.map((course) => (
                 <LanguageAwareLink
                   key={course.id}
                   to={`/course/${course.id}`}
-                  className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden flex flex-col"
+                  className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden flex flex-row"
                 >
-                  <div className="aspect-[4/3] sm:aspect-[3/4] overflow-hidden">
+                  <div className="relative flex-shrink-0 w-28 sm:w-40 md:w-44 overflow-hidden">
                     <img
                       src={course.cover_image_url || 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg'}
                       alt={course.title}
@@ -294,23 +294,23 @@ const Home: React.FC = () => {
                       loading="lazy"
                     />
                   </div>
-                  <div className="p-5 flex flex-col flex-1">
-                    <div className="flex items-center mb-3">
-                      <span className="bg-royal-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">
-                        {new Intl.NumberFormat('en-US', {
+                  <div className="flex-1 p-3 sm:p-5 flex flex-col min-w-0">
+                    <div className="mb-2">
+                      <span className="bg-royal-blue-600 text-white px-2.5 py-1 rounded-md text-xs sm:text-sm font-bold">
+                        {course.price === 0 ? 'FREE' : new Intl.NumberFormat('en-US', {
                           style: 'currency',
                           currency: course.currency || 'USD',
                         }).format(course.price)}
                       </span>
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-royal-blue-600 transition-colors line-clamp-2">
+                    <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-royal-blue-600 transition-colors line-clamp-2">
                       {course.title}
                     </h3>
-                    <p className="text-gray-600 mb-5 line-clamp-2 leading-relaxed text-sm">
+                    <p className="text-gray-600 text-sm mb-3 line-clamp-2 leading-relaxed">
                       {course.description}
                     </p>
                     <div className="mt-auto">
-                      <span className="w-full bg-royal-blue-600 text-white py-3 px-6 rounded-lg font-semibold group-hover:bg-royal-blue-700 transition-all duration-300 flex items-center justify-center">
+                      <span className="inline-flex items-center justify-center w-full bg-royal-blue-600 text-white py-2.5 rounded-lg font-semibold text-sm group-hover:bg-royal-blue-700 transition-all duration-300 shadow-sm group-hover:shadow-md">
                         <Play className="h-4 w-4 mr-2" />
                         {t('startNow')}
                       </span>
