@@ -273,20 +273,20 @@ const Home: React.FC = () => {
           </div>
 
           {sampleLoading ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(3)].map((_, i) => (
                 <HomeCourseCardSkeleton key={i} />
               ))}
             </div>
           ) : displaySampleCourses.length > 0 ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {displaySampleCourses.map((course) => (
                 <LanguageAwareLink
                   key={course.id}
                   to={`/course/${course.id}`}
-                  className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden flex flex-row"
+                  className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden flex flex-col"
                 >
-                  <div className="relative flex-shrink-0 w-28 sm:w-40 md:w-44 overflow-hidden">
+                  <div className="relative w-full aspect-video overflow-hidden">
                     <img
                       src={course.cover_image_url || 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg'}
                       alt={course.title}
@@ -294,7 +294,7 @@ const Home: React.FC = () => {
                       loading="lazy"
                     />
                   </div>
-                  <div className="flex-1 p-3 sm:p-5 flex flex-col min-w-0">
+                  <div className="flex-1 p-4 sm:p-5 flex flex-col">
                     <div className="mb-2">
                       <span className="bg-royal-blue-600 text-white px-2.5 py-1 rounded-md text-xs sm:text-sm font-bold">
                         {course.price === 0 ? 'FREE' : new Intl.NumberFormat('en-US', {
@@ -306,7 +306,7 @@ const Home: React.FC = () => {
                     <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-royal-blue-600 transition-colors line-clamp-2">
                       {course.title}
                     </h3>
-                    <p className="text-gray-600 text-sm mb-3 line-clamp-2 leading-relaxed">
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">
                       {course.description}
                     </p>
                     <div className="mt-auto">
