@@ -26,28 +26,27 @@ type Course = Database['public']['Tables']['courses']['Row']
 
 const CourseDetail: React.FC = () => {
   const { t, i18n } = useTranslation()
-  const { id } = useParams<{ id: string }>()
+  const { slug } = useParams<{ slug: string }>()
   const [course, setCourse] = useState<Course | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  const isUuid = (val: string) =>
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(val)
+
   useEffect(() => {
     window.scrollTo(0, 0)
-  }, [id])
+  }, [slug])
 
   useEffect(() => {
     const fetchCourse = async () => {
-      if (!id) return
+      if (!slug) return
 
       const result = await handleAsyncError(async () => {
-        logger.info('Fetching course details', { courseId: id })
+        logger.info('Fetching course details', { slug })
 
-        const { data, error } = await supabase
-          .from('courses')
-          .select('*')
-          .eq('id', id)
-          .eq('is_active', true)
-          .single()
+        const query = supabase.from('courses').select('*').eq('is_active', true)
+        const { data, error } = await (isUuid(slug) ? query.eq('id', slug) : query.eq('slug', slug)).maybeSingle()
 
         if (error) {
           handleSupabaseError(error, 'fetchCourseDetail')
@@ -62,7 +61,7 @@ const CourseDetail: React.FC = () => {
         if (localCourses) {
           try {
             const parsed = JSON.parse(localCourses)
-            const found = parsed.find((c: Course) => c.id === id)
+            const found = parsed.find((c: Course) => c.id === slug || c.slug === slug)
             if (found) {
               setCourse(found)
               return true
@@ -72,13 +71,13 @@ const CourseDetail: React.FC = () => {
           }
         }
 
-        logger.warn('Course not found', { courseId: id })
+        logger.warn('Course not found', { slug })
         setError('Course not found')
         return true
       }, 'fetchCourseDetail', false)
 
       if (!result) {
-        logger.error('Failed to fetch course details', { courseId: id })
+        logger.error('Failed to fetch course details', { slug })
         setError('Failed to fetch course')
       }
 
@@ -86,7 +85,7 @@ const CourseDetail: React.FC = () => {
     }
 
     fetchCourse()
-  }, [id, i18n.language])
+  }, [slug, i18n.language])
 
   if (loading) {
     return (

@@ -59,7 +59,7 @@ function App() {
                   {/* Language-prefixed routes */}
                   <Route path="/:lang" element={<Home />} />
                   <Route path="/:lang/courses" element={<Courses />} />
-                  <Route path="/:lang/course/:id" element={<CourseDetail />} />
+                  <Route path="/:lang/course/:slug" element={<CourseDetail />} />
                   <Route path="/:lang/checkout/:courseId" element={<Checkout />} />
                   <Route path="/:lang/checkout/success" element={<CheckoutSuccess />} />
                   <Route path="/:lang/blog" element={<Blog />} />

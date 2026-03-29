@@ -52,8 +52,17 @@ const CourseFormWizard: React.FC<CourseFormWizardProps> = ({
 
   const descriptionRef = useRef<HTMLTextAreaElement>(null)
 
+  const generateSlug = (title: string) =>
+    title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+
   const [formData, setFormData] = useState({
     title: '',
+    slug: '',
     short_description: '',
     description: '',
     price: 0,
@@ -72,6 +81,7 @@ const CourseFormWizard: React.FC<CourseFormWizardProps> = ({
     if (editingCourse) {
       setFormData({
         title: editingCourse.title,
+        slug: editingCourse.slug || generateSlug(editingCourse.title),
         short_description: editingCourse.short_description || '',
         description: editingCourse.description,
         price: editingCourse.price,
@@ -95,6 +105,7 @@ const CourseFormWizard: React.FC<CourseFormWizardProps> = ({
 
     const courseData = {
       ...formData,
+      slug: formData.slug || generateSlug(formData.title),
       tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean),
       format_types: formData.format_types,
       updated_at: new Date().toISOString(),
@@ -261,7 +272,14 @@ const CourseFormWizard: React.FC<CourseFormWizardProps> = ({
                     type="text"
                     required
                     value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    onChange={(e) => {
+                      const title = e.target.value
+                      setFormData(prev => ({
+                        ...prev,
+                        title,
+                        slug: !editingCourse || !editingCourse.slug ? generateSlug(title) : prev.slug,
+                      }))
+                    }}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
                   />
                 </div>
@@ -285,6 +303,33 @@ const CourseFormWizard: React.FC<CourseFormWizardProps> = ({
                       No categories available. Please create categories first.
                     </p>
                   )}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  URL Slug
+                  <span className="ml-1 text-xs text-gray-400 font-normal">
+                    (SEO-friendly URL — e.g. my-course-title)
+                  </span>
+                </label>
+                <div className="flex items-center rounded-lg border border-gray-300 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-shadow overflow-hidden">
+                  <span className="px-3 py-2 bg-gray-50 text-gray-500 text-sm border-r border-gray-300 whitespace-nowrap">
+                    /course/
+                  </span>
+                  <input
+                    type="text"
+                    required
+                    value={formData.slug}
+                    onChange={(e) =>
+                      setFormData(prev => ({
+                        ...prev,
+                        slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-'),
+                      }))
+                    }
+                    placeholder="my-course-title"
+                    className="flex-1 px-3 py-2 focus:outline-none text-sm"
+                  />
                 </div>
               </div>
 

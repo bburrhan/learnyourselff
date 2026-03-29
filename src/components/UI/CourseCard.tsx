@@ -26,7 +26,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, className = '' }) => {
 
   return (
     <LanguageAwareLink
-      to={`/course/${course.id}`}
+      to={`/course/${course.slug || course.id}`}
       className={`block bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group transform hover:-translate-y-1 flex flex-col ${className}`}
     >
       <div className="relative w-full aspect-video overflow-hidden">
