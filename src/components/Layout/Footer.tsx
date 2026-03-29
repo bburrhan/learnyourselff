@@ -84,23 +84,28 @@ const Footer: React.FC = () => {
             <h3 className="text-lg font-semibold mb-6 text-white">{t('categories')}</h3>
             <ul className="space-y-2">
               <li>
-                <LanguageAwareLink to="/courses?category=technology" className="text-gray-400 hover:text-white transition-colors">
-                  {t('technology')}
+                <LanguageAwareLink to="/courses?category=business-entrepreneurship" className="text-gray-400 hover:text-white transition-colors">
+                  Business & Entrepreneurship
                 </LanguageAwareLink>
               </li>
               <li>
-                <LanguageAwareLink to="/courses?category=business" className="text-gray-400 hover:text-white transition-colors">
-                  {t('business')}
+                <LanguageAwareLink to="/courses?category=marketing-content" className="text-gray-400 hover:text-white transition-colors">
+                  Marketing & Content
                 </LanguageAwareLink>
               </li>
               <li>
-                <LanguageAwareLink to="/courses?category=design" className="text-gray-400 hover:text-white transition-colors">
-                  {t('design')}
+                <LanguageAwareLink to="/courses?category=ai-technology" className="text-gray-400 hover:text-white transition-colors">
+                  AI & Technology
                 </LanguageAwareLink>
               </li>
               <li>
-                <LanguageAwareLink to="/courses?category=marketing" className="text-gray-400 hover:text-white transition-colors">
-                  {t('marketing')}
+                <LanguageAwareLink to="/courses?category=personal-development" className="text-gray-400 hover:text-white transition-colors">
+                  Personal Development
+                </LanguageAwareLink>
+              </li>
+              <li>
+                <LanguageAwareLink to="/courses?category=finance" className="text-gray-400 hover:text-white transition-colors">
+                  Finance
                 </LanguageAwareLink>
               </li>
             </ul>

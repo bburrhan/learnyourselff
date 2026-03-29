@@ -59,12 +59,14 @@ const AdminCourses: React.FC = () => {
 
     if (!result) {
       const defaultCategories = [
-        { id: 'tech', name: 'Technology', slug: 'technology' },
-        { id: 'biz', name: 'Business', slug: 'business' },
-        { id: 'design', name: 'Design', slug: 'design' },
-        { id: 'marketing', name: 'Marketing', slug: 'marketing' },
-        { id: 'wellness', name: 'Health & Wellness', slug: 'health-wellness' },
+        { id: 'biz-ent', name: 'Business & Entrepreneurship', slug: 'business-entrepreneurship' },
+        { id: 'mkt-cnt', name: 'Marketing & Content', slug: 'marketing-content' },
+        { id: 'sales', name: 'Sales & Conversion', slug: 'sales-conversion' },
+        { id: 'prod', name: 'Productivity', slug: 'productivity' },
+        { id: 'ai-tech', name: 'AI & Technology', slug: 'ai-technology' },
         { id: 'personal', name: 'Personal Development', slug: 'personal-development' },
+        { id: 'wellness', name: 'Wellness & Health', slug: 'wellness-health' },
+        { id: 'finance', name: 'Finance', slug: 'finance' },
       ]
       setCategories(defaultCategories as Category[])
     }
