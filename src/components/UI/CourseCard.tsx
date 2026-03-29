@@ -9,9 +9,10 @@ type Course = Database['public']['Tables']['courses']['Row']
 interface CourseCardProps {
   course: Course
   className?: string
+  categoryName?: string
 }
 
-const CourseCard: React.FC<CourseCardProps> = ({ course, className = '' }) => {
+const CourseCard: React.FC<CourseCardProps> = ({ course, className = '', categoryName }) => {
   const { t } = useTranslation()
 
   const formatPrice = (price: number, currency: string) => {
@@ -50,7 +51,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, className = '' }) => {
             {formatPrice(course.price, course.currency)}
           </span>
           <span className="inline-block bg-gray-100 text-gray-700 text-xs px-2.5 py-0.5 rounded-full font-medium">
-            {course.category}
+            {categoryName || course.category}
           </span>
           {course.content_types && course.content_types.length > 0 && (
             <div className="flex items-center gap-1">

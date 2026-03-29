@@ -30,6 +30,7 @@ const CourseDetail: React.FC = () => {
   const [course, setCourse] = useState<Course | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [categoryName, setCategoryName] = useState<string | null>(null)
 
   const isUuid = (val: string) =>
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(val)
@@ -54,6 +55,14 @@ const CourseDetail: React.FC = () => {
           setCourse(data)
           setError(null)
           logger.info('Found course in Supabase', { title: data.title })
+
+          const { data: catData } = await supabase
+            .from('categories')
+            .select('name')
+            .eq('slug', data.category)
+            .maybeSingle()
+          if (catData) setCategoryName(catData.name)
+
           return true
         }
 
@@ -169,7 +178,7 @@ const CourseDetail: React.FC = () => {
               {/* Badges */}
               <div className="flex flex-wrap gap-2 mb-4">
                 <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-medium capitalize">
-                  {course.category}
+                  {categoryName || course.category}
                 </span>
                 {course.content_types?.includes('ebook') && (
                   <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 text-xs px-2.5 py-1 rounded-full font-medium">
@@ -214,7 +223,7 @@ const CourseDetail: React.FC = () => {
                 </span>
                 <span className="flex items-center gap-1.5">
                   <BookOpen className="h-4 w-4 text-gray-400" />
-                  {course.category}
+                  {categoryName || course.category}
                 </span>
               </div>
 
@@ -316,7 +325,7 @@ const CourseDetail: React.FC = () => {
                   <span className="text-gray-500 flex items-center gap-1.5">
                     <BookOpen className="h-4 w-4" /> {t('category')}
                   </span>
-                  <span className="font-medium text-gray-800 capitalize">{course.category}</span>
+                  <span className="font-medium text-gray-800 capitalize">{categoryName || course.category}</span>
                 </div>
               </div>
             </div>
