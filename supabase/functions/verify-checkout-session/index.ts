@@ -159,11 +159,11 @@ Deno.serve(async (req: Request) => {
       `https://learnyourself.co/${sessionLanguage}/learn/${courseId}`
     );
 
-    fetch(`${supabaseUrl}/functions/v1/send-course-email`, {
+    const emailResp = await fetch(`${supabaseUrl}/functions/v1/send-course-email`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${anonKey}`,
+        Authorization: `Bearer ${serviceKey}`,
       },
       body: JSON.stringify({
         purchaseId: purchase!.id,
@@ -175,9 +175,13 @@ Deno.serve(async (req: Request) => {
         isFree: false,
         language: sessionLanguage,
       }),
-    }).catch((err) => {
-      console.error("Failed to send course email:", err);
     });
+    const emailResult = await emailResp.json();
+    if (!emailResp.ok) {
+      console.error("send-course-email failed:", emailResult);
+    } else {
+      console.log("send-course-email success:", emailResult);
+    }
 
     return new Response(
       JSON.stringify({
