@@ -147,15 +147,6 @@ const Contact: React.FC = () => {
                     {t('refundPolicyAnswer')}
                   </p>
                 </div>
-                <div>
-                  <h4 className="text-sm font-medium text-gray-900 flex items-center">
-                    <HelpCircle className="h-4 w-4 me-2 text-royal-blue-600" />
-                    {t('offerCertificates')}
-                  </h4>
-                  <p className="text-sm text-gray-600 ms-6 mt-1">
-                    {t('offerCertificatesAnswer')}
-                  </p>
-                </div>
               </div>
             </div>
           </div>

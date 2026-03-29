@@ -17,7 +17,6 @@ import {
   FileText,
   Music,
   Video,
-  Star,
   Users,
   ShieldCheck,
   CheckCircle2,
@@ -331,7 +330,6 @@ const CourseDetail: React.FC = () => {
                   { icon: Download, label: t('instantDownload') },
                   { icon: BookOpen, label: t('completeMaterials') },
                   { icon: Users, label: t('accessCommunity') },
-                  { icon: Star, label: t('certificateCompletion') },
                 ].map(({ icon: Icon, label }) => (
                   <li key={label} className="flex items-center gap-3 text-sm text-gray-700">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 flex-shrink-0" />
