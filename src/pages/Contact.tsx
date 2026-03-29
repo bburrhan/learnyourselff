@@ -7,6 +7,7 @@ import { Mail, Phone, MapPin, Send, MessageCircle, HelpCircle, Users } from 'luc
 import logger from '../utils/logger'
 import { handleAsyncError } from '../utils/errorHandler'
 import toast from 'react-hot-toast'
+import useSeo from '../hooks/useSeo'
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -21,7 +22,11 @@ const Contact: React.FC = () => {
   const { t } = useTranslation()
   const [loading, setLoading] = useState(false)
 
-  // Scroll to top when component mounts
+  useSeo({
+    title: t('contact'),
+    description: t('contactPageDesc'),
+  })
+
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
@@ -75,7 +80,7 @@ const Contact: React.FC = () => {
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">{t('contactUs')}</h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Have a question, suggestion, or need support? We'd love to hear from you. Get in touch and we'll respond as soon as possible.
+            {t('contactPageDesc')}
           </p>
         </div>
 
@@ -167,7 +172,7 @@ const Contact: React.FC = () => {
                     <input
                       {...register('name')}
                       type="text"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent"
                       placeholder="Your full name"
                     />
                     {errors.name && (
@@ -182,7 +187,7 @@ const Contact: React.FC = () => {
                     <input
                       {...register('email')}
                       type="email"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent"
                       placeholder="your@email.com"
                     />
                     {errors.email && (
@@ -198,7 +203,7 @@ const Contact: React.FC = () => {
                   <input
                     {...register('subject')}
                     type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent"
                     placeholder="What is this regarding?"
                   />
                   {errors.subject && (
@@ -213,7 +218,7 @@ const Contact: React.FC = () => {
                   <textarea
                     {...register('message')}
                     rows={6}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent"
                     placeholder="Please provide details about your inquiry..."
                   />
                   {errors.message && (
@@ -224,7 +229,7 @@ const Contact: React.FC = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full flex items-center justify-center px-6 py-3 bg-royal-blue-600 text-white rounded-md hover:bg-royal-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-semibold"
+                  className="w-full flex items-center justify-center px-6 py-3 bg-royal-blue-600 text-white rounded-xl hover:bg-royal-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-semibold"
                 >
                   {loading ? (
                     t('sendingMessage')

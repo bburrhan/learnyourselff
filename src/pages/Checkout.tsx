@@ -18,6 +18,7 @@ interface Course {
   currency: string;
   cover_image_url: string;
   category: string;
+  categoryName?: string;
 }
 
 const Checkout: React.FC = () => {
@@ -75,7 +76,14 @@ const Checkout: React.FC = () => {
       }
 
       logger.info('Course fetched for checkout', { courseId, title: data.title })
-      setCourse(data);
+
+      const { data: catData } = await supabase
+        .from('categories')
+        .select('name')
+        .eq('slug', data.category)
+        .maybeSingle()
+
+      setCourse({ ...data, categoryName: catData?.name });
       return true
     }, 'fetchCourseForCheckout', false)
     
@@ -108,13 +116,12 @@ const Checkout: React.FC = () => {
       
       if (!user) {
         logger.info('Creating user account for anonymous purchase', { email: formData.email })
-        
-        // Generate a secure random password
-        const password = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
-        
+
+        const tempPassword = crypto.randomUUID().replace(/-/g, '') + 'Aa1!'
+
         const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
           email: formData.email,
-          password: password,
+          password: tempPassword,
           options: {
             data: {
               full_name: formData.fullName,
@@ -122,14 +129,19 @@ const Checkout: React.FC = () => {
             },
           },
         })
-        
-        if (signUpError) {
+
+        if (signUpError && signUpError.message !== 'User already registered') {
           logger.error('Failed to create user account', { error: signUpError })
           throw signUpError
         }
-        
-        userId = signUpData.user?.id
+
+        userId = signUpData?.user?.id
         logger.info('Created user account for purchase', { userId, email: formData.email })
+
+        await supabase.auth.resetPasswordForEmail(formData.email, {
+          redirectTo: `${window.location.origin}/${i18n.language}/reset-password`,
+        })
+        logger.info('Password reset email sent to new user', { email: formData.email })
       }
 
       // Handle free courses - create purchase record and send email
@@ -313,8 +325,8 @@ const Checkout: React.FC = () => {
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900">{course.title}</h3>
                     <div className="flex items-center gap-2 mt-2">
-                      <span className="px-2 py-1 bg-royal-blue-100 text-royal-blue-800 text-xs rounded-full">
-                        {course.category}
+                      <span className="px-2 py-1 bg-royal-blue-100 text-royal-blue-800 text-xs rounded-full capitalize">
+                        {course.categoryName || course.category}
                       </span>
                     </div>
                   </div>
@@ -386,7 +398,7 @@ const Checkout: React.FC = () => {
                 {processing ? (
                   <>
                     <LoadingSpinner />
-                    Processing...
+                    {t('processing')}
                   </>
                 ) : (
                   <>

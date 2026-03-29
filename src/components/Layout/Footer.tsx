@@ -1,14 +1,32 @@
-import React from 'react'
-import { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Mail, Globe, Heart, Bug } from 'lucide-react'
+import { Mail, Globe, Heart } from 'lucide-react'
 import LanguageAwareLink from './LanguageAwareLink'
 import DebugPanel from '../Debug/DebugPanel'
+import { supabase } from '../../lib/supabase'
+
+interface Category {
+  name: string
+  slug: string
+}
 
 const Footer: React.FC = () => {
   const { t } = useTranslation()
   const [debugPanelOpen, setDebugPanelOpen] = useState(false)
   const [debugClickCount, setDebugClickCount] = useState(0)
+  const [categories, setCategories] = useState<Category[]>([])
+
+  useEffect(() => {
+    supabase
+      .from('categories')
+      .select('name, slug')
+      .eq('is_active', true)
+      .order('name')
+      .limit(5)
+      .then(({ data }) => {
+        if (data) setCategories(data)
+      })
+  }, [])
 
   // Secret debug panel activation (click logo 5 times in development)
   const handleLogoClick = () => {
@@ -40,7 +58,7 @@ const Footer: React.FC = () => {
               <span className="text-xl font-bold text-white">LearnYourself</span>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
-              Democratizing access to quality education through affordable digital courses.
+              {t('brandTagline')}
             </p>
             <div className="flex gap-x-4 pt-2">
               <div className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 cursor-pointer transition-colors">
@@ -83,31 +101,22 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-lg font-semibold mb-6 text-white">{t('categories')}</h3>
             <ul className="space-y-2">
-              <li>
-                <LanguageAwareLink to="/courses?category=business-entrepreneurship" className="text-gray-400 hover:text-white transition-colors">
-                  Business & Entrepreneurship
-                </LanguageAwareLink>
-              </li>
-              <li>
-                <LanguageAwareLink to="/courses?category=marketing-content" className="text-gray-400 hover:text-white transition-colors">
-                  Marketing & Content
-                </LanguageAwareLink>
-              </li>
-              <li>
-                <LanguageAwareLink to="/courses?category=ai-technology" className="text-gray-400 hover:text-white transition-colors">
-                  AI & Technology
-                </LanguageAwareLink>
-              </li>
-              <li>
-                <LanguageAwareLink to="/courses?category=personal-development" className="text-gray-400 hover:text-white transition-colors">
-                  Personal Development
-                </LanguageAwareLink>
-              </li>
-              <li>
-                <LanguageAwareLink to="/courses?category=finance" className="text-gray-400 hover:text-white transition-colors">
-                  Finance
-                </LanguageAwareLink>
-              </li>
+              {categories.length > 0 ? categories.map((cat) => (
+                <li key={cat.slug}>
+                  <LanguageAwareLink
+                    to={`/courses?category=${cat.slug}`}
+                    className="text-gray-400 hover:text-white transition-colors"
+                  >
+                    {cat.name}
+                  </LanguageAwareLink>
+                </li>
+              )) : (
+                <li>
+                  <LanguageAwareLink to="/courses" className="text-gray-400 hover:text-white transition-colors">
+                    {t('allCourses')}
+                  </LanguageAwareLink>
+                </li>
+              )}
             </ul>
           </div>
 

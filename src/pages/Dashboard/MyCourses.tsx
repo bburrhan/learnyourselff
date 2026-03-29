@@ -161,7 +161,7 @@ const MyCourses: React.FC = () => {
             </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">{t('noCoursesPurchased')}</h3>
             <p className="text-gray-500 mb-6 text-sm">
-              Start learning by purchasing your first course
+              {t('startPurchasing')}
             </p>
             <LanguageAwareLink
               to="/courses"
@@ -202,7 +202,7 @@ const MyCourses: React.FC = () => {
                           <div className="absolute inset-0 bg-green-900/60 flex items-center justify-center">
                             <div className="text-center text-white">
                               <CheckCircle2 className="h-8 w-8 mx-auto mb-1" />
-                              <span className="text-xs font-medium">Complete</span>
+                              <span className="text-xs font-medium">{t('completed')}</span>
                             </div>
                           </div>
                         )}
@@ -226,7 +226,7 @@ const MyCourses: React.FC = () => {
                                   {type.charAt(0).toUpperCase() + type.slice(1)}
                                 </span>
                               ))}
-                            <span className="text-xs text-gray-400 flex items-center gap-1">
+                                <span className="text-xs text-gray-400 flex items-center gap-1">
                               <Calendar className="h-3 w-3" />
                               {format(new Date(purchase.created_at), 'MMM d, yyyy')}
                             </span>
@@ -251,7 +251,7 @@ const MyCourses: React.FC = () => {
                         <div className="mb-4">
                           <div className="flex items-center justify-between text-xs mb-1.5">
                             <span className="text-gray-500">
-                              {progress.completedItems} of {progress.totalItems} items completed
+                              {t('itemsCompleted', { completed: progress.completedItems, total: progress.totalItems })}
                             </span>
                             <span className="font-medium text-gray-700">
                               {progress.overallPercent}%
@@ -267,7 +267,7 @@ const MyCourses: React.FC = () => {
                           </div>
                           {progress.lastAccessed && (
                             <p className="text-xs text-gray-400 mt-1">
-                              Last accessed{' '}
+                              {t('lastAccessed')}{' '}
                               {format(new Date(progress.lastAccessed), 'MMM d, yyyy')}
                             </p>
                           )}
@@ -289,30 +289,30 @@ const MyCourses: React.FC = () => {
                             {isComplete ? (
                               <>
                                 <CheckCircle2 className="h-4 w-4" />
-                                Review Course
+                                {t('reviewCourse')}
                               </>
                             ) : hasStarted ? (
                               <>
                                 <PlayCircle className="h-4 w-4" />
-                                Continue Learning
+                                {t('continueLearning')}
                               </>
                             ) : (
                               <>
                                 <PlayCircle className="h-4 w-4" />
-                                Start Learning
+                                {t('startLearningCourse')}
                               </>
                             )}
                           </LanguageAwareLink>
                         ) : (
                           <span className="text-xs text-gray-400">
-                            No content available yet
+                            {t('noContentYet')}
                           </span>
                         )}
                         <LanguageAwareLink
                           to={`/course/${course.slug || course.id}`}
                           className="text-sm text-gray-500 hover:text-royal-blue-600 transition-colors"
                         >
-                          View Details
+                          {t('viewDetails')}
                         </LanguageAwareLink>
                       </div>
                     </div>

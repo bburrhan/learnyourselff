@@ -7,6 +7,8 @@ import LanguageAwareLink from '../components/Layout/LanguageAwareLink'
 import { Calendar, User, Tag, ArrowLeft, ArrowRight, Share2, BookOpen } from 'lucide-react'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
+import useSeo from '../hooks/useSeo'
+import { renderMarkdown } from '../utils/renderMarkdown'
 
 type BlogPost = Database['public']['Tables']['blog_posts']['Row']
 
@@ -17,7 +19,11 @@ const BlogPost: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Scroll to top when component mounts
+  useSeo({
+    title: post?.title,
+    description: post?.excerpt ?? undefined,
+  })
+
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
@@ -181,10 +187,9 @@ const BlogPost: React.FC = () => {
 
         {/* Content */}
         <div className="prose prose-lg max-w-none">
-          <div
-            className="text-gray-800 leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: post.content.replace(/\n/g, '<br />') }}
-          />
+          <div className="text-gray-800 leading-relaxed">
+            {renderMarkdown(post.content)}
+          </div>
         </div>
 
         {/* TL;DR Section */}
@@ -194,10 +199,9 @@ const BlogPost: React.FC = () => {
               <BookOpen className="h-5 w-5 text-yellow-600 mt-1 me-3 flex-shrink-0" />
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">TL;DR</h3>
-                <div
-                  className="text-gray-700 leading-relaxed whitespace-pre-line"
-                  dangerouslySetInnerHTML={{ __html: post.tldr.replace(/\n/g, '<br />') }}
-                />
+                <div className="text-gray-700 leading-relaxed">
+                  {renderMarkdown(post.tldr)}
+                </div>
               </div>
             </div>
           </div>
@@ -206,10 +210,9 @@ const BlogPost: React.FC = () => {
         {/* CTA Section */}
         {post.cta_text && post.cta_link ? (
           <div className="mt-12 bg-gradient-to-r from-royal-blue-50 to-royal-blue-100 border border-royal-blue-200 rounded-lg p-6">
-            <div
-              className="text-gray-800 mb-4"
-              dangerouslySetInnerHTML={{ __html: post.cta_text.replace(/\n/g, '<br />') }}
-            />
+            <div className="text-gray-800 mb-4">
+              {renderMarkdown(post.cta_text)}
+            </div>
             <LanguageAwareLink
               to={post.cta_link.startsWith('http') ? post.cta_link : post.cta_link}
               className="inline-flex items-center bg-royal-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-royal-blue-700 transition-colors"

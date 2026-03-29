@@ -110,7 +110,7 @@ const AccountSettings: React.FC = () => {
               type="email"
               value={user?.email || ''}
               disabled
-              className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500 cursor-not-allowed"
+              className="w-full px-3 py-2 border border-gray-300 rounded-xl bg-gray-50 text-gray-500 cursor-not-allowed"
             />
             <p className="mt-1 text-xs text-gray-500">{t('emailCannotChange')}</p>
           </div>
@@ -122,7 +122,7 @@ const AccountSettings: React.FC = () => {
             <input
               {...profileForm.register('fullName')}
               type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent"
             />
             {profileForm.formState.errors.fullName && (
               <p className="mt-1 text-sm text-red-600">
@@ -138,17 +138,22 @@ const AccountSettings: React.FC = () => {
             </label>
             <select
               {...profileForm.register('languagePreference')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent"
             >
               <option value="en">English</option>
               <option value="tr">Türkçe</option>
+              <option value="hi">हिन्दी</option>
+              <option value="id">Indonesia</option>
+              <option value="bn">বাংলা</option>
+              <option value="vi">Tiếng Việt</option>
+              <option value="ur">اردو</option>
             </select>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center justify-center px-4 py-2 bg-royal-blue-600 text-white rounded-xl hover:bg-royal-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {loading ? (
               t('saving')
@@ -177,7 +182,7 @@ const AccountSettings: React.FC = () => {
             <input
               {...passwordForm.register('currentPassword')}
               type="password"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent"
             />
             {passwordForm.formState.errors.currentPassword && (
               <p className="mt-1 text-sm text-red-600">
@@ -193,7 +198,7 @@ const AccountSettings: React.FC = () => {
             <input
               {...passwordForm.register('newPassword')}
               type="password"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent"
             />
             {passwordForm.formState.errors.newPassword && (
               <p className="mt-1 text-sm text-red-600">
@@ -209,7 +214,7 @@ const AccountSettings: React.FC = () => {
             <input
               {...passwordForm.register('confirmPassword')}
               type="password"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent"
             />
             {passwordForm.formState.errors.confirmPassword && (
               <p className="mt-1 text-sm text-red-600">
@@ -221,7 +226,7 @@ const AccountSettings: React.FC = () => {
           <button
             type="submit"
             disabled={passwordLoading}
-            className="flex items-center justify-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center justify-center px-4 py-2 bg-royal-blue-600 text-white rounded-xl hover:bg-royal-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {passwordLoading ? (
               t('updating')

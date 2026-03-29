@@ -201,7 +201,7 @@ const Courses: React.FC = () => {
             {/* Format Filter */}
             <div className="mt-5">
               <label className="block text-sm font-semibold text-gray-700 mb-3">
-                Format
+                {t('filterByFormat')}
               </label>
               <div className="flex flex-wrap gap-2">
                 <button
@@ -213,7 +213,7 @@ const Courses: React.FC = () => {
                       : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
                   }`}
                 >
-                  All Formats
+                  {t('allFormats')}
                 </button>
                 {FORMAT_TYPES.map((fmt) => (
                   <button

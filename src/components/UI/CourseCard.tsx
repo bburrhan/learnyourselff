@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Database, FORMAT_TYPES } from '../../lib/supabase'
 import LanguageAwareLink from '../Layout/LanguageAwareLink'
@@ -12,8 +12,11 @@ interface CourseCardProps {
   categoryName?: string
 }
 
+const FALLBACK_IMAGE = 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg'
+
 const CourseCard: React.FC<CourseCardProps> = ({ course, className = '', categoryName }) => {
   const { t } = useTranslation()
+  const [imgSrc, setImgSrc] = useState(course.cover_image_url || FALLBACK_IMAGE)
 
   const formatPrice = (price: number, currency: string) => {
     if (price === 0) {
@@ -30,24 +33,19 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, className = '', categor
       to={`/course/${course.slug || course.id}`}
       className={`block bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group transform hover:-translate-y-1 flex flex-col ${className}`}
     >
-      <div className="relative w-full aspect-video overflow-hidden">
+      <div className="relative w-full aspect-video overflow-hidden bg-gray-100">
         <img
-          src={course.cover_image_url}
+          src={imgSrc}
           alt={course.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
-          onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            if (target.src !== 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg') {
-              target.src = 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg';
-            }
-          }}
+          onError={() => setImgSrc(FALLBACK_IMAGE)}
         />
       </div>
 
       <div className="flex-1 p-4 sm:p-5 flex flex-col">
         <div className="mb-2 flex items-center gap-2 flex-wrap">
-          <span className="bg-royal-blue-600 text-white px-2.5 py-1 rounded-md text-xs sm:text-sm font-bold">
+          <span className="bg-royal-blue-600 text-white px-2.5 py-1 rounded-xl text-xs sm:text-sm font-bold">
             {formatPrice(course.price, course.currency)}
           </span>
           <span className="inline-block bg-gray-100 text-gray-700 text-xs px-2.5 py-0.5 rounded-full font-medium">

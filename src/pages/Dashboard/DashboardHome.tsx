@@ -101,10 +101,10 @@ const DashboardHome: React.FC = () => {
     <div className="space-y-8">
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-xl shadow-md p-6">
           <div className="flex items-center">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <BookOpen className="h-6 w-6 text-blue-600" />
+            <div className="p-2 bg-royal-blue-100 rounded-xl">
+              <BookOpen className="h-6 w-6 text-royal-blue-600" />
             </div>
             <div className="ms-4">
               <p className="text-sm text-gray-600">{t('totalCourses')}</p>
@@ -113,9 +113,9 @@ const DashboardHome: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-xl shadow-md p-6">
           <div className="flex items-center">
-            <div className="p-2 bg-green-100 rounded-lg">
+            <div className="p-2 bg-green-100 rounded-xl">
               <Download className="h-6 w-6 text-green-600" />
             </div>
             <div className="ms-4">
@@ -125,10 +125,10 @@ const DashboardHome: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-xl shadow-md p-6">
           <div className="flex items-center">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <TrendingUp className="h-6 w-6 text-purple-600" />
+            <div className="p-2 bg-warm-orange-100 rounded-xl">
+              <TrendingUp className="h-6 w-6 text-warm-orange-600" />
             </div>
             <div className="ms-4">
               <p className="text-sm text-gray-600">{t('thisWeek')}</p>
@@ -139,13 +139,13 @@ const DashboardHome: React.FC = () => {
       </div>
 
       {/* Recent Purchases */}
-      <div className="bg-white rounded-lg shadow-md">
+      <div className="bg-white rounded-xl shadow-md">
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold text-gray-900">{t('recentPurchases')}</h2>
             <LanguageAwareLink
               to="/dashboard/courses"
-              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+              className="text-royal-blue-600 hover:text-royal-blue-700 text-sm font-medium"
             >
               {t('viewAll')}
             </LanguageAwareLink>
@@ -158,7 +158,7 @@ const DashboardHome: React.FC = () => {
               <p className="text-gray-500">{t('noCoursesPurchased')}</p>
               <LanguageAwareLink
                 to="/courses"
-                className="inline-flex items-center mt-4 text-blue-600 hover:text-blue-700 font-medium"
+                className="inline-flex items-center mt-4 text-royal-blue-600 hover:text-royal-blue-700 font-medium"
               >
                 {t('browseCoursesBtn')}
                 <ExternalLink className="h-4 w-4 ms-1" />
@@ -189,13 +189,13 @@ const DashboardHome: React.FC = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-sm text-gray-600">
-                      Downloaded {purchase.download_count} times
+                      {t('downloadedTimes', { count: purchase.download_count })}
                     </p>
                     <LanguageAwareLink
                       to="/dashboard/courses"
-                      className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                      className="text-royal-blue-600 hover:text-royal-blue-700 text-sm font-medium"
                     >
-                      {t('view')} Details
+                      {t('viewDetails')}
                     </LanguageAwareLink>
                   </div>
                 </div>
@@ -206,36 +206,36 @@ const DashboardHome: React.FC = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-white rounded-xl shadow-md p-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('quickActions')}</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <LanguageAwareLink
             to="/courses"
-            className="flex flex-col items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+            className="flex flex-col items-center p-4 bg-royal-blue-50 rounded-xl hover:bg-royal-blue-100 transition-colors"
           >
-            <BookOpen className="h-8 w-8 text-blue-600 mb-2" />
-            <span className="text-sm font-medium text-blue-900">{t('browseCoursesBtn')}</span>
+            <BookOpen className="h-8 w-8 text-royal-blue-600 mb-2" />
+            <span className="text-sm font-medium text-royal-blue-900">{t('browseCoursesBtn')}</span>
           </LanguageAwareLink>
           <LanguageAwareLink
             to="/dashboard/courses"
-            className="flex flex-col items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
+            className="flex flex-col items-center p-4 bg-green-50 rounded-xl hover:bg-green-100 transition-colors"
           >
             <Download className="h-8 w-8 text-green-600 mb-2" />
             <span className="text-sm font-medium text-green-900">{t('myCourses')}</span>
           </LanguageAwareLink>
           <LanguageAwareLink
             to="/dashboard/settings"
-            className="flex flex-col items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
+            className="flex flex-col items-center p-4 bg-emerald-50 rounded-xl hover:bg-emerald-100 transition-colors"
           >
-            <Settings className="h-8 w-8 text-purple-600 mb-2" />
-            <span className="text-sm font-medium text-purple-900">{t('settings')}</span>
+            <Settings className="h-8 w-8 text-emerald-600 mb-2" />
+            <span className="text-sm font-medium text-emerald-900">{t('settings')}</span>
           </LanguageAwareLink>
           <LanguageAwareLink
             to="/blog"
-            className="flex flex-col items-center p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors"
+            className="flex flex-col items-center p-4 bg-warm-orange-50 rounded-xl hover:bg-warm-orange-100 transition-colors"
           >
-            <ExternalLink className="h-8 w-8 text-orange-600 mb-2" />
-            <span className="text-sm font-medium text-orange-900">{t('blog')}</span>
+            <ExternalLink className="h-8 w-8 text-warm-orange-600 mb-2" />
+            <span className="text-sm font-medium text-warm-orange-900">{t('blog')}</span>
           </LanguageAwareLink>
         </div>
       </div>

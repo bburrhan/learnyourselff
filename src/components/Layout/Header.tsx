@@ -222,8 +222,8 @@ const Header: React.FC = () => {
 
               <div className="border-t border-gray-200 pt-4 mt-4 mx-2">
                 <div className="px-4 py-2 mb-2">
-                  <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Language</p>
-                  <div className="grid grid-cols-4 gap-2">
+                  <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">{t('languageLabel')}</p>
+                  <div className="grid grid-cols-2 gap-1.5">
                     {LANGUAGES.map((lang) => (
                       <button
                         key={lang.code}
@@ -231,14 +231,14 @@ const Header: React.FC = () => {
                           changeLanguage(lang.code)
                           setMobileMenuOpen(false)
                         }}
-                        className={`px-3 py-2 text-sm rounded-lg transition-colors text-start flex items-center gap-x-2 ${
+                        className={`px-3 py-2 text-sm rounded-lg transition-colors text-start flex items-center gap-x-2 truncate ${
                           i18n.language === lang.code
                             ? 'bg-royal-blue-50 text-royal-blue-600 font-medium'
                             : 'text-gray-700 hover:bg-gray-50'
                         }`}
                       >
-                        <span className="text-base leading-none">{lang.flag}</span>
-                        <span>{lang.label}</span>
+                        <span className="text-base leading-none flex-shrink-0">{lang.flag}</span>
+                        <span className="truncate">{lang.label}</span>
                       </button>
                     ))}
                   </div>
@@ -269,7 +269,7 @@ const Header: React.FC = () => {
                         onClick={() => setMobileMenuOpen(false)}
                         className="flex items-center gap-x-2 px-4 py-3 text-gray-700 hover:text-royal-blue-600 rounded-lg hover:bg-gray-50 transition-colors"
                       >
-                        <span>Blog Management</span>
+                        <span>{t('blogManagement')}</span>
                       </LanguageAwareLink>
                     )}
                     <button

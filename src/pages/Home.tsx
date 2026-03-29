@@ -2,6 +2,7 @@ import React from 'react'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCourses } from '../hooks/useCourses'
+import useSeo from '../hooks/useSeo'
 import { HomeCourseCardSkeleton } from '../components/UI/Skeleton'
 import LanguageAwareLink from '../components/Layout/LanguageAwareLink'
 import { 
@@ -24,7 +25,11 @@ const Home: React.FC = () => {
   const { t } = useTranslation()
   const { courses: sampleCourses, loading: sampleLoading } = useCourses({ priceRange: [0, 10] })
 
-  // Scroll to top when component mounts
+  useSeo({
+    title: t('heroTitleHome'),
+    description: t('heroSubtitleHome'),
+  })
+
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])

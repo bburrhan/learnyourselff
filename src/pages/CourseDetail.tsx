@@ -7,6 +7,7 @@ import { handleSupabaseError, handleAsyncError } from '../utils/errorHandler'
 import { renderMarkdown } from '../utils/renderMarkdown'
 import LoadingSpinner from '../components/UI/LoadingSpinner'
 import LanguageAwareLink from '../components/Layout/LanguageAwareLink'
+import useSeo from '../hooks/useSeo'
 import {
   BookOpen,
   Download,
@@ -31,6 +32,11 @@ const CourseDetail: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [categoryName, setCategoryName] = useState<string | null>(null)
+
+  useSeo({
+    title: course?.title,
+    description: course?.description ?? undefined,
+  })
 
   const isUuid = (val: string) =>
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(val)
@@ -127,7 +133,15 @@ const CourseDetail: React.FC = () => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency || 'USD' }).format(price)
   }
 
-  const languageLabel: Record<string, string> = { en: 'English', tr: 'Türkçe', hi: 'Hindi' }
+  const languageLabel: Record<string, string> = {
+    en: 'English',
+    tr: 'Türkçe',
+    hi: 'हिन्दी',
+    id: 'Indonesia',
+    bn: 'বাংলা',
+    vi: 'Tiếng Việt',
+    ur: 'اردو',
+  }
 
   const formatBadges = FORMAT_TYPES.filter(f =>
     course.format_types?.includes(f.value)

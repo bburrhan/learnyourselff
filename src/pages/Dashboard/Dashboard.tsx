@@ -59,26 +59,28 @@ const Dashboard: React.FC = () => {
         </div>
 
         <div className="grid lg:grid-cols-4 gap-8">
-          {/* Sidebar */}
+          {/* Sidebar - mobile horizontal scroll, desktop vertical */}
           <div className="lg:col-span-1">
-            <nav className="bg-white rounded-lg shadow-md p-4 space-y-2">
-              {sidebarItems.map((item) => {
-                const Icon = item.icon
-                return (
-                  <LanguageAwareLink
-                    key={item.path}
-                    to={item.path}
-                    className={`flex items-center space-x-3 px-3 py-2 rounded-md transition-colors ${
-                      isActive(item.path, item.exact)
-                        ? 'bg-blue-50 text-blue-600'
-                        : 'text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    <Icon className="h-5 w-5" />
-                    <span className="font-medium">{item.label}</span>
-                  </LanguageAwareLink>
-                )
-              })}
+            <nav className="bg-white rounded-xl shadow-md p-4">
+              <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-1 lg:pb-0">
+                {sidebarItems.map((item) => {
+                  const Icon = item.icon
+                  return (
+                    <LanguageAwareLink
+                      key={item.path}
+                      to={item.path}
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors whitespace-nowrap flex-shrink-0 lg:flex-shrink lg:whitespace-normal ${
+                        isActive(item.path, item.exact)
+                          ? 'bg-royal-blue-50 text-royal-blue-600'
+                          : 'text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      <Icon className="h-5 w-5 flex-shrink-0" />
+                      <span className="font-medium">{item.label}</span>
+                    </LanguageAwareLink>
+                  )
+                })}
+              </div>
             </nav>
           </div>
 
