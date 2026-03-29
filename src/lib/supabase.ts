@@ -52,6 +52,7 @@ export type Database = {
         Row: {
           id: string
           title: string
+          short_description: string
           description: string
           price: number
           currency: string
@@ -70,6 +71,7 @@ export type Database = {
         Insert: {
           id?: string
           title: string
+          short_description?: string
           description: string
           price: number
           currency?: string
@@ -88,6 +90,7 @@ export type Database = {
         Update: {
           id?: string
           title?: string
+          short_description?: string
           description?: string
           price?: number
           currency?: string

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { supabase, Database, ContentType, FORMAT_TYPES, FormatType } from '../../lib/supabase'
 import { handleSupabaseError, handleAsyncError } from '../../utils/errorHandler'
@@ -14,6 +14,12 @@ import {
   Music,
   Video,
   Info,
+  Bold,
+  Italic,
+  List,
+  ListOrdered,
+  Heading2,
+  Minus,
 } from 'lucide-react'
 import FileUploader from '../UI/FileUploader'
 import ContentManager from './ContentManager'
@@ -44,8 +50,11 @@ const CourseFormWizard: React.FC<CourseFormWizardProps> = ({
   const [submitting, setSubmitting] = useState(false)
   const [savedCourse, setSavedCourse] = useState<Course | null>(editingCourse)
 
+  const descriptionRef = useRef<HTMLTextAreaElement>(null)
+
   const [formData, setFormData] = useState({
     title: '',
+    short_description: '',
     description: '',
     price: 0,
     currency: 'USD',
@@ -63,6 +72,7 @@ const CourseFormWizard: React.FC<CourseFormWizardProps> = ({
     if (editingCourse) {
       setFormData({
         title: editingCourse.title,
+        short_description: editingCourse.short_description || '',
         description: editingCourse.description,
         price: editingCourse.price,
         currency: editingCourse.currency,
@@ -143,6 +153,39 @@ const CourseFormWizard: React.FC<CourseFormWizardProps> = ({
         ? prev.format_types.filter(f => f !== value)
         : [...prev.format_types, value],
     }))
+  }
+
+  const insertMarkdown = (before: string, after: string = '') => {
+    const ta = descriptionRef.current
+    if (!ta) return
+    const start = ta.selectionStart
+    const end = ta.selectionEnd
+    const selected = formData.description.slice(start, end)
+    const replacement = before + (selected || 'text') + after
+    const newVal =
+      formData.description.slice(0, start) + replacement + formData.description.slice(end)
+    setFormData(prev => ({ ...prev, description: newVal }))
+    setTimeout(() => {
+      ta.focus()
+      const cursor = start + before.length + (selected || 'text').length + after.length
+      ta.setSelectionRange(cursor, cursor)
+    }, 0)
+  }
+
+  const insertLinePrefix = (prefix: string) => {
+    const ta = descriptionRef.current
+    if (!ta) return
+    const start = ta.selectionStart
+    const lineStart = formData.description.lastIndexOf('\n', start - 1) + 1
+    const newVal =
+      formData.description.slice(0, lineStart) +
+      prefix +
+      formData.description.slice(lineStart)
+    setFormData(prev => ({ ...prev, description: newVal }))
+    setTimeout(() => {
+      ta.focus()
+      ta.setSelectionRange(start + prefix.length, start + prefix.length)
+    }, 0)
   }
 
   const contentTypeIcons: Record<string, { icon: React.ReactNode; color: string }> = {
@@ -246,14 +289,93 @@ const CourseFormWizard: React.FC<CourseFormWizardProps> = ({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Description</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Short Description
+                  <span className="ml-1 text-xs text-gray-400 font-normal">
+                    (shown in card / course header — 1-2 sentences)
+                  </span>
+                </label>
                 <textarea
                   required
-                  rows={3}
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
+                  rows={2}
+                  value={formData.short_description}
+                  onChange={(e) => setFormData({ ...formData, short_description: e.target.value })}
+                  placeholder="A concise hook that appears on course cards and at the top of the detail page."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow resize-none"
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Full Description
+                  <span className="ml-1 text-xs text-gray-400 font-normal">
+                    (supports **bold**, *italic*, ## headings, - lists)
+                  </span>
+                </label>
+                <div className="border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-shadow">
+                  <div className="flex items-center gap-0.5 px-2 py-1.5 bg-gray-50 border-b border-gray-200">
+                    <button
+                      type="button"
+                      title="Bold"
+                      onClick={() => insertMarkdown('**', '**')}
+                      className="p-1.5 rounded hover:bg-gray-200 text-gray-600 transition-colors"
+                    >
+                      <Bold className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      title="Italic"
+                      onClick={() => insertMarkdown('*', '*')}
+                      className="p-1.5 rounded hover:bg-gray-200 text-gray-600 transition-colors"
+                    >
+                      <Italic className="h-3.5 w-3.5" />
+                    </button>
+                    <div className="w-px h-4 bg-gray-300 mx-1" />
+                    <button
+                      type="button"
+                      title="Heading"
+                      onClick={() => insertLinePrefix('## ')}
+                      className="p-1.5 rounded hover:bg-gray-200 text-gray-600 transition-colors"
+                    >
+                      <Heading2 className="h-3.5 w-3.5" />
+                    </button>
+                    <div className="w-px h-4 bg-gray-300 mx-1" />
+                    <button
+                      type="button"
+                      title="Bullet list"
+                      onClick={() => insertLinePrefix('- ')}
+                      className="p-1.5 rounded hover:bg-gray-200 text-gray-600 transition-colors"
+                    >
+                      <List className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      title="Numbered list"
+                      onClick={() => insertLinePrefix('1. ')}
+                      className="p-1.5 rounded hover:bg-gray-200 text-gray-600 transition-colors"
+                    >
+                      <ListOrdered className="h-3.5 w-3.5" />
+                    </button>
+                    <div className="w-px h-4 bg-gray-300 mx-1" />
+                    <button
+                      type="button"
+                      title="Horizontal rule"
+                      onClick={() => insertMarkdown('\n---\n')}
+                      className="p-1.5 rounded hover:bg-gray-200 text-gray-600 transition-colors"
+                    >
+                      <Minus className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                  <textarea
+                    ref={descriptionRef}
+                    required
+                    rows={8}
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    placeholder="Write the full course description here. Use the toolbar above for formatting."
+                    className="w-full px-3 py-2 font-mono text-sm focus:outline-none resize-y"
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
