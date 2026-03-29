@@ -195,13 +195,14 @@ Deno.serve(async (req: Request) => {
       const minPrice = params.get("min_price");
       const maxPrice = params.get("max_price");
       const isFeatured = params.get("is_featured");
+      const formatType = params.get("format_type");
       const page = parseInt(params.get("page") ?? "1");
       const limit = Math.min(parseInt(params.get("limit") ?? "20"), 100);
       const offset = (page - 1) * limit;
 
       let query = supabase
         .from("courses")
-        .select("id, title, description, price, currency, category, cover_image_url, tags, language, content_types, is_featured, created_at", { count: "exact" })
+        .select("id, title, description, price, currency, category, cover_image_url, tags, language, content_types, format_types, is_featured, created_at", { count: "exact" })
         .eq("is_active", true);
 
       if (language) query = query.eq("language", language);
@@ -209,6 +210,7 @@ Deno.serve(async (req: Request) => {
       if (isFeatured === "true") query = query.eq("is_featured", true);
       if (minPrice) query = query.gte("price", parseFloat(minPrice));
       if (maxPrice) query = query.lte("price", parseFloat(maxPrice));
+      if (formatType) query = query.contains("format_types", [formatType]);
       if (search) query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
 
       query = query.order("created_at", { ascending: false }).range(offset, offset + limit - 1);
@@ -411,7 +413,7 @@ Deno.serve(async (req: Request) => {
 
       const { data: courses } = await supabase
         .from("courses")
-        .select("id, title, description, cover_image_url, content_types, language, category")
+        .select("id, title, description, cover_image_url, content_types, format_types, language, category")
         .in("id", courseIds);
 
       const { data: progressRows } = await supabase

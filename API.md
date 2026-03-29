@@ -194,6 +194,7 @@ Common codes: `UNAUTHORIZED`, `NOT_FOUND`, `MISSING_FIELDS`, `DB_ERROR`, `INTERN
 | `min_price` | number | Minimum price |
 | `max_price` | number | Maximum price |
 | `is_featured` | boolean | `true` to return featured courses only |
+| `format_type` | string | Filter by a single format type (e.g. `book`, `guide`, `checklist`, `listicle`, `notion-template`, `email-course`, `podcast`, `prompt-pack`, `toolstack`, `workbook`) |
 | `page` | number | Page number (default: 1) |
 | `limit` | number | Results per page (default: 20, max: 100) |
 
@@ -212,6 +213,7 @@ Common codes: `UNAUTHORIZED`, `NOT_FOUND`, `MISSING_FIELDS`, `DB_ERROR`, `INTERN
       "tags": ["mindset", "habits"],
       "language": "en",
       "content_types": ["video", "audio"],
+      "format_types": ["guide", "workbook"],
       "is_featured": true,
       "created_at": "2025-01-01T00:00:00Z"
     }
@@ -397,6 +399,7 @@ Returns all purchased courses with progress.
       "title": "Master Your Mindset",
       "cover_image_url": "https://...",
       "content_types": ["video"],
+      "format_types": ["guide", "workbook"],
       "language": "en",
       "purchase_id": "uuid",
       "purchased_at": "2025-01-01T00:00:00Z",
