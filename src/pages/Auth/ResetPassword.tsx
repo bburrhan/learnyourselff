@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { supabase } from '../../lib/supabase'
 import LanguageAwareLink from '../../components/Layout/LanguageAwareLink'
-import { Eye, EyeOff, Lock } from 'lucide-react'
+import { Eye, EyeOff, Lock, ArrowLeft } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 const resetPasswordSchema = z.object({
@@ -26,9 +26,8 @@ const ResetPassword: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [validSession, setValidSession] = useState(false)
+  const [validSession, setValidSession] = useState<boolean | null>(null)
 
-  // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
@@ -42,19 +41,42 @@ const ResetPassword: React.FC = () => {
   })
 
   useEffect(() => {
-    // Check if we have valid session from password reset link
-    const checkSession = async () => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setValidSession(true)
+      } else if (event === 'SIGNED_IN' && session) {
+        setValidSession(true)
+      }
+    })
+
+    const checkExistingSession = async () => {
+      const hash = window.location.hash
+      if (hash.includes('type=recovery') || hash.includes('access_token')) {
+        return
+      }
+
       const { data: { session } } = await supabase.auth.getSession()
       if (session) {
         setValidSession(true)
       } else {
-        // If no session, redirect to forgot password page
-        navigate('/forgot-password')
+        setValidSession(false)
       }
     }
 
-    checkSession()
-  }, [navigate])
+    checkExistingSession()
+
+    const timer = setTimeout(() => {
+      setValidSession((prev) => {
+        if (prev === null) return false
+        return prev
+      })
+    }, 3000)
+
+    return () => {
+      subscription.unsubscribe()
+      clearTimeout(timer)
+    }
+  }, [])
 
   const onSubmit = async (data: ResetPasswordForm) => {
     setLoading(true)
@@ -62,7 +84,7 @@ const ResetPassword: React.FC = () => {
       const { error } = await supabase.auth.updateUser({
         password: data.password,
       })
-      
+
       if (error) {
         toast.error(error.message)
       } else {
@@ -76,7 +98,18 @@ const ResetPassword: React.FC = () => {
     }
   }
 
-  if (!validSession) {
+  if (validSession === null) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-royal-blue-600 mx-auto mb-4" />
+          <p className="text-gray-600">Verifying reset link...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (validSession === false) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -101,9 +134,9 @@ const ResetPassword: React.FC = () => {
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
           <LanguageAwareLink to="/" className="flex items-center gap-x-2">
-            <img 
-              src="/Learnyourself_Logo copy.svg" 
-              alt="LearnYourself Logo" 
+            <img
+              src="/Learnyourself_Logo copy.svg"
+              alt="LearnYourself Logo"
               className="h-10 w-10"
             />
             <span className="text-2xl font-bold text-gray-900">LearnYourself</span>
