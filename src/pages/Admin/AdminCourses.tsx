@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { supabase, Database } from '../../lib/supabase'
+import { supabase, Database, FORMAT_TYPES } from '../../lib/supabase'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
 import { handleSupabaseError, handleAsyncError } from '../../utils/errorHandler'
 import {
@@ -220,6 +220,9 @@ const AdminCourses: React.FC = () => {
                     Content
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Format
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     {t('price')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
@@ -284,6 +287,26 @@ const AdminCourses: React.FC = () => {
                             <AlertTriangle className="h-3.5 w-3.5" />
                             No content
                           </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        {course.format_types && course.format_types.length > 0 ? (
+                          <div className="flex flex-wrap gap-1">
+                            {course.format_types.map((ft) => {
+                              const cfg = FORMAT_TYPES.find(f => f.value === ft)
+                              if (!cfg) return null
+                              return (
+                                <span
+                                  key={ft}
+                                  className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold border ${cfg.bg} ${cfg.color} ${cfg.border}`}
+                                >
+                                  {cfg.label}
+                                </span>
+                              )
+                            })}
+                          </div>
+                        ) : (
+                          <span className="text-xs text-gray-400">—</span>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">

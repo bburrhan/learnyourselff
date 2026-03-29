@@ -11,6 +11,7 @@ export const useCourses = (filters?: {
   language?: string
   search?: string
   priceRange?: [number, number]
+  formatType?: string
 }) => {
   const [courses, setCourses] = useState<Course[]>([])
   const [loading, setLoading] = useState(true)
@@ -47,7 +48,10 @@ export const useCourses = (filters?: {
         if (filters?.search) {
           query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`)
         }
-        
+        if (filters?.formatType && filters.formatType !== 'all') {
+          query = query.contains('format_types', [filters.formatType])
+        }
+
         const { data: supabaseCourses, error: supabaseError } = await query
         
         logger.debug('Supabase courses result', { 
@@ -77,7 +81,7 @@ export const useCourses = (filters?: {
     }
 
     fetchCourses()
-  }, [filters?.category, filters?.search, filters?.priceRange?.[0], filters?.priceRange?.[1], i18n.language])
+  }, [filters?.category, filters?.search, filters?.priceRange?.[0], filters?.priceRange?.[1], filters?.formatType, i18n.language])
 
   return { courses, loading, error }
 }

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
 import { Search, Filter, X, AlertCircle } from 'lucide-react'
 import { useCourses } from '../hooks/useCourses'
-import { supabase } from '../lib/supabase'
+import { supabase, FORMAT_TYPES } from '../lib/supabase'
 import CourseCard from '../components/UI/CourseCard'
 import { CourseCardSkeleton } from '../components/UI/Skeleton'
 
@@ -25,6 +25,7 @@ const Courses: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '')
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all')
   const [selectedLanguage, setSelectedLanguage] = useState(searchParams.get('language') || 'all')
+  const [selectedFormat, setSelectedFormat] = useState(searchParams.get('format') || 'all')
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 500])
 
   // Build filters object
@@ -33,7 +34,8 @@ const Courses: React.FC = () => {
     category: selectedCategory !== 'all' ? selectedCategory : undefined,
     language: selectedLanguage !== 'all' ? selectedLanguage : undefined,
     priceRange: priceRange,
-  }), [searchTerm, selectedCategory, selectedLanguage, priceRange])
+    formatType: selectedFormat !== 'all' ? selectedFormat : undefined,
+  }), [searchTerm, selectedCategory, selectedLanguage, priceRange, selectedFormat])
 
   const { courses, loading, error } = useCourses(filters)
 
@@ -66,6 +68,7 @@ const Courses: React.FC = () => {
     if (searchTerm) params.set('search', searchTerm)
     if (selectedCategory !== 'all') params.set('category', selectedCategory)
     if (selectedLanguage !== 'all') params.set('language', selectedLanguage)
+    if (selectedFormat !== 'all') params.set('format', selectedFormat)
     setSearchParams(params)
   }
 
@@ -73,6 +76,7 @@ const Courses: React.FC = () => {
     setSearchTerm('')
     setSelectedCategory('all')
     setSelectedLanguage('all')
+    setSelectedFormat('all')
     setPriceRange([0, 500])
     setSearchParams({})
   }
@@ -89,7 +93,7 @@ const Courses: React.FC = () => {
     ur: 'اردو',
   }
 
-  const hasActiveFilters = searchTerm || selectedCategory !== 'all' || selectedLanguage !== 'all'
+  const hasActiveFilters = searchTerm || selectedCategory !== 'all' || selectedLanguage !== 'all' || selectedFormat !== 'all'
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -191,6 +195,40 @@ const Courses: React.FC = () => {
                     $0 - ${priceRange[1]}
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Format Filter */}
+            <div className="mt-5">
+              <label className="block text-sm font-semibold text-gray-700 mb-3">
+                Format
+              </label>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedFormat('all')}
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
+                    selectedFormat === 'all'
+                      ? 'bg-gray-800 text-white border-gray-800'
+                      : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
+                  }`}
+                >
+                  All Formats
+                </button>
+                {FORMAT_TYPES.map((fmt) => (
+                  <button
+                    key={fmt.value}
+                    type="button"
+                    onClick={() => setSelectedFormat(fmt.value)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
+                      selectedFormat === fmt.value
+                        ? `${fmt.bg} ${fmt.color} ${fmt.border} ring-2 ring-offset-1 ring-current`
+                        : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
+                    }`}
+                  >
+                    {fmt.label}
+                  </button>
+                ))}
               </div>
             </div>
 

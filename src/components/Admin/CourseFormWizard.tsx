@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { supabase, Database, ContentType } from '../../lib/supabase'
+import { supabase, Database, ContentType, FORMAT_TYPES, FormatType } from '../../lib/supabase'
 import { handleSupabaseError, handleAsyncError } from '../../utils/errorHandler'
 import logger from '../../utils/logger'
 import toast from 'react-hot-toast'
@@ -56,6 +56,7 @@ const CourseFormWizard: React.FC<CourseFormWizardProps> = ({
     language: 'en',
     is_featured: false,
     is_active: true,
+    format_types: [] as FormatType[],
   })
 
   useEffect(() => {
@@ -72,6 +73,7 @@ const CourseFormWizard: React.FC<CourseFormWizardProps> = ({
         language: editingCourse.language,
         is_featured: editingCourse.is_featured,
         is_active: editingCourse.is_active,
+        format_types: (editingCourse.format_types as FormatType[]) || [],
       })
       setSavedCourse(editingCourse)
     }
@@ -84,6 +86,7 @@ const CourseFormWizard: React.FC<CourseFormWizardProps> = ({
     const courseData = {
       ...formData,
       tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean),
+      format_types: formData.format_types,
       updated_at: new Date().toISOString(),
     }
 
@@ -131,6 +134,15 @@ const CourseFormWizard: React.FC<CourseFormWizardProps> = ({
     }
 
     setSubmitting(false)
+  }
+
+  const toggleFormatType = (value: FormatType) => {
+    setFormData(prev => ({
+      ...prev,
+      format_types: prev.format_types.includes(value)
+        ? prev.format_types.filter(f => f !== value)
+        : [...prev.format_types, value],
+    }))
   }
 
   const contentTypeIcons: Record<string, { icon: React.ReactNode; color: string }> = {
@@ -325,6 +337,31 @@ const CourseFormWizard: React.FC<CourseFormWizardProps> = ({
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
                   placeholder="react, javascript, web development"
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Content Format
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {FORMAT_TYPES.map((fmt) => {
+                    const selected = formData.format_types.includes(fmt.value)
+                    return (
+                      <button
+                        key={fmt.value}
+                        type="button"
+                        onClick={() => toggleFormatType(fmt.value)}
+                        className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
+                          selected
+                            ? `${fmt.bg} ${fmt.color} ${fmt.border} ring-2 ring-offset-1 ring-current`
+                            : 'bg-gray-50 text-gray-500 border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        {fmt.label}
+                      </button>
+                    )
+                  })}
+                </div>
               </div>
 
               <div className="flex items-center space-x-6">

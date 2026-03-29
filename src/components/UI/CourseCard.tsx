@@ -1,6 +1,6 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { Database } from '../../lib/supabase'
+import { Database, FORMAT_TYPES } from '../../lib/supabase'
 import LanguageAwareLink from '../Layout/LanguageAwareLink'
 import { FileText, Music, Video } from 'lucide-react'
 
@@ -80,6 +80,23 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, className = '' }) => {
         <p className="text-gray-600 text-sm mb-3 line-clamp-2 leading-relaxed">
           {course.description}
         </p>
+
+        {course.format_types && course.format_types.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            {course.format_types.map((ft) => {
+              const cfg = FORMAT_TYPES.find(f => f.value === ft)
+              if (!cfg) return null
+              return (
+                <span
+                  key={ft}
+                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${cfg.bg} ${cfg.color} ${cfg.border}`}
+                >
+                  {cfg.label}
+                </span>
+              )
+            })}
+          </div>
+        )}
 
         <div className="flex flex-wrap gap-1.5 mb-4">
           {course.tags?.slice(0, 3).map((tag, index) => (
