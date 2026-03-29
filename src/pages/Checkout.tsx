@@ -12,6 +12,7 @@ import { ArrowLeft, CreditCard, Shield, Clock, CheckCircle } from 'lucide-react'
 interface Course {
   id: string;
   title: string;
+  slug: string | null;
   description: string;
   price: number;
   currency: string;
@@ -283,7 +284,7 @@ const Checkout: React.FC = () => {
         {/* Header */}
         <div className="mb-8">
           <button
-            onClick={() => navigate(`/course/${courseId}`)}
+            onClick={() => navigate(`/course/${course?.slug || courseId}`)}
             className="flex items-center text-gray-600 hover:text-gray-900 transition-colors mb-4"
           >
             <ArrowLeft className="w-4 h-4 me-2" />

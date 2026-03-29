@@ -309,7 +309,7 @@ const MyCourses: React.FC = () => {
                           </span>
                         )}
                         <LanguageAwareLink
-                          to={`/course/${course.id}`}
+                          to={`/course/${course.slug || course.id}`}
                           className="text-sm text-gray-500 hover:text-royal-blue-600 transition-colors"
                         >
                           View Details

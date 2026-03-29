@@ -283,7 +283,7 @@ const Home: React.FC = () => {
               {displaySampleCourses.map((course) => (
                 <LanguageAwareLink
                   key={course.id}
-                  to={`/course/${course.id}`}
+                  to={`/course/${course.slug || course.id}`}
                   className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden flex flex-col"
                 >
                   <div className="relative w-full aspect-video overflow-hidden">
