@@ -474,23 +474,6 @@ const CourseFormWizard: React.FC<CourseFormWizardProps> = ({
                   label=""
                   onUploadComplete={(url) => setFormData({ ...formData, cover_image_url: url })}
                 />
-                <p className="mt-1 text-xs text-gray-500">Or enter a URL directly:</p>
-                <input
-                  type="text"
-                  value={formData.cover_image_url}
-                  onChange={(e) => setFormData({ ...formData, cover_image_url: e.target.value })}
-                  className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="https://images.pexels.com/..."
-                />
-                {formData.cover_image_url && (
-                  <img
-                    src={formData.cover_image_url}
-                    alt="Preview"
-                    className="w-24 h-32 object-cover rounded-lg border mt-2 shadow-sm"
-                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
-                    onLoad={(e) => { (e.target as HTMLImageElement).style.display = 'block' }}
-                  />
-                )}
               </div>
 
               <div>
