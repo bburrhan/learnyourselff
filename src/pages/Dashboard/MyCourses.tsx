@@ -46,9 +46,33 @@ const CONTENT_COLORS: Record<ContentType, string> = {
   video: 'bg-orange-50 text-orange-600',
 }
 
-const handleDownloadPdf = (pdfUrl: string, title: string) => {
+const handleDownloadPdf = async (pdfUrl: string, title: string) => {
+  let downloadUrl = pdfUrl
+
+  const storageMarker = '/storage/v1/object/course-files/'
+  const publicMarker = '/storage/v1/object/public/course-files/'
+
+  let storagePath: string | null = null
+  if (pdfUrl.includes(storageMarker)) {
+    storagePath = pdfUrl.split(storageMarker)[1]
+  } else if (pdfUrl.includes(publicMarker)) {
+    storagePath = pdfUrl.split(publicMarker)[1]
+  } else if (!pdfUrl.startsWith('http')) {
+    storagePath = pdfUrl
+  }
+
+  if (storagePath) {
+    const { data, error } = await supabase.storage
+      .from('course-files')
+      .createSignedUrl(storagePath, 3600)
+    if (error || !data?.signedUrl) {
+      return
+    }
+    downloadUrl = data.signedUrl
+  }
+
   const link = document.createElement('a')
-  link.href = pdfUrl
+  link.href = downloadUrl
   link.download = `${title}.pdf`
   link.target = '_blank'
   document.body.appendChild(link)
