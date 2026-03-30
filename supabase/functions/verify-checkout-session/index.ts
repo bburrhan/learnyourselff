@@ -126,9 +126,17 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const { data: authUser } = await admin.auth.admin.getUserByEmail(email);
-    const isNewUser = !authUser?.user;
-    let userId: string | null = authUser?.user?.id ?? null;
+    let isNewUser = true;
+    let userId: string | null = null;
+
+    const { data: userList } = await admin.auth.admin.listUsers();
+    const matchedUser = userList?.users?.find(
+      (u: { email?: string }) => u.email?.toLowerCase() === email.toLowerCase()
+    );
+    if (matchedUser) {
+      isNewUser = false;
+      userId = matchedUser.id;
+    }
 
     if (!userId) {
       const { data: profile } = await admin
@@ -136,7 +144,10 @@ Deno.serve(async (req: Request) => {
         .select("id")
         .eq("email", email)
         .maybeSingle();
-      userId = profile?.id ?? null;
+      if (profile) {
+        userId = profile.id;
+        isNewUser = false;
+      }
     }
 
     console.log("Inserting purchase for userId:", userId, "courseId:", courseId, "email:", email);
