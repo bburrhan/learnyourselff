@@ -172,6 +172,11 @@ const InlineUploader: React.FC<InlineUploaderProps> = ({
     setProgress(0)
     setUploadedName(file.name)
 
+    if (currentFileUrl) {
+      const oldPath = extractStoragePath(currentFileUrl) || currentFileUrl
+      await supabase.storage.from('course-files').remove([oldPath])
+    }
+
     const ext = file.name.split('.').pop()
     const filePath = `${courseId}/${contentType}/${Date.now()}.${ext}`
 
@@ -181,7 +186,7 @@ const InlineUploader: React.FC<InlineUploaderProps> = ({
 
     const { error: uploadError } = await supabase.storage
       .from('course-files')
-      .upload(filePath, file, { cacheControl: '3600', upsert: true })
+      .upload(filePath, file, { cacheControl: '0', upsert: true })
 
     clearInterval(interval)
 
@@ -365,7 +370,7 @@ const CourseDetailModal: React.FC<Props> = ({ course, onClose }) => {
       return
     }
     setContents(prev =>
-      prev.map(c => (c.id === contentId ? { ...c, ...updates } as CourseContent : c))
+      prev.map(c => (c.id === contentId ? { ...c, ...updates, file_url: fileUrl } as CourseContent : c))
     )
     toast.success('File replaced successfully')
   }

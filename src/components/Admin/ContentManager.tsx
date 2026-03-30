@@ -120,6 +120,11 @@ const ContentManager: React.FC<ContentManagerProps> = ({ courseId, onContentType
   }
 
   const handleFileUploaded = async (contentId: string, fileUrl: string, fileName: string, fileSize: number) => {
+    const oldItem = contents.find(c => c.id === contentId)
+    if (oldItem?.file_url && oldItem.file_url !== fileUrl) {
+      await supabase.storage.from('course-files').remove([oldItem.file_url])
+    }
+
     const titleFromFile = fileName ? fileName.replace(/\.[^/.]+$/, '') : ''
     const updates: Record<string, string | number> = {
       file_url: fileUrl,

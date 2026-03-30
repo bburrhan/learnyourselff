@@ -54,6 +54,10 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     setProgress(0)
     setFileName(file.name)
 
+    if (currentFileUrl && bucket !== 'course-covers') {
+      await supabase.storage.from(bucket).remove([currentFileUrl])
+    }
+
     const ext = file.name.split('.').pop()
     const filePath = `${path}/${Date.now()}.${ext}`
 
@@ -64,7 +68,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     const { error: uploadError } = await supabase.storage
       .from(bucket)
       .upload(filePath, file, {
-        cacheControl: '3600',
+        cacheControl: '0',
         upsert: true,
       })
 

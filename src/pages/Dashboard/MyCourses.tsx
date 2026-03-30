@@ -46,33 +46,29 @@ const CONTENT_COLORS: Record<ContentType, string> = {
   video: 'bg-orange-50 text-orange-600',
 }
 
-const handleDownloadPdf = async (pdfUrl: string, title: string) => {
-  let downloadUrl = pdfUrl
-
+const resolveStoragePath = (url: string): string => {
   const storageMarker = '/storage/v1/object/course-files/'
   const publicMarker = '/storage/v1/object/public/course-files/'
+  const signedMarker = '/storage/v1/object/sign/course-files/'
 
-  let storagePath: string | null = null
-  if (pdfUrl.includes(storageMarker)) {
-    storagePath = pdfUrl.split(storageMarker)[1]
-  } else if (pdfUrl.includes(publicMarker)) {
-    storagePath = pdfUrl.split(publicMarker)[1]
-  } else if (!pdfUrl.startsWith('http')) {
-    storagePath = pdfUrl
-  }
+  if (url.includes(storageMarker)) return url.split(storageMarker)[1]
+  if (url.includes(publicMarker)) return url.split(publicMarker)[1]
+  if (url.includes(signedMarker)) return url.split(signedMarker)[1].split('?')[0]
+  if (!url.startsWith('http')) return url
+  return url
+}
 
-  if (storagePath) {
-    const { data, error } = await supabase.storage
-      .from('course-files')
-      .createSignedUrl(storagePath, 3600)
-    if (error || !data?.signedUrl) {
-      return
-    }
-    downloadUrl = data.signedUrl
-  }
+const handleDownloadPdf = async (pdfUrl: string, title: string) => {
+  const storagePath = resolveStoragePath(pdfUrl)
+
+  const { data, error } = await supabase.storage
+    .from('course-files')
+    .createSignedUrl(storagePath, 3600)
+
+  if (error || !data?.signedUrl) return
 
   const link = document.createElement('a')
-  link.href = downloadUrl
+  link.href = data.signedUrl
   link.download = `${title}.pdf`
   link.target = '_blank'
   document.body.appendChild(link)
@@ -86,6 +82,7 @@ const MyCourses: React.FC = () => {
   const [purchases, setPurchases] = useState<Purchase[]>([])
   const [progressMap, setProgressMap] = useState<CourseProgressMap>({})
   const [contentCounts, setContentCounts] = useState<Record<string, number>>({})
+  const [ebookUrls, setEbookUrls] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -116,7 +113,7 @@ const MyCourses: React.FC = () => {
         const courseIds = (purchaseData || []).map((p: Purchase) => p.course_id)
 
         if (courseIds.length > 0) {
-          const [progressRes, contentRes] = await Promise.all([
+          const [progressRes, contentRes, ebookRes] = await Promise.all([
             supabase
               .from('user_progress')
               .select('*')
@@ -127,10 +124,26 @@ const MyCourses: React.FC = () => {
               .select('id, course_id')
               .in('course_id', courseIds)
               .eq('is_active', true),
+            supabase
+              .from('course_content')
+              .select('course_id, file_url')
+              .in('course_id', courseIds)
+              .eq('content_type', 'ebook')
+              .eq('is_active', true)
+              .not('file_url', 'is', null),
           ])
 
           const progressData: UserProgress[] = progressRes.data || []
           const contentData = contentRes.data || []
+          const ebookData = ebookRes.data || []
+
+          const ebookMap: Record<string, string> = {}
+          ebookData.forEach((e) => {
+            if (e.file_url && !ebookMap[e.course_id]) {
+              ebookMap[e.course_id] = e.file_url
+            }
+          })
+          setEbookUrls(ebookMap)
 
           const counts: Record<string, number> = {}
           contentData.forEach((c) => {
@@ -335,9 +348,9 @@ const MyCourses: React.FC = () => {
                               </>
                             )}
                           </LanguageAwareLink>
-                        ) : course.pdf_url ? (
+                        ) : (course.pdf_url || ebookUrls[course.id]) ? (
                           <button
-                            onClick={() => handleDownloadPdf(course.pdf_url!, course.title)}
+                            onClick={() => handleDownloadPdf(course.pdf_url || ebookUrls[course.id], course.title)}
                             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-royal-blue-600 text-white hover:bg-royal-blue-700 shadow-sm transition-all duration-200"
                           >
                             <Download className="h-4 w-4" />
