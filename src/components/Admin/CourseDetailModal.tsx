@@ -15,6 +15,7 @@ import {
   Clock,
   Copy,
   Check,
+  Eye,
 } from 'lucide-react'
 import { format } from 'date-fns'
 
@@ -278,16 +279,26 @@ const CourseDetailModal: React.FC<Props> = ({ course, onClose }) => {
                       )}
                     </div>
                     {item.file_url && (
-                      <a
-                        href={item.file_url}
-                        download
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-teal-600 hover:bg-teal-700 rounded-lg transition-colors"
-                      >
-                        <Download className="h-3.5 w-3.5" />
-                        Download
-                      </a>
+                      <div className="flex flex-col gap-1.5 flex-shrink-0">
+                        <a
+                          href={item.file_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-teal-600 hover:bg-teal-700 rounded-lg transition-colors"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                          View
+                        </a>
+                        <a
+                          href={item.file_url}
+                          download
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                        >
+                          <Download className="h-3.5 w-3.5" />
+                          Download
+                        </a>
+                      </div>
                     )}
                   </div>
                 ))}
@@ -299,16 +310,26 @@ const CourseDetailModal: React.FC<Props> = ({ course, onClose }) => {
             <div>
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Legacy PDF URL</p>
               <UrlRow url={course.pdf_url} copiedUrl={copiedUrl} onCopy={copyToClipboard} />
-              <a
-                href={course.pdf_url}
-                download
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 text-xs font-medium text-white bg-teal-600 hover:bg-teal-700 rounded-lg transition-colors"
-              >
-                <Download className="h-3.5 w-3.5" />
-                Download PDF
-              </a>
+              <div className="flex gap-2 mt-2">
+                <a
+                  href={course.pdf_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-teal-600 hover:bg-teal-700 rounded-lg transition-colors"
+                >
+                  <Eye className="h-3.5 w-3.5" />
+                  View PDF
+                </a>
+                <a
+                  href={course.pdf_url}
+                  download
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  Download PDF
+                </a>
+              </div>
             </div>
           )}
         </div>
