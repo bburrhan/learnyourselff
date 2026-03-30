@@ -15,6 +15,8 @@ Deno.serve(async (req: Request) => {
   try {
     const { sessionId, language = "en" } = await req.json();
 
+    console.log("verify-checkout-session called with sessionId:", sessionId);
+
     if (!sessionId) {
       return new Response(
         JSON.stringify({ error: "sessionId is required" }),
@@ -50,6 +52,8 @@ Deno.serve(async (req: Request) => {
 
     const session = await stripeResponse.json();
 
+    console.log("Stripe session payment_status:", session.payment_status, "session_id:", session.id);
+
     if (session.payment_status !== "paid") {
       return new Response(
         JSON.stringify({ error: "Payment not completed", payment_status: session.payment_status }),
@@ -63,6 +67,7 @@ Deno.serve(async (req: Request) => {
     const sessionLanguage = session.metadata?.language || language;
 
     if (!courseId || !email) {
+      console.error("Missing metadata - courseId:", courseId, "email:", email);
       return new Response(
         JSON.stringify({ error: "Missing course or email information in session" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -73,10 +78,12 @@ Deno.serve(async (req: Request) => {
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const admin = createClient(supabaseUrl, serviceKey);
 
+    const stripePaymentId = session.payment_intent || sessionId;
+
     const { data: existingPurchase } = await admin
       .from("purchases")
       .select("id")
-      .eq("stripe_payment_id", session.payment_intent || sessionId)
+      .eq("stripe_payment_id", stripePaymentId)
       .maybeSingle();
 
     if (existingPurchase) {
@@ -85,6 +92,8 @@ Deno.serve(async (req: Request) => {
         .select("id, title, price, currency")
         .eq("id", courseId)
         .maybeSingle();
+
+      console.log("Purchase already exists:", existingPurchase.id);
 
       return new Response(
         JSON.stringify({
@@ -110,16 +119,16 @@ Deno.serve(async (req: Request) => {
       .maybeSingle();
 
     if (!course) {
+      console.error("Course not found:", courseId);
       return new Response(
         JSON.stringify({ error: "Course not found" }),
         { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const { data: userList } = await admin.auth.admin.listUsers();
-    const matchedUser = userList?.users?.find((u) => u.email === email);
-    const isNewUser = !matchedUser;
-    let userId: string | null = matchedUser?.id ?? null;
+    const { data: authUser } = await admin.auth.admin.getUserByEmail(email);
+    const isNewUser = !authUser?.user;
+    let userId: string | null = authUser?.user?.id ?? null;
 
     if (!userId) {
       const { data: profile } = await admin
@@ -130,13 +139,15 @@ Deno.serve(async (req: Request) => {
       userId = profile?.id ?? null;
     }
 
+    console.log("Inserting purchase for userId:", userId, "courseId:", courseId, "email:", email);
+
     const { data: purchase, error: purchaseError } = await admin
       .from("purchases")
       .insert({
         user_id: userId,
         course_id: courseId,
         email,
-        stripe_payment_id: session.payment_intent || sessionId,
+        stripe_payment_id: stripePaymentId,
         amount: (session.amount_total ?? 0) / 100,
         currency: session.currency?.toUpperCase() ?? "USD",
         status: "completed",
@@ -151,6 +162,8 @@ Deno.serve(async (req: Request) => {
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    console.log("Purchase created successfully:", purchase?.id);
 
     if (isNewUser) {
       const appUrl = Deno.env.get("APP_URL") || "https://learnyourself.co";

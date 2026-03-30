@@ -58,36 +58,29 @@ Deno.serve(async (req: Request) => {
     const priceInCents = Math.round(course.price * 100);
     const currency = (course.currency || "usd").toLowerCase();
 
-    const defaultSuccessUrl = successUrl || `${supabaseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
-    const defaultCancelUrl = cancelUrl || `${supabaseUrl}/courses/${courseId}?canceled=true`;
+    const finalSuccessUrl = successUrl || `${supabaseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
+    const finalCancelUrl = cancelUrl || `${supabaseUrl}/courses/${courseId}?canceled=true`;
 
-    const sessionPayload = {
-      payment_method_types: ["card"],
-      mode: "payment",
-      customer_email: email,
-      line_items: [
-        {
-          price_data: {
-            currency,
-            unit_amount: priceInCents,
-            product_data: {
-              name: course.title,
-              description: course.description || undefined,
-              images: course.cover_image_url ? [course.cover_image_url] : [],
-            },
-          },
-          quantity: 1,
-        },
-      ],
-      metadata: {
-        course_id: courseId,
-        email,
-        full_name: fullName || "",
-        language,
-      },
-      success_url: defaultSuccessUrl,
-      cancel_url: defaultCancelUrl,
-    };
+    const params = new URLSearchParams();
+    params.set("payment_method_types[0]", "card");
+    params.set("mode", "payment");
+    params.set("customer_email", email);
+    params.set("line_items[0][price_data][currency]", currency);
+    params.set("line_items[0][price_data][unit_amount]", String(priceInCents));
+    params.set("line_items[0][price_data][product_data][name]", course.title);
+    if (course.description) {
+      params.set("line_items[0][price_data][product_data][description]", course.description);
+    }
+    if (course.cover_image_url) {
+      params.set("line_items[0][price_data][product_data][images][0]", course.cover_image_url);
+    }
+    params.set("line_items[0][quantity]", "1");
+    params.set("metadata[course_id]", courseId);
+    params.set("metadata[email]", email);
+    params.set("metadata[full_name]", fullName || "");
+    params.set("metadata[language]", language);
+    params.set("success_url", finalSuccessUrl);
+    params.set("cancel_url", finalCancelUrl);
 
     const stripeResponse = await fetch("https://api.stripe.com/v1/checkout/sessions", {
       method: "POST",
@@ -95,7 +88,7 @@ Deno.serve(async (req: Request) => {
         Authorization: `Bearer ${stripeSecretKey}`,
         "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: new URLSearchParams(flattenForStripe(sessionPayload)).toString(),
+      body: params.toString(),
     });
 
     const session = await stripeResponse.json();
@@ -120,25 +113,3 @@ Deno.serve(async (req: Request) => {
     );
   }
 });
-
-function flattenForStripe(obj: Record<string, unknown>, prefix = ""): Record<string, string> {
-  const result: Record<string, string> = {};
-  for (const [key, value] of Object.entries(obj)) {
-    const fullKey = prefix ? `${prefix}[${key}]` : key;
-    if (value === null || value === undefined) continue;
-    if (Array.isArray(value)) {
-      value.forEach((item, i) => {
-        if (typeof item === "object" && item !== null) {
-          Object.assign(result, flattenForStripe(item as Record<string, unknown>, `${fullKey}[${i}]`));
-        } else {
-          result[`${fullKey}[${i}]`] = String(item);
-        }
-      });
-    } else if (typeof value === "object") {
-      Object.assign(result, flattenForStripe(value as Record<string, unknown>, fullKey));
-    } else {
-      result[fullKey] = String(value);
-    }
-  }
-  return result;
-}
