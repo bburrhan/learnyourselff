@@ -138,10 +138,10 @@ const Checkout: React.FC = () => {
         userId = signUpData?.user?.id
         logger.info('Created user account for purchase', { userId, email: formData.email })
 
-        await supabase.auth.resetPasswordForEmail(formData.email, {
-          redirectTo: `${window.location.origin}/${i18n.language}/reset-password`,
-        })
-        logger.info('Password reset email sent to new user', { email: formData.email })
+        localStorage.setItem('pendingSetPassword', JSON.stringify({
+          email: formData.email,
+          tempPassword,
+        }))
       }
 
       // Handle free courses - create purchase record and send email
@@ -187,6 +187,7 @@ const Checkout: React.FC = () => {
           language: i18n.language,
           isFree: true,
           purchaseId: purchaseResult.id,
+          isNewUser: !user,
         }));
         
         // Redirect directly to success page
@@ -218,7 +219,8 @@ const Checkout: React.FC = () => {
           fullName: formData.fullName,
           amount: course.price,
           currency: course.currency,
-          language: i18n.language
+          language: i18n.language,
+          isNewUser: !user,
         }));
         window.location.href = url;
       } else {

@@ -73,7 +73,7 @@ const CheckoutSuccess: React.FC = () => {
               language: parsed.language || i18n.language,
               isFree: false,
               purchaseId: data.purchase_id,
-              isNewUser: data.is_new_user,
+              isNewUser: parsed.isNewUser === true || data.is_new_user,
             })
           } else {
             setCheckoutInfo({
@@ -94,6 +94,16 @@ const CheckoutSuccess: React.FC = () => {
     }
   }, [])
 
+  const isNewUser = checkoutInfo?.isNewUser === true
+
+  const getRedirectPath = () => {
+    if (isNewUser) {
+      const emailParam = checkoutInfo?.email ? `?email=${encodeURIComponent(checkoutInfo.email)}` : ''
+      return `/${i18n.language}/set-password${emailParam}`
+    }
+    return `/${i18n.language}/dashboard/my-courses`
+  }
+
   useEffect(() => {
     if (verifying || checkoutInfo === null) return
 
@@ -101,7 +111,7 @@ const CheckoutSuccess: React.FC = () => {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(interval)
-          navigate(`/${i18n.language}/dashboard/my-courses`)
+          navigate(getRedirectPath())
           return 0
         }
         return prev - 1
@@ -170,37 +180,48 @@ const CheckoutSuccess: React.FC = () => {
             </div>
           )}
 
-          {checkoutInfo?.isNewUser && (
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+          {isNewUser ? (
+            <div className="bg-royal-blue-50 border border-royal-blue-200 rounded-lg p-4 mb-6">
               <div className="flex items-center justify-center mb-2">
-                <Key className="h-5 w-5 text-amber-600 me-2" />
-                <span className="font-medium text-amber-900">Sifre Olusturma Linki Gonderildi</span>
+                <Key className="h-5 w-5 text-royal-blue-600 me-2" />
+                <span className="font-medium text-royal-blue-900">{t('createYourPassword')}</span>
               </div>
-              <p className="text-sm text-amber-700">
-                <strong>{checkoutInfo?.email}</strong> adresine hesabinizi aktive etmek icin bir link gonderildi. Linke tiklayarak sifrenizi belirleyin ve kurslariniza erisim saglayin.
+              <p className="text-sm text-royal-blue-700">
+                {t('redirectingToSetPassword', { seconds: countdown })}
+              </p>
+            </div>
+          ) : (
+            <div className="bg-royal-blue-50 border border-royal-blue-200 rounded-lg p-4 mb-6">
+              <div className="flex items-center justify-center mb-2">
+                <BookOpen className="h-5 w-5 text-royal-blue-600 me-2" />
+                <span className="font-medium text-royal-blue-900">{t('redirectingToCourses')}</span>
+              </div>
+              <p className="text-sm text-royal-blue-700">
+                {t('redirectingToMyCoursesCountdown', { seconds: countdown })}
               </p>
             </div>
           )}
 
-          <div className="bg-royal-blue-50 border border-royal-blue-200 rounded-lg p-4 mb-6">
-            <div className="flex items-center justify-center mb-2">
-              <BookOpen className="h-5 w-5 text-royal-blue-600 me-2" />
-              <span className="font-medium text-royal-blue-900">Kurslariniza Yonlendiriliyorsunuz</span>
-            </div>
-            <p className="text-sm text-royal-blue-700">
-              {countdown} saniye icinde <strong>Kurslarim</strong> sayfasina yonlendirileceksiniz.
-            </p>
-          </div>
-
           <div className="flex flex-col gap-3">
-            <LanguageAwareLink
-              to="/dashboard/my-courses"
-              className="w-full bg-royal-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-royal-blue-700 transition-all duration-300 flex items-center justify-center transform hover:scale-105"
-            >
-              <BookOpen className="h-4 w-4 me-2" />
-              Kurslarima Git
-              <ArrowRight className="h-4 w-4 ms-2" />
-            </LanguageAwareLink>
+            {isNewUser ? (
+              <button
+                onClick={() => navigate(getRedirectPath())}
+                className="w-full bg-royal-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-royal-blue-700 transition-all duration-300 flex items-center justify-center transform hover:scale-105"
+              >
+                <Key className="h-4 w-4 me-2" />
+                {t('createYourPassword')}
+                <ArrowRight className="h-4 w-4 ms-2" />
+              </button>
+            ) : (
+              <LanguageAwareLink
+                to="/dashboard/my-courses"
+                className="w-full bg-royal-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-royal-blue-700 transition-all duration-300 flex items-center justify-center transform hover:scale-105"
+              >
+                <BookOpen className="h-4 w-4 me-2" />
+                {t('goToMyCourses')}
+                <ArrowRight className="h-4 w-4 ms-2" />
+              </LanguageAwareLink>
+            )}
 
             <LanguageAwareLink
               to="/courses"

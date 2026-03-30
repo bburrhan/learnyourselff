@@ -23,6 +23,7 @@ import Login from './pages/Auth/Login'
 import Signup from './pages/Auth/Signup'
 import ForgotPassword from './pages/Auth/ForgotPassword'
 import ResetPassword from './pages/Auth/ResetPassword'
+import SetPassword from './pages/Auth/SetPassword'
 import Dashboard from './pages/Dashboard/Dashboard'
 import AdminDashboard from './pages/Admin/AdminDashboard'
 import AdminCourses from './pages/Admin/AdminCourses'
@@ -68,6 +69,7 @@ function App() {
                   <Route path="/:lang/signup" element={<Signup />} />
                   <Route path="/:lang/forgot-password" element={<ForgotPassword />} />
                   <Route path="/:lang/reset-password" element={<ResetPassword />} />
+                  <Route path="/:lang/set-password" element={<SetPassword />} />
                   <Route path="/:lang/about" element={<About />} />
                   <Route path="/:lang/contact" element={<Contact />} />
                   <Route path="/:lang/privacy" element={<Privacy />} />
@@ -143,6 +145,7 @@ function App() {
                   <Route path="/" element={<Home />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
+                  <Route path="/set-password" element={<SetPassword />} />
                   <Route path="/*" element={<Home />} />
                   
                   <Route path="*" element={<NotFound />} />
