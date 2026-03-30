@@ -62,10 +62,38 @@ const contentTypeLabel = (type: string) => {
   return 'Video'
 }
 
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string
+
+function extractStoragePath(url: string): string | null {
+  try {
+    const marker = '/storage/v1/object/public/course-files/'
+    const idx = url.indexOf(marker)
+    if (idx !== -1) return url.slice(idx + marker.length)
+    const signedMarker = '/storage/v1/object/sign/course-files/'
+    const idx2 = url.indexOf(signedMarker)
+    if (idx2 !== -1) {
+      const afterMarker = url.slice(idx2 + signedMarker.length)
+      return afterMarker.split('?')[0]
+    }
+    if (!url.startsWith('http') && !url.startsWith('/')) return url
+    return null
+  } catch {
+    return null
+  }
+}
+
+function isStoragePath(url: string): boolean {
+  if (!url) return false
+  if (url.includes(`${SUPABASE_URL}/storage`)) return true
+  if (!url.startsWith('http') && !url.startsWith('/') && !url.startsWith('blob:')) return true
+  return false
+}
+
 const CourseDetailModal: React.FC<Props> = ({ course, onClose }) => {
   const [contents, setContents] = useState<CourseContent[]>([])
   const [loadingContents, setLoadingContents] = useState(true)
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null)
+  const [openingUrl, setOpeningUrl] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchContents = async () => {
@@ -87,6 +115,27 @@ const CourseDetailModal: React.FC<Props> = ({ course, onClose }) => {
       setTimeout(() => setCopiedUrl(null), 2000)
     } catch {
       // fallback
+    }
+  }
+
+  const openSignedUrl = async (fileUrlOrPath: string, download = false) => {
+    setOpeningUrl(fileUrlOrPath)
+    try {
+      const path = extractStoragePath(fileUrlOrPath) || fileUrlOrPath
+      const { data, error } = await supabase.storage
+        .from('course-files')
+        .createSignedUrl(path, 3600, { download })
+      if (error || !data?.signedUrl) {
+        console.error('Signed URL error:', error)
+        window.open(fileUrlOrPath, '_blank')
+        return
+      }
+      window.open(data.signedUrl, '_blank')
+    } catch (e) {
+      console.error('openSignedUrl error:', e)
+      window.open(fileUrlOrPath, '_blank')
+    } finally {
+      setOpeningUrl(null)
     }
   }
 
@@ -274,30 +323,28 @@ const CourseDetailModal: React.FC<Props> = ({ course, onClose }) => {
                       </div>
                       {item.file_url && (
                         <div className="mt-2">
-                          <UrlRow url={item.file_url} copiedUrl={copiedUrl} onCopy={copyToClipboard} />
+                          <UrlRow url={item.file_url} copiedUrl={copiedUrl} onCopy={copyToClipboard} onOpen={isStoragePath(item.file_url) ? openSignedUrl : undefined} />
                         </div>
                       )}
                     </div>
                     {item.file_url && (
                       <div className="flex flex-col gap-1.5 flex-shrink-0">
-                        <a
-                          href={item.file_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-teal-600 hover:bg-teal-700 rounded-lg transition-colors"
+                        <button
+                          onClick={() => openSignedUrl(item.file_url)}
+                          disabled={openingUrl === item.file_url}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-teal-600 hover:bg-teal-700 disabled:opacity-60 rounded-lg transition-colors"
                         >
                           <Eye className="h-3.5 w-3.5" />
-                          View
-                        </a>
-                        <a
-                          href={item.file_url}
-                          download
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                          {openingUrl === item.file_url ? 'Opening...' : 'View'}
+                        </button>
+                        <button
+                          onClick={() => openSignedUrl(item.file_url, true)}
+                          disabled={openingUrl === item.file_url}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 disabled:opacity-60 rounded-lg transition-colors"
                         >
                           <Download className="h-3.5 w-3.5" />
                           Download
-                        </a>
+                        </button>
                       </div>
                     )}
                   </div>
@@ -308,27 +355,25 @@ const CourseDetailModal: React.FC<Props> = ({ course, onClose }) => {
 
           {course.pdf_url && (
             <div>
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Legacy PDF URL</p>
-              <UrlRow url={course.pdf_url} copiedUrl={copiedUrl} onCopy={copyToClipboard} />
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">PDF File</p>
+              <UrlRow url={course.pdf_url} copiedUrl={copiedUrl} onCopy={copyToClipboard} onOpen={openSignedUrl} />
               <div className="flex gap-2 mt-2">
-                <a
-                  href={course.pdf_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-teal-600 hover:bg-teal-700 rounded-lg transition-colors"
+                <button
+                  onClick={() => openSignedUrl(course.pdf_url!)}
+                  disabled={openingUrl === course.pdf_url}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-teal-600 hover:bg-teal-700 disabled:opacity-60 rounded-lg transition-colors"
                 >
                   <Eye className="h-3.5 w-3.5" />
-                  View PDF
-                </a>
-                <a
-                  href={course.pdf_url}
-                  download
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                  {openingUrl === course.pdf_url ? 'Opening...' : 'View PDF'}
+                </button>
+                <button
+                  onClick={() => openSignedUrl(course.pdf_url!, true)}
+                  disabled={openingUrl === course.pdf_url}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 disabled:opacity-60 rounded-lg transition-colors"
                 >
                   <Download className="h-3.5 w-3.5" />
                   Download PDF
-                </a>
+                </button>
               </div>
             </div>
           )}
@@ -351,9 +396,10 @@ interface UrlRowProps {
   url: string
   copiedUrl: string | null
   onCopy: (url: string) => void
+  onOpen?: (url: string) => void
 }
 
-const UrlRow: React.FC<UrlRowProps> = ({ url, copiedUrl, onCopy }) => {
+const UrlRow: React.FC<UrlRowProps> = ({ url, copiedUrl, onCopy, onOpen }) => {
   const isCopied = copiedUrl === url
   return (
     <div className="flex items-center gap-2 bg-gray-100 rounded-lg px-3 py-2 border border-gray-200">
@@ -365,15 +411,25 @@ const UrlRow: React.FC<UrlRowProps> = ({ url, copiedUrl, onCopy }) => {
       >
         {isCopied ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
       </button>
-      <a
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex-shrink-0 p-1 text-gray-400 hover:text-gray-700 transition-colors"
-        title="Open in new tab"
-      >
-        <ExternalLink className="h-3.5 w-3.5" />
-      </a>
+      {onOpen ? (
+        <button
+          onClick={() => onOpen(url)}
+          className="flex-shrink-0 p-1 text-gray-400 hover:text-gray-700 transition-colors"
+          title="Open in new tab"
+        >
+          <ExternalLink className="h-3.5 w-3.5" />
+        </button>
+      ) : (
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-shrink-0 p-1 text-gray-400 hover:text-gray-700 transition-colors"
+          title="Open in new tab"
+        >
+          <ExternalLink className="h-3.5 w-3.5" />
+        </a>
+      )}
     </div>
   )
 }
