@@ -17,9 +17,11 @@ import {
   ChevronDown,
   X,
   BookOpen,
+  Eye,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import CourseFormWizard from '../../components/Admin/CourseFormWizard'
+import CourseDetailModal from '../../components/Admin/CourseDetailModal'
 
 type Course = Database['public']['Tables']['courses']['Row']
 type Category = Database['public']['Tables']['categories']['Row']
@@ -32,6 +34,8 @@ const AdminCourses: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [showForm, setShowForm] = useState(false)
   const [editingCourse, setEditingCourse] = useState<Course | null>(null)
+
+  const [viewingCourse, setViewingCourse] = useState<Course | null>(null)
 
   const [filterCategory, setFilterCategory] = useState<string>('all')
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all')
@@ -481,6 +485,13 @@ const AdminCourses: React.FC = () => {
                       <td className="px-5 py-3.5 whitespace-nowrap">
                         <div className="flex items-center justify-end gap-1">
                           <button
+                            onClick={() => setViewingCourse(course)}
+                            className="p-1.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                            title="View details"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </button>
+                          <button
                             onClick={() => handleEdit(course)}
                             className="p-1.5 text-gray-400 hover:text-royal-blue-600 hover:bg-royal-blue-50 rounded-lg transition-colors"
                             title="Edit"
@@ -532,6 +543,13 @@ const AdminCourses: React.FC = () => {
           categories={categories}
           onClose={handleCloseForm}
           onSaved={handleCourseSaved}
+        />
+      )}
+
+      {viewingCourse && (
+        <CourseDetailModal
+          course={viewingCourse}
+          onClose={() => setViewingCourse(null)}
         />
       )}
     </div>
