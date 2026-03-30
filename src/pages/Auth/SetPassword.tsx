@@ -102,7 +102,7 @@ const SetPassword: React.FC = () => {
 
       localStorage.removeItem('pendingSetPassword')
       toast.success(t('passwordSetSuccess'))
-      navigate(`/${i18n.language}/dashboard/my-courses`, { replace: true })
+      navigate(`/${i18n.language}/dashboard/courses`, { replace: true })
     } catch {
       toast.error(t('passwordSetError'))
     } finally {

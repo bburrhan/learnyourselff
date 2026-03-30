@@ -108,7 +108,7 @@ const CheckoutSuccess: React.FC = () => {
       const emailParam = checkoutInfo?.email ? `?email=${encodeURIComponent(checkoutInfo.email)}` : ''
       return `/${i18n.language}/set-password${emailParam}`
     }
-    return `/${i18n.language}/dashboard/my-courses`
+    return `/${i18n.language}/dashboard/courses`
   }
 
   useEffect(() => {
@@ -221,7 +221,7 @@ const CheckoutSuccess: React.FC = () => {
               </button>
             ) : (
               <LanguageAwareLink
-                to="/dashboard/my-courses"
+                to="/dashboard/courses"
                 className="w-full bg-royal-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-royal-blue-700 transition-all duration-300 flex items-center justify-center transform hover:scale-105"
               >
                 <BookOpen className="h-4 w-4 me-2" />
