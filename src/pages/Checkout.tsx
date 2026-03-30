@@ -176,35 +176,6 @@ const Checkout: React.FC = () => {
 
         logger.info('Free course purchase record created', { purchaseId: purchaseResult.id })
 
-        const courseUrl = `${window.location.origin}/${i18n.language}/learn/${course.id}`
-
-        fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-course-email`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            purchaseId: purchaseResult.id,
-            email: formData.email,
-            fullName: formData.fullName,
-            courseTitle: course.title,
-            courseId: course.id,
-            courseUrl,
-            isFree: true,
-            language: i18n.language,
-          }),
-        }).then(async (res) => {
-          if (!res.ok) {
-            const emailError = await res.json().catch(() => ({}))
-            logger.error('Failed to send course email', { error: emailError })
-          } else {
-            logger.info('Course email sent successfully', { email: formData.email })
-          }
-        }).catch((err) => {
-          logger.error('Course email request failed', { error: err })
-        })
-
         // Store checkout info for success page
         localStorage.setItem('checkoutInfo', JSON.stringify({
           courseId: course.id,

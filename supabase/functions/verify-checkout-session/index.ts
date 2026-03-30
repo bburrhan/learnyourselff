@@ -97,6 +97,7 @@ Deno.serve(async (req: Request) => {
           full_name: fullName,
           amount: (session.amount_total ?? 0) / 100,
           currency: session.currency?.toUpperCase() ?? "USD",
+          is_new_user: false,
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
@@ -115,20 +116,18 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const { data: profile } = await admin
-      .from("profiles")
-      .select("id")
-      .eq("email", email)
-      .maybeSingle();
-
-    const { data: authUser } = await admin.auth.admin.getUserById(profile?.id ?? "").catch(() => ({ data: { user: null } }));
-
-    let userId: string | null = profile?.id ?? null;
+    const { data: userList } = await admin.auth.admin.listUsers();
+    const matchedUser = userList?.users?.find((u) => u.email === email);
+    const isNewUser = !matchedUser;
+    let userId: string | null = matchedUser?.id ?? null;
 
     if (!userId) {
-      const { data: userList } = await admin.auth.admin.listUsers();
-      const matchedUser = userList?.users?.find((u) => u.email === email);
-      userId = matchedUser?.id ?? null;
+      const { data: profile } = await admin
+        .from("profiles")
+        .select("id")
+        .eq("email", email)
+        .maybeSingle();
+      userId = profile?.id ?? null;
     }
 
     const { data: purchase, error: purchaseError } = await admin
@@ -153,34 +152,23 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    const courseUrl = `${supabaseUrl.replace("https://", "https://").split(".supabase.co")[0]}.supabase.co`.replace(
-      /^.*$/,
-      `https://learnyourself.co/${sessionLanguage}/learn/${courseId}`
-    );
+    if (isNewUser) {
+      const appUrl = Deno.env.get("APP_URL") || "https://learnyourself.co";
+      const resetRedirectUrl = `${appUrl}/${sessionLanguage}/auth/reset-password`;
 
-    const emailResp = await fetch(`${supabaseUrl}/functions/v1/send-course-email`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${serviceKey}`,
-      },
-      body: JSON.stringify({
-        purchaseId: purchase!.id,
+      const { error: resetError } = await admin.auth.admin.generateLink({
+        type: "recovery",
         email,
-        fullName,
-        courseTitle: course.title,
-        courseId,
-        courseUrl: `https://learnyourself.co/${sessionLanguage}/learn/${courseId}`,
-        isFree: false,
-        language: sessionLanguage,
-      }),
-    });
-    const emailResult = await emailResp.json();
-    if (!emailResp.ok) {
-      console.error("send-course-email failed:", emailResult);
-    } else {
-      console.log("send-course-email success:", emailResult);
+        options: {
+          redirectTo: resetRedirectUrl,
+        },
+      });
+
+      if (resetError) {
+        console.error("Failed to generate password reset link:", resetError);
+      } else {
+        console.log("Password reset link generated and sent for new user:", email);
+      }
     }
 
     return new Response(
@@ -193,6 +181,7 @@ Deno.serve(async (req: Request) => {
         full_name: fullName,
         amount: (session.amount_total ?? 0) / 100,
         currency: session.currency?.toUpperCase() ?? "USD",
+        is_new_user: isNewUser,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );

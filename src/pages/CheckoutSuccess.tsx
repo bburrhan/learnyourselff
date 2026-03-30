@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import LanguageAwareLink from '../components/Layout/LanguageAwareLink'
-import { CheckCircle, BookOpen, Mail, ArrowRight, Loader } from 'lucide-react'
+import { CheckCircle, BookOpen, Key, ArrowRight, Loader } from 'lucide-react'
 
 interface CheckoutInfo {
   courseId?: string
@@ -14,13 +14,16 @@ interface CheckoutInfo {
   language?: string
   isFree?: boolean
   purchaseId?: string
+  isNewUser?: boolean
 }
 
 const CheckoutSuccess: React.FC = () => {
   const { t, i18n } = useTranslation()
   const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
   const [checkoutInfo, setCheckoutInfo] = useState<CheckoutInfo | null>(null)
   const [verifying, setVerifying] = useState(false)
+  const [countdown, setCountdown] = useState(3)
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -70,6 +73,7 @@ const CheckoutSuccess: React.FC = () => {
               language: parsed.language || i18n.language,
               isFree: false,
               purchaseId: data.purchase_id,
+              isNewUser: data.is_new_user,
             })
           } else {
             setCheckoutInfo({
@@ -89,6 +93,23 @@ const CheckoutSuccess: React.FC = () => {
         })
     }
   }, [])
+
+  useEffect(() => {
+    if (verifying || checkoutInfo === null) return
+
+    const interval = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval)
+          navigate(`/${i18n.language}/dashboard/my-courses`)
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [verifying, checkoutInfo, navigate, i18n.language])
 
   const sessionId = searchParams.get('session_id')
 
@@ -133,7 +154,7 @@ const CheckoutSuccess: React.FC = () => {
                   <strong>{t('email')}:</strong> {checkoutInfo.email}
                 </p>
               )}
-              {typeof checkoutInfo.amount === 'number' && (
+              {typeof checkoutInfo.amount === 'number' && !checkoutInfo.isFree && (
                 <p className="text-sm text-gray-600">
                   <strong>{t('amount')}:</strong> {new Intl.NumberFormat('en-US', {
                     style: 'currency',
@@ -149,50 +170,43 @@ const CheckoutSuccess: React.FC = () => {
             </div>
           )}
 
-          <div className="bg-royal-blue-50 border border-royal-blue-200 rounded-lg p-4 mb-6">
-            <div className="flex items-center justify-center mb-2">
-              <Mail className="h-5 w-5 text-royal-blue-600 me-2" />
-              <span className="font-medium text-royal-blue-900">Check Your Email</span>
-            </div>
-            <p className="text-sm text-royal-blue-700">
-              {t('emailSentInstructions')}{' '}
-              <strong>{checkoutInfo?.email || 'your email address'}</strong>
-            </p>
-          </div>
-
-          {checkoutInfo?.courseId && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+          {checkoutInfo?.isNewUser && (
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
               <div className="flex items-center justify-center mb-2">
-                <BookOpen className="h-5 w-5 text-green-600 me-2" />
-                <span className="font-medium text-green-900">{t('instantAccess')}</span>
+                <Key className="h-5 w-5 text-amber-600 me-2" />
+                <span className="font-medium text-amber-900">Sifre Olusturma Linki Gonderildi</span>
               </div>
-              <p className="text-sm text-green-700 mb-3">
-                {t('pdfReadyDownload')}
+              <p className="text-sm text-amber-700">
+                <strong>{checkoutInfo?.email}</strong> adresine hesabinizi aktive etmek icin bir link gonderildi. Linke tiklayarak sifrenizi belirleyin ve kurslariniza erisim saglayin.
               </p>
-              <LanguageAwareLink
-                to={`/learn/${checkoutInfo.courseId}`}
-                className="inline-flex items-center justify-center w-full bg-green-600 text-white py-2.5 px-4 rounded-lg font-semibold hover:bg-green-700 transition-all duration-300 transform hover:scale-105"
-              >
-                <BookOpen className="h-4 w-4 me-2" />
-                {t('startLearning')}
-              </LanguageAwareLink>
             </div>
           )}
 
+          <div className="bg-royal-blue-50 border border-royal-blue-200 rounded-lg p-4 mb-6">
+            <div className="flex items-center justify-center mb-2">
+              <BookOpen className="h-5 w-5 text-royal-blue-600 me-2" />
+              <span className="font-medium text-royal-blue-900">Kurslariniza Yonlendiriliyorsunuz</span>
+            </div>
+            <p className="text-sm text-royal-blue-700">
+              {countdown} saniye icinde <strong>Kurslarim</strong> sayfasina yonlendirileceksiniz.
+            </p>
+          </div>
+
           <div className="flex flex-col gap-3">
             <LanguageAwareLink
-              to="/courses"
+              to="/dashboard/my-courses"
               className="w-full bg-royal-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-royal-blue-700 transition-all duration-300 flex items-center justify-center transform hover:scale-105"
             >
-              {t('browseMoreCourses')}
+              <BookOpen className="h-4 w-4 me-2" />
+              Kurslarima Git
               <ArrowRight className="h-4 w-4 ms-2" />
             </LanguageAwareLink>
 
             <LanguageAwareLink
-              to="/"
+              to="/courses"
               className="w-full bg-gray-100 text-gray-700 py-3 px-6 rounded-lg font-medium hover:bg-gray-200 transition-all duration-300 flex items-center justify-center transform hover:scale-105"
             >
-              {t('backToHome')}
+              {t('browseMoreCourses')}
             </LanguageAwareLink>
           </div>
 
