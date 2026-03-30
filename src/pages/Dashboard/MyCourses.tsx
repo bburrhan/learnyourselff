@@ -15,6 +15,7 @@ import {
   PlayCircle,
   CheckCircle2,
   BookOpen,
+  Download,
 } from 'lucide-react'
 import { format } from 'date-fns'
 
@@ -43,6 +44,16 @@ const CONTENT_COLORS: Record<ContentType, string> = {
   ebook: 'bg-blue-50 text-blue-600',
   audio: 'bg-green-50 text-green-600',
   video: 'bg-orange-50 text-orange-600',
+}
+
+const handleDownloadPdf = (pdfUrl: string, title: string) => {
+  const link = document.createElement('a')
+  link.href = pdfUrl
+  link.download = `${title}.pdf`
+  link.target = '_blank'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
 }
 
 const MyCourses: React.FC = () => {
@@ -280,9 +291,7 @@ const MyCourses: React.FC = () => {
                             className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                               isComplete
                                 ? 'bg-green-50 text-green-700 hover:bg-green-100'
-                                : hasStarted
-                                  ? 'bg-royal-blue-600 text-white hover:bg-royal-blue-700 shadow-sm'
-                                  : 'bg-royal-blue-600 text-white hover:bg-royal-blue-700 shadow-sm'
+                                : 'bg-royal-blue-600 text-white hover:bg-royal-blue-700 shadow-sm'
                             }`}
                           >
                             {isComplete ? (
@@ -302,6 +311,14 @@ const MyCourses: React.FC = () => {
                               </>
                             )}
                           </LanguageAwareLink>
+                        ) : course.pdf_url ? (
+                          <button
+                            onClick={() => handleDownloadPdf(course.pdf_url!, course.title)}
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-royal-blue-600 text-white hover:bg-royal-blue-700 shadow-sm transition-all duration-200"
+                          >
+                            <Download className="h-4 w-4" />
+                            {t('downloadPdf')}
+                          </button>
                         ) : (
                           <span className="text-xs text-gray-400">
                             {t('noContentYet')}
