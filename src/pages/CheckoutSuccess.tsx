@@ -63,6 +63,13 @@ const CheckoutSuccess: React.FC = () => {
         .then(async (res) => {
           const data = await res.json()
           if (res.ok && data.success) {
+            const isNew = parsed.isNewUser === true || data.is_new_user
+            if (isNew && data.temp_password) {
+              localStorage.setItem('pendingSetPassword', JSON.stringify({
+                email: data.email,
+                tempPassword: data.temp_password,
+              }))
+            }
             setCheckoutInfo({
               courseId: data.course_id,
               courseTitle: data.course_title,
@@ -73,7 +80,7 @@ const CheckoutSuccess: React.FC = () => {
               language: parsed.language || i18n.language,
               isFree: false,
               purchaseId: data.purchase_id,
-              isNewUser: parsed.isNewUser === true || data.is_new_user,
+              isNewUser: isNew,
             })
           } else {
             setCheckoutInfo({

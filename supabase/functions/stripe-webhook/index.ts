@@ -141,6 +141,31 @@ Deno.serve(async (req: Request) => {
       }
     }
 
+    if (isNewUser && !userId) {
+      const tempPassword = crypto.randomUUID().replace(/-/g, "") + "Aa1!";
+
+      const { data: newUser, error: createError } = await admin.auth.admin.createUser({
+        email,
+        password: tempPassword,
+        email_confirm: true,
+        user_metadata: { full_name: fullName, language_preference: language },
+      });
+
+      if (createError) {
+        console.error("Webhook: failed to create user account:", createError);
+      } else {
+        userId = newUser.user.id;
+        console.log("Webhook: created confirmed user account:", userId);
+
+        await admin.from("profiles").upsert({
+          id: userId,
+          email,
+          full_name: fullName || null,
+          language_preference: language,
+        });
+      }
+    }
+
     console.log("Webhook: inserting purchase userId:", userId, "courseId:", courseId, "email:", email);
 
     const { data: purchase, error: purchaseError } = await admin
@@ -166,23 +191,6 @@ Deno.serve(async (req: Request) => {
     }
 
     console.log("Webhook: purchase created successfully:", purchase?.id);
-
-    if (isNewUser) {
-      const appUrl = Deno.env.get("APP_URL") || "https://learnyourself.co";
-      const resetRedirectUrl = `${appUrl}/${language}/auth/reset-password`;
-
-      const { error: resetError } = await admin.auth.admin.generateLink({
-        type: "recovery",
-        email,
-        options: { redirectTo: resetRedirectUrl },
-      });
-
-      if (resetError) {
-        console.error("Webhook: failed to generate password reset link:", resetError);
-      } else {
-        console.log("Webhook: password reset link sent to new user:", email);
-      }
-    }
 
     return new Response(
       JSON.stringify({ received: true, purchase_id: purchase?.id }),

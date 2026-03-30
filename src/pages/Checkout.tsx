@@ -9,6 +9,23 @@ import { handleSupabaseError, handleAsyncError } from '../utils/errorHandler';
 import LoadingSpinner from '../components/UI/LoadingSpinner';
 import { ArrowLeft, CreditCard, Shield, Clock, CheckCircle } from 'lucide-react';
 
+const enrollFreeCourse = async (courseId: string, email: string, fullName: string, language: string) => {
+  const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/enroll-free-course`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+    },
+    body: JSON.stringify({ courseId, email, fullName, language }),
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error || 'Failed to enroll in free course');
+  }
+  return data;
+};
+
 interface Course {
   id: string;
   title: string;
@@ -96,12 +113,12 @@ const Checkout: React.FC = () => {
 
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!course || !formData.email || !formData.fullName) {
-      logger.warn('Checkout validation failed', { 
-        hasCourse: !!course, 
-        hasEmail: !!formData.email, 
-        hasFullName: !!formData.fullName 
+      logger.warn('Checkout validation failed', {
+        hasCourse: !!course,
+        hasEmail: !!formData.email,
+        hasFullName: !!formData.fullName
       })
       setError(t('fillAllFields'));
       return;
@@ -111,97 +128,48 @@ const Checkout: React.FC = () => {
     setError(null);
 
     try {
-      // Create user account if not logged in
-      let userId = user?.id
-      
-      if (!user) {
-        logger.info('Creating user account for anonymous purchase', { email: formData.email })
-
-        const tempPassword = crypto.randomUUID().replace(/-/g, '') + 'Aa1!'
-
-        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-          email: formData.email,
-          password: tempPassword,
-          options: {
-            data: {
-              full_name: formData.fullName,
-              language_preference: i18n.language,
-            },
-          },
-        })
-
-        if (signUpError && signUpError.message !== 'User already registered') {
-          logger.error('Failed to create user account', { error: signUpError })
-          throw signUpError
-        }
-
-        userId = signUpData?.user?.id
-        logger.info('Created user account for purchase', { userId, email: formData.email })
-
-        localStorage.setItem('pendingSetPassword', JSON.stringify({
-          email: formData.email,
-          tempPassword,
-        }))
-      }
-
-      // Handle free courses - create purchase record and send email
       if (course.price === 0) {
-        logger.info('Processing free course enrollment', { 
-          courseId: course.id, 
+        logger.info('Processing free course enrollment', {
+          courseId: course.id,
           email: formData.email,
-          userId 
         })
-        
-        // Create purchase record for free course
-        const purchaseData = {
-          user_id: userId,
-          course_id: course.id,
-          email: formData.email,
-          stripe_payment_id: `free_${Date.now()}`, // Special identifier for free courses
-          amount: 0,
-          currency: course.currency,
-          status: 'completed' as const,
+
+        const result = await enrollFreeCourse(
+          course.id,
+          formData.email,
+          formData.fullName,
+          i18n.language
+        );
+
+        if (result.is_new_user && result.temp_password) {
+          localStorage.setItem('pendingSetPassword', JSON.stringify({
+            email: formData.email,
+            tempPassword: result.temp_password,
+          }))
         }
 
-        const { data: purchaseResult, error: purchaseError } = await supabase
-          .from('purchases')
-          .insert([purchaseData])
-          .select()
-          .single()
-
-        if (purchaseError) {
-          logger.error('Failed to create free course purchase record', { error: purchaseError })
-          throw purchaseError
-        }
-
-        logger.info('Free course purchase record created', { purchaseId: purchaseResult.id })
-
-        // Store checkout info for success page
         localStorage.setItem('checkoutInfo', JSON.stringify({
           courseId: course.id,
-          courseTitle: course.title,
+          courseTitle: result.course_title || course.title,
           email: formData.email,
           fullName: formData.fullName,
           amount: 0,
           currency: course.currency,
           language: i18n.language,
           isFree: true,
-          purchaseId: purchaseResult.id,
-          isNewUser: !user,
+          purchaseId: result.purchase_id,
+          isNewUser: result.is_new_user,
         }));
-        
-        // Redirect directly to success page
+
         navigate(`/checkout/success?free=true&course_id=${course.id}`);
         return;
       }
 
-      // Handle paid courses - proceed with Stripe checkout
-      logger.info('Starting checkout process', { 
-        courseId: course.id, 
+      logger.info('Starting checkout process', {
+        courseId: course.id,
         email: formData.email,
-        userId 
       })
-      
+
       const { url } = await createCheckoutSession(
         course.id,
         formData.email,
@@ -211,7 +179,6 @@ const Checkout: React.FC = () => {
 
       if (url) {
         logger.info('Redirecting to Stripe checkout', { url })
-        // Store checkout info in localStorage for success page
         localStorage.setItem('checkoutInfo', JSON.stringify({
           courseId: course.id,
           courseTitle: course.title,
@@ -228,10 +195,10 @@ const Checkout: React.FC = () => {
         throw new Error('No checkout URL received');
       }
     } catch (err) {
-      logger.error('Checkout process failed', { 
-        courseId: course.id, 
-        email: formData.email, 
-        error: err 
+      logger.error('Checkout process failed', {
+        courseId: course.id,
+        email: formData.email,
+        error: err
       }, err as Error)
       setError(err instanceof Error ? err.message : 'Failed to process checkout');
       setProcessing(false);

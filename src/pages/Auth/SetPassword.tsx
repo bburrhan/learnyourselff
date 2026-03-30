@@ -64,12 +64,21 @@ const SetPassword: React.FC = () => {
         return
       }
 
-      const { error } = await supabase.auth.signInWithPassword({
-        email: targetEmail,
-        password: parsed.tempPassword,
-      })
+      const attemptSignIn = async (retries: number): Promise<boolean> => {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: targetEmail,
+          password: parsed.tempPassword,
+        })
+        if (!error) return true
+        if (retries > 0) {
+          await new Promise(r => setTimeout(r, 1500))
+          return attemptSignIn(retries - 1)
+        }
+        return false
+      }
 
-      if (!error) {
+      const success = await attemptSignIn(2)
+      if (success) {
         setSessionReady(true)
       }
 
