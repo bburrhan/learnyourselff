@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { supabase, Database, FORMAT_TYPES } from '../lib/supabase'
+import { useAuth } from '../hooks/useAuth'
 import logger from '../utils/logger'
 import { handleSupabaseError, handleAsyncError } from '../utils/errorHandler'
 import { renderMarkdown } from '../utils/renderMarkdown'
@@ -21,6 +22,7 @@ import {
   Users,
   ShieldCheck,
   CheckCircle2,
+  PlayCircle,
 } from 'lucide-react'
 
 type Course = Database['public']['Tables']['courses']['Row']
@@ -28,10 +30,12 @@ type Course = Database['public']['Tables']['courses']['Row']
 const CourseDetail: React.FC = () => {
   const { t, i18n } = useTranslation()
   const { slug } = useParams<{ slug: string }>()
+  const { user } = useAuth()
   const [course, setCourse] = useState<Course | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [categoryName, setCategoryName] = useState<string | null>(null)
+  const [hasPurchased, setHasPurchased] = useState(false)
 
   useSeo({
     title: course?.title,
@@ -62,12 +66,25 @@ const CourseDetail: React.FC = () => {
           setError(null)
           logger.info('Found course in Supabase', { title: data.title })
 
-          const { data: catData } = await supabase
-            .from('categories')
-            .select('name')
-            .eq('slug', data.category)
-            .maybeSingle()
-          if (catData) setCategoryName(catData.name)
+          const [catRes, purchaseRes] = await Promise.all([
+            supabase.from('categories').select('name').eq('slug', data.category).maybeSingle(),
+            user
+              ? supabase
+                  .from('purchases')
+                  .select('id')
+                  .eq('user_id', user.id)
+                  .eq('course_id', data.id)
+                  .eq('status', 'completed')
+                  .limit(1)
+              : Promise.resolve({ data: null }),
+          ])
+
+          if (catRes.data) setCategoryName(catRes.data.name)
+          if (purchaseRes.data && (purchaseRes.data as { id: string }[]).length > 0) {
+            setHasPurchased(true)
+          } else if (data.price === 0) {
+            setHasPurchased(true)
+          }
 
           return true
         }
@@ -100,7 +117,7 @@ const CourseDetail: React.FC = () => {
     }
 
     fetchCourse()
-  }, [slug, i18n.language])
+  }, [slug, i18n.language, user])
 
   if (loading) {
     return (
@@ -243,22 +260,34 @@ const CourseDetail: React.FC = () => {
 
               {/* Mobile CTA (visible below lg) */}
               <div className="mt-8 flex items-center gap-4 lg:hidden">
-                <div>
-                  <span className="text-3xl font-bold text-gray-900">
-                    {formatPrice(course.price, course.currency)}
-                  </span>
-                  <p className="text-xs text-gray-500">{t('oneTimePayment')}</p>
-                </div>
-                <LanguageAwareLink
-                  to={`/checkout/${course.id}`}
-                  className={`flex-1 max-w-xs py-3 px-6 rounded-xl font-semibold text-center transition-colors ${
-                    course.price === 0
-                      ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                      : 'bg-royal-blue-600 text-white hover:bg-royal-blue-700'
-                  }`}
-                >
-                  {course.price === 0 ? t('getForFree') : t('buyNow')}
-                </LanguageAwareLink>
+                {!hasPurchased && (
+                  <div>
+                    <span className="text-3xl font-bold text-gray-900">
+                      {formatPrice(course.price, course.currency)}
+                    </span>
+                    <p className="text-xs text-gray-500">{t('oneTimePayment')}</p>
+                  </div>
+                )}
+                {hasPurchased ? (
+                  <LanguageAwareLink
+                    to={`/learn/${course.id}`}
+                    className="flex-1 max-w-xs py-3 px-6 rounded-xl font-semibold text-center transition-colors bg-emerald-600 text-white hover:bg-emerald-700 inline-flex items-center justify-center gap-2"
+                  >
+                    <PlayCircle className="h-5 w-5" />
+                    {t('startLearningCourse')}
+                  </LanguageAwareLink>
+                ) : (
+                  <LanguageAwareLink
+                    to={`/checkout/${course.id}`}
+                    className={`flex-1 max-w-xs py-3 px-6 rounded-xl font-semibold text-center transition-colors ${
+                      course.price === 0
+                        ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                        : 'bg-royal-blue-600 text-white hover:bg-royal-blue-700'
+                    }`}
+                  >
+                    {course.price === 0 ? t('getForFree') : t('buyNow')}
+                  </LanguageAwareLink>
+                )}
               </div>
             </div>
           </div>
@@ -300,30 +329,44 @@ const CourseDetail: React.FC = () => {
           <div className="lg:col-span-1 space-y-4">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-8">
               {/* Price */}
-              <div className="text-center py-4 border-b border-gray-100 mb-5">
-                <div className="text-4xl font-bold text-gray-900 mb-1">
-                  {formatPrice(course.price, course.currency)}
+              {!hasPurchased && (
+                <div className="text-center py-4 border-b border-gray-100 mb-5">
+                  <div className="text-4xl font-bold text-gray-900 mb-1">
+                    {formatPrice(course.price, course.currency)}
+                  </div>
+                  <p className="text-sm text-gray-500">{t('oneTimePayment')}</p>
                 </div>
-                <p className="text-sm text-gray-500">{t('oneTimePayment')}</p>
-              </div>
+              )}
 
               {/* CTA */}
-              <LanguageAwareLink
-                to={`/checkout/${course.id}`}
-                className={`w-full py-4 px-6 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 text-base shadow-sm hover:shadow-md ${
-                  course.price === 0
-                    ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                    : 'bg-royal-blue-600 text-white hover:bg-royal-blue-700'
-                }`}
-              >
-                <CreditCard className="h-5 w-5" />
-                {course.price === 0 ? t('getForFree') : t('buyNow')}
-              </LanguageAwareLink>
+              {hasPurchased ? (
+                <LanguageAwareLink
+                  to={`/learn/${course.id}`}
+                  className="w-full py-4 px-6 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 text-base shadow-sm hover:shadow-md bg-emerald-600 text-white hover:bg-emerald-700"
+                >
+                  <PlayCircle className="h-5 w-5" />
+                  {t('startLearningCourse')}
+                </LanguageAwareLink>
+              ) : (
+                <LanguageAwareLink
+                  to={`/checkout/${course.id}`}
+                  className={`w-full py-4 px-6 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 text-base shadow-sm hover:shadow-md ${
+                    course.price === 0
+                      ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                      : 'bg-royal-blue-600 text-white hover:bg-royal-blue-700'
+                  }`}
+                >
+                  <CreditCard className="h-5 w-5" />
+                  {course.price === 0 ? t('getForFree') : t('buyNow')}
+                </LanguageAwareLink>
+              )}
 
-              <p className="text-xs text-gray-400 text-center mt-3 flex items-center justify-center gap-1">
-                <ShieldCheck className="h-3.5 w-3.5" />
-                {t('moneyBackGuarantee')}
-              </p>
+              {!hasPurchased && (
+                <p className="text-xs text-gray-400 text-center mt-3 flex items-center justify-center gap-1">
+                  <ShieldCheck className="h-3.5 w-3.5" />
+                  {t('moneyBackGuarantee')}
+                </p>
+              )}
 
               {/* Course meta */}
               <div className="mt-5 pt-5 border-t border-gray-100 space-y-3">
@@ -367,22 +410,34 @@ const CourseDetail: React.FC = () => {
       {/* Sticky Mobile Bar */}
       <div className="fixed bottom-0 left-0 right-0 lg:hidden bg-white border-t border-gray-200 p-3 z-40 shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
         <div className="flex items-center justify-between gap-3 max-w-7xl mx-auto">
-          <div className="flex-shrink-0">
-            <div className="text-xl font-bold text-gray-900">
-              {formatPrice(course.price, course.currency)}
+          {!hasPurchased && (
+            <div className="flex-shrink-0">
+              <div className="text-xl font-bold text-gray-900">
+                {formatPrice(course.price, course.currency)}
+              </div>
+              <p className="text-xs text-gray-500">{t('oneTimePayment')}</p>
             </div>
-            <p className="text-xs text-gray-500">{t('oneTimePayment')}</p>
-          </div>
-          <LanguageAwareLink
-            to={`/checkout/${course.id}`}
-            className={`flex-1 max-w-xs py-3 px-6 rounded-xl font-semibold text-center transition-colors ${
-              course.price === 0
-                ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                : 'bg-royal-blue-600 text-white hover:bg-royal-blue-700'
-            }`}
-          >
-            {course.price === 0 ? t('getForFree') : t('buyNow')}
-          </LanguageAwareLink>
+          )}
+          {hasPurchased ? (
+            <LanguageAwareLink
+              to={`/learn/${course.id}`}
+              className="w-full py-3 px-6 rounded-xl font-semibold text-center transition-colors bg-emerald-600 text-white hover:bg-emerald-700 inline-flex items-center justify-center gap-2"
+            >
+              <PlayCircle className="h-5 w-5" />
+              {t('startLearningCourse')}
+            </LanguageAwareLink>
+          ) : (
+            <LanguageAwareLink
+              to={`/checkout/${course.id}`}
+              className={`flex-1 max-w-xs py-3 px-6 rounded-xl font-semibold text-center transition-colors ${
+                course.price === 0
+                  ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                  : 'bg-royal-blue-600 text-white hover:bg-royal-blue-700'
+              }`}
+            >
+              {course.price === 0 ? t('getForFree') : t('buyNow')}
+            </LanguageAwareLink>
+          )}
         </div>
       </div>
       <div className="h-20 lg:hidden" />

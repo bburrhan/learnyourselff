@@ -46,7 +46,7 @@ const CONTENT_COLORS: Record<ContentType, string> = {
 }
 
 const MyCourses: React.FC = () => {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const { user } = useAuth()
   const [purchases, setPurchases] = useState<Purchase[]>([])
   const [progressMap, setProgressMap] = useState<CourseProgressMap>({})
@@ -69,7 +69,6 @@ const MyCourses: React.FC = () => {
           .select(`*, courses!inner (*)`)
           .eq('user_id', user.id)
           .eq('status', 'completed')
-          .eq('courses.language', i18n.language)
           .order('created_at', { ascending: false })
 
         if (error) {
@@ -140,7 +139,7 @@ const MyCourses: React.FC = () => {
     }
 
     fetchData()
-  }, [user, i18n.language])
+  }, [user])
 
   if (loading) {
     return <LoadingSpinner className="py-12" />
