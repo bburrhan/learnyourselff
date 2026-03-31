@@ -7,17 +7,21 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
 };
 
+function generateDummyEmail(userId: string): string {
+  return `${userId}@noemail.learnyourself.app`;
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders });
   }
 
   try {
-    const { courseId, email, fullName, language = "en" } = await req.json();
+    const { courseId, email, phoneNumber, fullName, language = "en" } = await req.json();
 
-    if (!courseId || !email) {
+    if (!courseId || (!email && !phoneNumber)) {
       return new Response(
-        JSON.stringify({ error: "courseId and email are required" }),
+        JSON.stringify({ error: "courseId and either email or phoneNumber are required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -51,54 +55,96 @@ Deno.serve(async (req: Request) => {
     let userId: string | null = null;
     let tempPassword: string | null = null;
 
-    const { data: userList } = await admin.auth.admin.listUsers();
-    const matchedUser = userList?.users?.find(
-      (u: { email?: string }) => u.email?.toLowerCase() === email.toLowerCase()
-    );
-    if (matchedUser) {
-      isNewUser = false;
-      userId = matchedUser.id;
-    }
-
-    if (!userId) {
+    if (phoneNumber) {
       const { data: profile } = await admin
         .from("profiles")
         .select("id")
-        .eq("email", email)
+        .eq("phone_number", phoneNumber)
         .maybeSingle();
       if (profile) {
         userId = profile.id;
         isNewUser = false;
       }
+    } else if (email) {
+      const { data: userList } = await admin.auth.admin.listUsers();
+      const matchedUser = userList?.users?.find(
+        (u: { email?: string }) => u.email?.toLowerCase() === email.toLowerCase()
+      );
+      if (matchedUser) {
+        isNewUser = false;
+        userId = matchedUser.id;
+      }
+
+      if (!userId) {
+        const { data: profile } = await admin
+          .from("profiles")
+          .select("id")
+          .eq("email", email)
+          .maybeSingle();
+        if (profile) {
+          userId = profile.id;
+          isNewUser = false;
+        }
+      }
     }
 
     if (isNewUser && !userId) {
-      tempPassword = crypto.randomUUID().replace(/-/g, "") + "Aa1!";
+      if (phoneNumber) {
+        const newUserId = crypto.randomUUID();
+        const dummyEmail = generateDummyEmail(newUserId);
+        tempPassword = crypto.randomUUID().replace(/-/g, "") + "Aa1!";
 
-      const { data: newUser, error: createError } = await admin.auth.admin.createUser({
-        email,
-        password: tempPassword,
-        email_confirm: true,
-        user_metadata: { full_name: fullName || "", language_preference: language },
-      });
+        const { data: newUser, error: createError } = await admin.auth.admin.createUser({
+          email: dummyEmail,
+          password: tempPassword,
+          email_confirm: true,
+          user_metadata: { full_name: fullName || "", phone_number: phoneNumber, language_preference: language },
+        });
 
-      if (createError) {
-        console.error("Failed to create user account:", createError);
-        return new Response(
-          JSON.stringify({ error: "Failed to create user account" }),
-          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        if (createError) {
+          console.error("Failed to create user account:", createError);
+          return new Response(
+            JSON.stringify({ error: "Failed to create user account" }),
+            { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        userId = newUser.user.id;
+
+        await admin.from("profiles").upsert({
+          id: userId,
+          phone_number: phoneNumber,
+          full_name: fullName || null,
+          language_preference: language,
+          whatsapp_verified: true,
+        });
+      } else {
+        tempPassword = crypto.randomUUID().replace(/-/g, "") + "Aa1!";
+
+        const { data: newUser, error: createError } = await admin.auth.admin.createUser({
+          email,
+          password: tempPassword,
+          email_confirm: true,
+          user_metadata: { full_name: fullName || "", language_preference: language },
+        });
+
+        if (createError) {
+          console.error("Failed to create user account:", createError);
+          return new Response(
+            JSON.stringify({ error: "Failed to create user account" }),
+            { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        userId = newUser.user.id;
+
+        await admin.from("profiles").upsert({
+          id: userId,
+          email,
+          full_name: fullName || null,
+          language_preference: language,
+        });
       }
-
-      userId = newUser.user.id;
-      console.log("Created confirmed user account for free enrollment:", userId);
-
-      await admin.from("profiles").upsert({
-        id: userId,
-        email,
-        full_name: fullName || null,
-        language_preference: language,
-      });
     }
 
     const { data: existingPurchase } = await admin
@@ -117,24 +163,29 @@ Deno.serve(async (req: Request) => {
           purchase_id: existingPurchase.id,
           course_id: courseId,
           course_title: course.title,
-          email,
+          email: email ?? null,
+          phone_number: phoneNumber ?? null,
           is_new_user: false,
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
+    const purchaseRecord: Record<string, unknown> = {
+      user_id: userId,
+      course_id: courseId,
+      stripe_payment_id: `free_${Date.now()}`,
+      amount: 0,
+      currency: course.currency,
+      status: "completed",
+    };
+
+    if (email) purchaseRecord.email = email;
+    if (phoneNumber) purchaseRecord.phone_number = phoneNumber;
+
     const { data: purchase, error: purchaseError } = await admin
       .from("purchases")
-      .insert({
-        user_id: userId,
-        course_id: courseId,
-        email,
-        stripe_payment_id: `free_${Date.now()}`,
-        amount: 0,
-        currency: course.currency,
-        status: "completed",
-      })
+      .insert(purchaseRecord)
       .select()
       .maybeSingle();
 
@@ -146,7 +197,22 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    console.log("Free enrollment created:", purchase?.id, "for user:", userId);
+    if (email) {
+      const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+      fetch(`${supabaseUrl}/functions/v1/send-course-email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${anonKey}` },
+        body: JSON.stringify({
+          purchaseId: purchase!.id,
+          email,
+          fullName: fullName ?? "",
+          courseTitle: course.title,
+          courseId,
+          isFree: true,
+          language,
+        }),
+      }).catch(() => {});
+    }
 
     return new Response(
       JSON.stringify({
@@ -154,12 +220,13 @@ Deno.serve(async (req: Request) => {
         purchase_id: purchase!.id,
         course_id: courseId,
         course_title: course.title,
-        email,
+        email: email ?? null,
+        phone_number: phoneNumber ?? null,
         full_name: fullName || "",
         amount: 0,
         currency: course.currency,
         is_new_user: isNewUser,
-        temp_password: isNewUser ? tempPassword : undefined,
+        temp_password: isNewUser && email ? tempPassword : undefined,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );

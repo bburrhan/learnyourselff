@@ -7,16 +7,29 @@ import { createCheckoutSession } from '../lib/stripe';
 import logger from '../utils/logger';
 import { handleSupabaseError, handleAsyncError } from '../utils/errorHandler';
 import LoadingSpinner from '../components/UI/LoadingSpinner';
-import { ArrowLeft, CreditCard, Shield, Clock, CheckCircle } from 'lucide-react';
+import WhatsAppOTPInput from '../components/UI/WhatsAppOTPInput';
+import { ArrowLeft, CreditCard, Shield, Clock, CheckCircle, MessageCircle } from 'lucide-react';
 
-const enrollFreeCourse = async (courseId: string, email: string, fullName: string, language: string) => {
+const enrollFreeCourse = async (
+  courseId: string,
+  phoneNumber: string | null,
+  email: string | null,
+  fullName: string,
+  language: string
+) => {
   const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/enroll-free-course`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
     },
-    body: JSON.stringify({ courseId, email, fullName, language }),
+    body: JSON.stringify({
+      courseId,
+      phoneNumber: phoneNumber || undefined,
+      email: email || undefined,
+      fullName,
+      language,
+    }),
   });
 
   const data = await response.json();
@@ -38,28 +51,36 @@ interface Course {
   categoryName?: string;
 }
 
+type CheckoutStep = 'info' | 'verify' | 'processing';
+
 const Checkout: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const { user } = useAuth();
+  const { user, getPhoneNumber } = useAuth();
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [step, setStep] = useState<CheckoutStep>('info');
+  const [verifiedPhone, setVerifiedPhone] = useState<string | null>(null);
+
+  const phoneNumber = getPhoneNumber();
+  const isPhoneUser = !!phoneNumber;
+
   const [formData, setFormData] = useState({
-    email: user?.email || '',
-    fullName: '',
+    email: user?.email?.includes('@noemail.learnyourself.app') ? '' : (user?.email || ''),
+    fullName: user?.user_metadata?.full_name || '',
   });
 
   useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [])
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     if (user) {
       setFormData(prev => ({
-        email: prev.email || user.email || '',
+        email: prev.email || (user.email?.includes('@noemail.learnyourself.app') ? '' : (user.email || '')),
         fullName: prev.fullName || user.user_metadata?.full_name || '',
       }));
     }
@@ -70,14 +91,13 @@ const Checkout: React.FC = () => {
       navigate('/courses');
       return;
     }
-
     fetchCourse();
   }, [courseId, navigate]);
 
   const fetchCourse = async () => {
     const result = await handleAsyncError(async () => {
-      logger.info('Fetching course for checkout', { courseId })
-      
+      logger.info('Fetching course for checkout', { courseId });
+
       const { data, error } = await supabase
         .from('courses')
         .select('*')
@@ -86,73 +106,60 @@ const Checkout: React.FC = () => {
         .single();
 
       if (error || !data) {
-        if (error) {
-          handleSupabaseError(error, 'fetchCourseForCheckout')
-        }
+        if (error) handleSupabaseError(error, 'fetchCourseForCheckout');
         throw new Error('Course not found');
       }
-
-      logger.info('Course fetched for checkout', { courseId, title: data.title })
 
       const { data: catData } = await supabase
         .from('categories')
         .select('name')
         .eq('slug', data.category)
-        .maybeSingle()
+        .maybeSingle();
 
       setCourse({ ...data, categoryName: catData?.name });
-      return true
-    }, 'fetchCourseForCheckout', false)
-    
-    if (!result) {
-      setError('Failed to load course');
-    }
-    
+      return true;
+    }, 'fetchCourseForCheckout', false);
+
+    if (!result) setError('Failed to load course');
     setLoading(false);
   };
 
-  const handleCheckout = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!course || !formData.email || !formData.fullName) {
-      logger.warn('Checkout validation failed', {
-        hasCourse: !!course,
-        hasEmail: !!formData.email,
-        hasFullName: !!formData.fullName
-      })
-      setError(t('fillAllFields'));
-      return;
+  const handlePhoneVerified = async (phone: string) => {
+    setVerifiedPhone(phone);
+    const stored = sessionStorage.getItem('whatsapp_auth');
+    if (stored) {
+      sessionStorage.removeItem('whatsapp_auth');
     }
+    await processCheckout(phone, null);
+  };
+
+  const processCheckout = async (phone: string | null, emailOverride: string | null) => {
+    if (!course) return;
+
+    const effectivePhone = phone ?? phoneNumber ?? verifiedPhone;
+    const effectiveEmail = emailOverride ?? formData.email;
+    const effectiveName = formData.fullName;
 
     setProcessing(true);
     setError(null);
+    setStep('processing');
 
     try {
       if (course.price === 0) {
-        logger.info('Processing free course enrollment', {
-          courseId: course.id,
-          email: formData.email,
-        })
-
         const result = await enrollFreeCourse(
           course.id,
-          formData.email,
-          formData.fullName,
+          effectivePhone,
+          effectivePhone ? null : effectiveEmail,
+          effectiveName,
           i18n.language
         );
-
-        if (result.is_new_user && result.temp_password) {
-          localStorage.setItem('pendingSetPassword', JSON.stringify({
-            email: formData.email,
-            tempPassword: result.temp_password,
-          }))
-        }
 
         localStorage.setItem('checkoutInfo', JSON.stringify({
           courseId: course.id,
           courseTitle: result.course_title || course.title,
-          email: formData.email,
-          fullName: formData.fullName,
+          email: effectiveEmail,
+          phoneNumber: effectivePhone,
+          fullName: effectiveName,
           amount: 0,
           currency: course.currency,
           language: i18n.language,
@@ -165,25 +172,20 @@ const Checkout: React.FC = () => {
         return;
       }
 
-      logger.info('Starting checkout process', {
-        courseId: course.id,
-        email: formData.email,
-      })
-
       const { url } = await createCheckoutSession(
         course.id,
-        formData.email,
-        formData.fullName,
+        effectivePhone ? `phone:${effectivePhone}` : effectiveEmail,
+        effectiveName,
         i18n.language
       );
 
       if (url) {
-        logger.info('Redirecting to Stripe checkout', { url })
         localStorage.setItem('checkoutInfo', JSON.stringify({
           courseId: course.id,
           courseTitle: course.title,
-          email: formData.email,
-          fullName: formData.fullName,
+          email: effectiveEmail,
+          phoneNumber: effectivePhone,
+          fullName: effectiveName,
           amount: course.price,
           currency: course.currency,
           language: i18n.language,
@@ -191,18 +193,35 @@ const Checkout: React.FC = () => {
         }));
         window.location.href = url;
       } else {
-        logger.error('No checkout URL received from Stripe')
         throw new Error('No checkout URL received');
       }
     } catch (err) {
-      logger.error('Checkout process failed', {
-        courseId: course.id,
-        email: formData.email,
-        error: err
-      }, err as Error)
+      logger.error('Checkout process failed', { courseId: course.id, error: err }, err as Error);
       setError(err instanceof Error ? err.message : 'Failed to process checkout');
       setProcessing(false);
+      setStep('info');
     }
+  };
+
+  const handleCheckout = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!course || !formData.fullName) {
+      setError(t('fillAllFields'));
+      return;
+    }
+
+    if (!isPhoneUser && !formData.email) {
+      setError(t('fillAllFields'));
+      return;
+    }
+
+    if (!user && !isPhoneUser) {
+      setStep('verify');
+      return;
+    }
+
+    await processCheckout(phoneNumber, null);
   };
 
   if (loading) {
@@ -233,7 +252,6 @@ const Checkout: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4">
-        {/* Header */}
         <div className="mb-8">
           <button
             onClick={() => navigate(`/course/${course?.slug || courseId}`)}
@@ -249,7 +267,7 @@ const Checkout: React.FC = () => {
           {/* Course Summary */}
           <div className="bg-white rounded-xl shadow-sm border p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('orderSummary')}</h2>
-            
+
             {course && (
               <div className="space-y-4">
                 <div className="flex gap-4">
@@ -271,12 +289,15 @@ const Checkout: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="border-t pt-4">
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">{t('coursePrice')}</span>
                     <span className={`text-2xl font-bold ${course.price === 0 ? 'text-green-600' : 'text-gray-900'}`}>
-                      {course.price === 0 ? 'FREE' : new Intl.NumberFormat('en-US', { style: 'currency', currency: course.currency || 'USD' }).format(course.price)}
+                      {course.price === 0
+                        ? 'FREE'
+                        : new Intl.NumberFormat('en-US', { style: 'currency', currency: course.currency || 'USD' }).format(course.price)
+                      }
                     </span>
                   </div>
                 </div>
@@ -284,94 +305,147 @@ const Checkout: React.FC = () => {
             )}
           </div>
 
-          {/* Checkout Form */}
+          {/* Checkout Form / OTP Verification */}
           <div className="bg-white rounded-xl shadow-sm border p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('customerInformation')}</h2>
-            
-            <form onSubmit={handleCheckout} className="space-y-4">
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                  {t('emailAddress')}
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  required
-                  readOnly={!!user}
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent ${user ? 'bg-gray-50 text-gray-600 cursor-default' : ''}`}
-                  placeholder="your@email.com"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
-                  {t('fullName')}
-                </label>
-                <input
-                  type="text"
-                  id="fullName"
-                  required
-                  value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent"
-                  placeholder={t('fullName')}
-                />
-              </div>
-
-              {error && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                  <p className="text-red-800 text-sm">{error}</p>
+            {step === 'verify' ? (
+              <div className="space-y-4">
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-1">Verify Your Identity</h2>
+                  <p className="text-sm text-gray-500">We need to verify your phone number to complete the purchase.</p>
                 </div>
-              )}
+                <WhatsAppOTPInput
+                  onVerified={handlePhoneVerified}
+                  purpose="checkout"
+                  language={i18n.language}
+                />
+                <button
+                  type="button"
+                  onClick={() => setStep('info')}
+                  className="text-sm text-gray-500 hover:text-gray-700 underline"
+                >
+                  Go back
+                </button>
+              </div>
+            ) : step === 'processing' ? (
+              <div className="flex flex-col items-center justify-center py-12 gap-4">
+                <LoadingSpinner />
+                <p className="text-gray-600">{t('processing')}</p>
+              </div>
+            ) : (
+              <>
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('customerInformation')}</h2>
 
-              <button
-                type="submit"
-                disabled={processing || !formData.email || !formData.fullName}
-                className={`w-full text-white py-3 px-4 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2 transform hover:scale-105 ${
-                  course?.price === 0 
-                    ? 'bg-green-600 hover:bg-green-700' 
-                    : 'bg-royal-blue-600 hover:bg-royal-blue-700'
-                }`}
-              >
-                {processing ? (
-                  <>
-                    <LoadingSpinner />
-                    {t('processing')}
-                  </>
-                ) : (
-                  <>
-                    {course?.price === 0 ? (
+                <form onSubmit={handleCheckout} className="space-y-4">
+                  {isPhoneUser ? (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        WhatsApp Number
+                      </label>
+                      <div className="flex items-center gap-2 px-3 py-2 border border-gray-200 rounded-lg bg-gray-50">
+                        <MessageCircle className="w-4 h-4 text-green-600" />
+                        <span className="text-sm text-gray-700">{phoneNumber}</span>
+                        <CheckCircle className="w-4 h-4 text-green-500 ml-auto" />
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                        {t('emailAddress')}
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        required
+                        readOnly={!!user && !user.email?.includes('@noemail.learnyourself.app')}
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent ${
+                          user && !user.email?.includes('@noemail.learnyourself.app')
+                            ? 'bg-gray-50 text-gray-600 cursor-default'
+                            : ''
+                        }`}
+                        placeholder="your@email.com"
+                      />
+                    </div>
+                  )}
+
+                  <div>
+                    <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
+                      {t('fullName')}
+                    </label>
+                    <input
+                      type="text"
+                      id="fullName"
+                      required
+                      value={formData.fullName}
+                      onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent"
+                      placeholder={t('fullName')}
+                    />
+                  </div>
+
+                  {!user && !isPhoneUser && (
+                    <div className="flex items-start gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <MessageCircle className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
+                      <p className="text-xs text-green-700">
+                        You'll verify your identity via WhatsApp before completing the purchase.
+                      </p>
+                    </div>
+                  )}
+
+                  {error && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                      <p className="text-red-800 text-sm">{error}</p>
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={processing || !formData.fullName || (!isPhoneUser && !formData.email)}
+                    className={`w-full text-white py-3 px-4 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2 transform hover:scale-105 ${
+                      course?.price === 0
+                        ? 'bg-green-600 hover:bg-green-700'
+                        : 'bg-royal-blue-600 hover:bg-royal-blue-700'
+                    }`}
+                  >
+                    {processing ? (
                       <>
-                        <CheckCircle className="w-5 h-5" />
-                        {t('enrollForFree')}
+                        <LoadingSpinner />
+                        {t('processing')}
                       </>
                     ) : (
                       <>
-                        <CreditCard className="w-5 h-5" />
-                        {t('proceedToPayment')}
+                        {course?.price === 0 ? (
+                          <>
+                            <CheckCircle className="w-5 h-5" />
+                            {t('enrollForFree')}
+                          </>
+                        ) : (
+                          <>
+                            <CreditCard className="w-5 h-5" />
+                            {!user && !isPhoneUser ? 'Verify & Pay' : t('proceedToPayment')}
+                          </>
+                        )}
                       </>
                     )}
-                  </>
-                )}
-              </button>
-            </form>
+                  </button>
+                </form>
 
-            {/* Security Features */}
-            <div className="mt-6 pt-6 border-t">
-              <h3 className="text-sm font-medium text-gray-900 mb-3">{t('securePayment')}</h3>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Shield className="w-4 h-4 text-green-600" />
-                  {t('sslEncrypted')}
+                <div className="mt-6 pt-6 border-t">
+                  <h3 className="text-sm font-medium text-gray-900 mb-3">{t('securePayment')}</h3>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <Shield className="w-4 h-4 text-green-600" />
+                      {t('sslEncrypted')}
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <Clock className="w-4 h-4 text-blue-600" />
+                      {t('instantAccess')}
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Clock className="w-4 h-4 text-blue-600" />
-                  {t('instantAccess')}
-                </div>
-              </div>
-            </div>
+              </>
+            )}
           </div>
         </div>
       </div>

@@ -9,16 +9,14 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Get initial session
     const getSession = async () => {
       try {
         logger.debug('Getting initial session')
         const { data: { session }, error } = await supabase.auth.getSession()
-        
+
         if (error) {
           const errorResult = handleSupabaseError(error, 'getSession')
-          
-          // If session is expired or refresh token is invalid, clear the session
+
           if (errorResult.code === 'SESSION_EXPIRED') {
             logger.info('Session expired, clearing invalid session data')
             await supabase.auth.signOut()
@@ -26,14 +24,13 @@ export const useAuth = () => {
           }
         } else {
           setUser(session?.user ?? null)
-          logger.info('Session retrieved', { 
+          logger.info('Session retrieved', {
             hasUser: !!session?.user,
-            userId: session?.user?.id 
+            userId: session?.user?.id,
           })
         }
       } catch (error) {
         logger.error('Failed to get session', { error }, error as Error)
-        // Clear any potentially corrupted session data
         try {
           await supabase.auth.signOut()
           setUser(null)
@@ -47,13 +44,12 @@ export const useAuth = () => {
 
     getSession()
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        logger.info('Auth state changed', { 
-          event, 
+      (event, session) => {
+        logger.info('Auth state changed', {
+          event,
           hasUser: !!session?.user,
-          userId: session?.user?.id 
+          userId: session?.user?.id,
         })
         setUser(session?.user ?? null)
         setLoading(false)
@@ -63,19 +59,37 @@ export const useAuth = () => {
     return () => subscription.unsubscribe()
   }, [])
 
+  const signInWithPhone = async (accessToken: string, refreshToken: string) => {
+    try {
+      logger.info('Setting session from WhatsApp OTP')
+      const { data, error } = await supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      })
+
+      if (error) {
+        logger.warn('setSession failed', { error: error.message })
+        return { data, error: handleSupabaseError(error, 'signInWithPhone') }
+      }
+
+      logger.info('Phone sign-in successful', { userId: data.user?.id })
+      return { data, error: null }
+    } catch (error) {
+      logger.error('signInWithPhone error', { error }, error as Error)
+      return { data: null, error }
+    }
+  }
+
   const signIn = async (email: string, password: string) => {
     try {
       logger.info('Sign in attempt', { email })
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-      
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+
       if (error) {
         logger.warn('Sign in failed', { email, error: error.message })
         return { data, error: handleSupabaseError(error, 'signIn') }
       }
-      
+
       logger.info('Sign in successful', { email, userId: data.user?.id })
       return { data, error }
     } catch (error) {
@@ -97,12 +111,12 @@ export const useAuth = () => {
           },
         },
       })
-      
+
       if (error) {
         logger.warn('Sign up failed', { email, error: error.message })
         return { data, error: handleSupabaseError(error, 'signUp') }
       }
-      
+
       logger.info('Sign up successful', { email, userId: data.user?.id })
       return { data, error }
     } catch (error) {
@@ -117,7 +131,6 @@ export const useAuth = () => {
       const { error } = await supabase.auth.signOut()
 
       if (error) {
-        // If there's no session, treat it as success (already signed out)
         if (error.message?.includes('Auth session missing')) {
           logger.info('Sign out skipped - no active session')
           setUser(null)
@@ -132,9 +145,13 @@ export const useAuth = () => {
       return { error: null }
     } catch (error) {
       logger.error('Sign out error', { error }, error as Error)
-      setUser(null) // Clear user state even if signOut fails
+      setUser(null)
       return { error: null }
     }
+  }
+
+  const getPhoneNumber = (): string | null => {
+    return user?.user_metadata?.phone_number ?? null
   }
 
   return {
@@ -143,5 +160,7 @@ export const useAuth = () => {
     signIn,
     signUp,
     signOut,
+    signInWithPhone,
+    getPhoneNumber,
   }
 }
