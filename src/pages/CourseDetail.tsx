@@ -82,8 +82,6 @@ const CourseDetail: React.FC = () => {
           if (catRes.data) setCategoryName(catRes.data.name)
           if (purchaseRes.data && (purchaseRes.data as { id: string }[]).length > 0) {
             setHasPurchased(true)
-          } else if (data.price === 0) {
-            setHasPurchased(true)
           }
 
           return true
