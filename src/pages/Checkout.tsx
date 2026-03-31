@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
@@ -12,8 +12,7 @@ import { ArrowLeft, CreditCard, Shield, Clock, CheckCircle, MessageCircle } from
 
 const enrollFreeCourse = async (
   courseId: string,
-  phoneNumber: string | null,
-  email: string | null,
+  phoneNumber: string,
   fullName: string,
   language: string
 ) => {
@@ -25,8 +24,7 @@ const enrollFreeCourse = async (
     },
     body: JSON.stringify({
       courseId,
-      phoneNumber: phoneNumber || undefined,
-      email: email || undefined,
+      phoneNumber,
       fullName,
       language,
     }),
@@ -51,8 +49,6 @@ interface Course {
   categoryName?: string;
 }
 
-type CheckoutStep = 'info' | 'verify' | 'processing';
-
 const Checkout: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
@@ -62,16 +58,14 @@ const Checkout: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [step, setStep] = useState<CheckoutStep>('info');
-  const [verifiedPhone, setVerifiedPhone] = useState<string | null>(null);
+  const [nameError, setNameError] = useState<string | null>(null);
 
   const phoneNumber = getPhoneNumber();
   const isPhoneUser = !!phoneNumber;
 
-  const [formData, setFormData] = useState({
-    email: user?.email?.includes('@noemail.learnyourself.app') ? '' : (user?.email || ''),
-    fullName: user?.user_metadata?.full_name || '',
-  });
+  const [fullName, setFullName] = useState(user?.user_metadata?.full_name || '');
+  const fullNameRef = useRef(fullName);
+  fullNameRef.current = fullName;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -79,10 +73,7 @@ const Checkout: React.FC = () => {
 
   useEffect(() => {
     if (user) {
-      setFormData(prev => ({
-        email: prev.email || (user.email?.includes('@noemail.learnyourself.app') ? '' : (user.email || '')),
-        fullName: prev.fullName || user.user_metadata?.full_name || '',
-      }));
+      setFullName(prev => prev || user.user_metadata?.full_name || '');
     }
   }, [user]);
 
@@ -124,32 +115,37 @@ const Checkout: React.FC = () => {
     setLoading(false);
   };
 
+  const validateName = () => {
+    if (!fullNameRef.current.trim()) {
+      setNameError(t('fillAllFields'));
+      return false;
+    }
+    setNameError(null);
+    return true;
+  };
+
   const handlePhoneVerified = async (phone: string) => {
-    setVerifiedPhone(phone);
     const stored = sessionStorage.getItem('whatsapp_auth');
     if (stored) {
       sessionStorage.removeItem('whatsapp_auth');
     }
-    await processCheckout(phone, null);
+    await processCheckout(phone);
   };
 
-  const processCheckout = async (phone: string | null, emailOverride: string | null) => {
+  const processCheckout = async (phone: string) => {
     if (!course) return;
 
-    const effectivePhone = phone ?? phoneNumber ?? verifiedPhone;
-    const effectiveEmail = emailOverride ?? formData.email;
-    const effectiveName = formData.fullName;
+    const effectivePhone = phone;
+    const effectiveName = fullNameRef.current;
 
     setProcessing(true);
     setError(null);
-    setStep('processing');
 
     try {
       if (course.price === 0) {
         const result = await enrollFreeCourse(
           course.id,
           effectivePhone,
-          effectivePhone ? null : effectiveEmail,
           effectiveName,
           i18n.language
         );
@@ -157,7 +153,6 @@ const Checkout: React.FC = () => {
         localStorage.setItem('checkoutInfo', JSON.stringify({
           courseId: course.id,
           courseTitle: result.course_title || course.title,
-          email: effectiveEmail,
           phoneNumber: effectivePhone,
           fullName: effectiveName,
           amount: 0,
@@ -174,7 +169,7 @@ const Checkout: React.FC = () => {
 
       const { url } = await createCheckoutSession(
         course.id,
-        effectivePhone ? `phone:${effectivePhone}` : effectiveEmail,
+        `phone:${effectivePhone}`,
         effectiveName,
         i18n.language
       );
@@ -183,7 +178,6 @@ const Checkout: React.FC = () => {
         localStorage.setItem('checkoutInfo', JSON.stringify({
           courseId: course.id,
           courseTitle: course.title,
-          email: effectiveEmail,
           phoneNumber: effectivePhone,
           fullName: effectiveName,
           amount: course.price,
@@ -199,29 +193,14 @@ const Checkout: React.FC = () => {
       logger.error('Checkout process failed', { courseId: course.id, error: err }, err as Error);
       setError(err instanceof Error ? err.message : 'Failed to process checkout');
       setProcessing(false);
-      setStep('info');
     }
   };
 
-  const handleCheckout = async (e: React.FormEvent) => {
+  const handleAuthenticatedCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!course || !formData.fullName) {
-      setError(t('fillAllFields'));
-      return;
-    }
-
-    if (!isPhoneUser && !formData.email) {
-      setError(t('fillAllFields'));
-      return;
-    }
-
-    if (!user && !isPhoneUser) {
-      setStep('verify');
-      return;
-    }
-
-    await processCheckout(phoneNumber, null);
+    if (!validateName()) return;
+    if (!phoneNumber) return;
+    await processCheckout(phoneNumber);
   };
 
   if (loading) {
@@ -303,30 +282,25 @@ const Checkout: React.FC = () => {
                 </div>
               </div>
             )}
+
+            <div className="mt-6 pt-6 border-t">
+              <h3 className="text-sm font-medium text-gray-900 mb-3">{t('securePayment')}</h3>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <Shield className="w-4 h-4 text-green-600" />
+                  {t('sslEncrypted')}
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <Clock className="w-4 h-4 text-blue-600" />
+                  {t('instantAccess')}
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Checkout Form / OTP Verification */}
+          {/* Checkout Form */}
           <div className="bg-white rounded-xl shadow-sm border p-6">
-            {step === 'verify' ? (
-              <div className="space-y-4">
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900 mb-1">Verify Your Identity</h2>
-                  <p className="text-sm text-gray-500">We need to verify your phone number to complete the purchase.</p>
-                </div>
-                <WhatsAppOTPInput
-                  onVerified={handlePhoneVerified}
-                  purpose="checkout"
-                  language={i18n.language}
-                />
-                <button
-                  type="button"
-                  onClick={() => setStep('info')}
-                  className="text-sm text-gray-500 hover:text-gray-700 underline"
-                >
-                  Go back
-                </button>
-              </div>
-            ) : step === 'processing' ? (
+            {processing ? (
               <div className="flex flex-col items-center justify-center py-12 gap-4">
                 <LoadingSpinner />
                 <p className="text-gray-600">{t('processing')}</p>
@@ -335,40 +309,8 @@ const Checkout: React.FC = () => {
               <>
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('customerInformation')}</h2>
 
-                <form onSubmit={handleCheckout} className="space-y-4">
-                  {isPhoneUser ? (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        WhatsApp Number
-                      </label>
-                      <div className="flex items-center gap-2 px-3 py-2 border border-gray-200 rounded-lg bg-gray-50">
-                        <MessageCircle className="w-4 h-4 text-green-600" />
-                        <span className="text-sm text-gray-700">{phoneNumber}</span>
-                        <CheckCircle className="w-4 h-4 text-green-500 ml-auto" />
-                      </div>
-                    </div>
-                  ) : (
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                        {t('emailAddress')}
-                      </label>
-                      <input
-                        type="email"
-                        id="email"
-                        required
-                        readOnly={!!user && !user.email?.includes('@noemail.learnyourself.app')}
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent ${
-                          user && !user.email?.includes('@noemail.learnyourself.app')
-                            ? 'bg-gray-50 text-gray-600 cursor-default'
-                            : ''
-                        }`}
-                        placeholder="your@email.com"
-                      />
-                    </div>
-                  )}
-
+                <div className="space-y-4">
+                  {/* Full Name */}
                   <div>
                     <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
                       {t('fullName')}
@@ -376,45 +318,50 @@ const Checkout: React.FC = () => {
                     <input
                       type="text"
                       id="fullName"
-                      required
-                      value={formData.fullName}
-                      onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent"
+                      value={fullName}
+                      onChange={(e) => {
+                        setFullName(e.target.value);
+                        if (e.target.value.trim()) setNameError(null);
+                      }}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-royal-blue-500 focus:border-transparent ${
+                        nameError ? 'border-red-400 bg-red-50' : 'border-gray-300'
+                      }`}
                       placeholder={t('fullName')}
                     />
+                    {nameError && (
+                      <p className="text-xs text-red-600 mt-1">{nameError}</p>
+                    )}
                   </div>
 
-                  {!user && !isPhoneUser && (
-                    <div className="flex items-start gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
-                      <MessageCircle className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                      <p className="text-xs text-green-700">
-                        You'll verify your identity via WhatsApp before completing the purchase.
-                      </p>
-                    </div>
-                  )}
+                  {/* Authenticated phone user */}
+                  {isPhoneUser ? (
+                    <form onSubmit={handleAuthenticatedCheckout} className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          WhatsApp Number
+                        </label>
+                        <div className="flex items-center gap-2 px-3 py-2 border border-gray-200 rounded-lg bg-gray-50">
+                          <MessageCircle className="w-4 h-4 text-green-600" />
+                          <span className="text-sm text-gray-700">{phoneNumber}</span>
+                          <CheckCircle className="w-4 h-4 text-green-500 ml-auto" />
+                        </div>
+                      </div>
 
-                  {error && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                      <p className="text-red-800 text-sm">{error}</p>
-                    </div>
-                  )}
+                      {error && (
+                        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                          <p className="text-red-800 text-sm">{error}</p>
+                        </div>
+                      )}
 
-                  <button
-                    type="submit"
-                    disabled={processing || !formData.fullName || (!isPhoneUser && !formData.email)}
-                    className={`w-full text-white py-3 px-4 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2 transform hover:scale-105 ${
-                      course?.price === 0
-                        ? 'bg-green-600 hover:bg-green-700'
-                        : 'bg-royal-blue-600 hover:bg-royal-blue-700'
-                    }`}
-                  >
-                    {processing ? (
-                      <>
-                        <LoadingSpinner />
-                        {t('processing')}
-                      </>
-                    ) : (
-                      <>
+                      <button
+                        type="submit"
+                        disabled={processing || !fullName.trim()}
+                        className={`w-full text-white py-3 px-4 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2 transform hover:scale-105 ${
+                          course?.price === 0
+                            ? 'bg-green-600 hover:bg-green-700'
+                            : 'bg-royal-blue-600 hover:bg-royal-blue-700'
+                        }`}
+                      >
                         {course?.price === 0 ? (
                           <>
                             <CheckCircle className="w-5 h-5" />
@@ -423,26 +370,29 @@ const Checkout: React.FC = () => {
                         ) : (
                           <>
                             <CreditCard className="w-5 h-5" />
-                            {!user && !isPhoneUser ? 'Verify & Pay' : t('proceedToPayment')}
+                            {t('proceedToPayment')}
                           </>
                         )}
-                      </>
-                    )}
-                  </button>
-                </form>
+                      </button>
+                    </form>
+                  ) : (
+                    /* Guest user — inline OTP */
+                    <div className="space-y-4">
+                      <WhatsAppOTPInput
+                        onVerified={handlePhoneVerified}
+                        onBeforeSend={validateName}
+                        purpose="checkout"
+                        language={i18n.language}
+                        loading={processing}
+                      />
 
-                <div className="mt-6 pt-6 border-t">
-                  <h3 className="text-sm font-medium text-gray-900 mb-3">{t('securePayment')}</h3>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Shield className="w-4 h-4 text-green-600" />
-                      {t('sslEncrypted')}
+                      {error && (
+                        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                          <p className="text-red-800 text-sm">{error}</p>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Clock className="w-4 h-4 text-blue-600" />
-                      {t('instantAccess')}
-                    </div>
-                  </div>
+                  )}
                 </div>
               </>
             )}

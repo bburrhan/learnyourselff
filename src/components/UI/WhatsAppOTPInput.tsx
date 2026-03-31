@@ -26,6 +26,7 @@ const COUNTRY_CODES = [
 
 interface WhatsAppOTPInputProps {
   onVerified: (phoneNumber: string, otpId?: string) => void
+  onBeforeSend?: () => boolean
   purpose?: 'login' | 'signup' | 'checkout'
   language?: string
   loading?: boolean
@@ -38,6 +39,7 @@ const OTP_RESEND_SECONDS = 60
 
 const WhatsAppOTPInput: React.FC<WhatsAppOTPInputProps> = ({
   onVerified,
+  onBeforeSend,
   purpose = 'login',
   language = 'en',
   loading: externalLoading = false,
@@ -101,6 +103,10 @@ const WhatsAppOTPInput: React.FC<WhatsAppOTPInputProps> = ({
       return
     }
 
+    if (onBeforeSend && !onBeforeSend()) {
+      return
+    }
+
     setLoading(true)
     setError(null)
 
@@ -132,7 +138,7 @@ const WhatsAppOTPInput: React.FC<WhatsAppOTPInputProps> = ({
     } finally {
       setLoading(false)
     }
-  }, [phoneLocal, fullPhone, purpose, language, startResendTimer])
+  }, [phoneLocal, fullPhone, purpose, language, startResendTimer, onBeforeSend])
 
   const handleOtpChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return
