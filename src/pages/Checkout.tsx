@@ -8,7 +8,7 @@ import logger from '../utils/logger';
 import { handleSupabaseError, handleAsyncError } from '../utils/errorHandler';
 import LoadingSpinner from '../components/UI/LoadingSpinner';
 import WhatsAppOTPInput from '../components/UI/WhatsAppOTPInput';
-import { ArrowLeft, CreditCard, Shield, Clock, CheckCircle, MessageCircle } from 'lucide-react';
+import { ArrowLeft, CreditCard, Shield, Clock, CheckCircle, Smartphone } from 'lucide-react';
 
 const enrollFreeCourse = async (
   courseId: string,
@@ -338,10 +338,10 @@ const Checkout: React.FC = () => {
                     <form onSubmit={handleAuthenticatedCheckout} className="space-y-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          WhatsApp Number
+                          Phone Number
                         </label>
                         <div className="flex items-center gap-2 px-3 py-2 border border-gray-200 rounded-lg bg-gray-50">
-                          <MessageCircle className="w-4 h-4 text-green-600" />
+                          <Smartphone className="w-4 h-4 text-blue-600" />
                           <span className="text-sm text-gray-700">{phoneNumber}</span>
                           <CheckCircle className="w-4 h-4 text-green-500 ml-auto" />
                         </div>

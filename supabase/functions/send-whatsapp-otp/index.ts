@@ -62,7 +62,7 @@ Deno.serve(async (req: Request) => {
 
     const body = new URLSearchParams({
       To: normalizedPhone,
-      Channel: "whatsapp",
+      Channel: "sms",
     });
 
     const twilioResponse = await fetch(twilioUrl, {

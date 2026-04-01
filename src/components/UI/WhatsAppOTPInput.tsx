@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
-import { MessageCircle, Phone, ArrowRight, RefreshCw, CheckCircle, ChevronDown } from 'lucide-react'
+import { Smartphone, Phone, ArrowRight, RefreshCw, CheckCircle, ChevronDown } from 'lucide-react'
 
 const COUNTRY_CODES = [
   { code: '+90', flag: '🇹🇷', name: 'Turkey' },
@@ -245,14 +245,14 @@ const WhatsAppOTPInput: React.FC<WhatsAppOTPInputProps> = ({
     <div className={`space-y-4 ${className}`}>
       {step === 'phone' && (
         <>
-          <div className="flex items-center gap-2 text-sm text-gray-600 bg-green-50 border border-green-200 rounded-xl px-3 py-2">
-            <MessageCircle className="w-4 h-4 text-green-600 shrink-0" />
-            <span>We'll send a verification code via WhatsApp</span>
+          <div className="flex items-center gap-2 text-sm text-gray-600 bg-blue-50 border border-blue-200 rounded-xl px-3 py-2">
+            <Smartphone className="w-4 h-4 text-blue-600 shrink-0" />
+            <span>We'll send a verification code via SMS</span>
           </div>
 
           <div className="space-y-1">
             <label className="block text-sm font-medium text-gray-700">
-              WhatsApp Phone Number
+              Phone Number
             </label>
             <div className="flex gap-2">
               <div className="relative" ref={dropdownRef}>
@@ -333,14 +333,14 @@ const WhatsAppOTPInput: React.FC<WhatsAppOTPInputProps> = ({
             type="button"
             onClick={sendOtp}
             disabled={isLoading || phoneLocal.replace(/\D/g, '').length < 6}
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-medium text-sm transition-colors"
+            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-medium text-sm transition-colors"
           >
             {isLoading ? (
               <RefreshCw className="w-4 h-4 animate-spin" />
             ) : (
               <>
-                <MessageCircle className="w-4 h-4" />
-                Send OTP via WhatsApp
+                <Smartphone className="w-4 h-4" />
+                Send OTP via SMS
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
