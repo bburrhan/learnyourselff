@@ -11,6 +11,13 @@ function generateDummyEmail(userId: string): string {
   return `${userId}@noemail.learnyourself.app`;
 }
 
+function normalizePhone(phone: string): string {
+  const cleaned = phone.replace(/\D/g, "");
+  if (cleaned.startsWith("0")) return "+" + cleaned.slice(1);
+  if (!phone.startsWith("+")) return "+" + cleaned;
+  return "+" + cleaned;
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders });
@@ -32,70 +39,55 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const admin = createClient(supabaseUrl, serviceKey);
+    const normalizedPhone = normalizePhone(phone_number);
 
-    const { data: otpRecord, error: otpFetchError } = await admin
-      .from("whatsapp_otps")
-      .select("*")
-      .eq("phone_number", phone_number)
-      .eq("purpose", purpose)
-      .eq("verified", false)
-      .gt("expires_at", new Date().toISOString())
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    const twilioAccountSid = Deno.env.get("TWILIO_ACCOUNT_SID");
+    const twilioAuthToken = Deno.env.get("TWILIO_AUTH_TOKEN");
+    const twilioVerifyServiceSid = Deno.env.get("TWILIO_VERIFY_SERVICE_SID");
 
-    if (otpFetchError) {
-      console.error("OTP fetch error:", otpFetchError);
+    if (!twilioAccountSid || !twilioAuthToken || !twilioVerifyServiceSid) {
+      console.error("Missing Twilio credentials");
       return new Response(
-        JSON.stringify({ error: "Failed to verify OTP" }),
+        JSON.stringify({ error: "SMS service not configured" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    if (!otpRecord) {
+    const credentials = btoa(`${twilioAccountSid}:${twilioAuthToken}`);
+    const twilioUrl = `https://verify.twilio.com/v2/Services/${twilioVerifyServiceSid}/VerificationCheck`;
+
+    const body = new URLSearchParams({
+      To: normalizedPhone,
+      Code: otp_code.trim(),
+    });
+
+    const twilioResponse = await fetch(twilioUrl, {
+      method: "POST",
+      headers: {
+        "Authorization": `Basic ${credentials}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: body.toString(),
+    });
+
+    const twilioData = await twilioResponse.json();
+
+    if (!twilioResponse.ok || twilioData.status !== "approved") {
+      console.error("Twilio verification failed:", twilioData);
       return new Response(
-        JSON.stringify({ error: "OTP not found or expired. Please request a new code." }),
+        JSON.stringify({ error: "Incorrect or expired verification code." }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    if (otpRecord.attempts >= 5) {
-      return new Response(
-        JSON.stringify({ error: "Too many failed attempts. Please request a new code." }),
-        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    if (otpRecord.otp_code !== otp_code.trim()) {
-      await admin
-        .from("whatsapp_otps")
-        .update({ attempts: otpRecord.attempts + 1 })
-        .eq("id", otpRecord.id);
-
-      const remaining = 5 - (otpRecord.attempts + 1);
-      return new Response(
-        JSON.stringify({
-          error: remaining > 0
-            ? `Incorrect code. ${remaining} attempt${remaining === 1 ? "" : "s"} remaining.`
-            : "Too many failed attempts. Please request a new code.",
-          attempts_remaining: remaining,
-        }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    await admin
-      .from("whatsapp_otps")
-      .update({ verified: true })
-      .eq("id", otpRecord.id);
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const admin = createClient(supabaseUrl, serviceKey);
 
     const { data: existingProfile } = await admin
       .from("profiles")
       .select("id, whatsapp_verified")
-      .eq("phone_number", phone_number)
+      .eq("phone_number", normalizedPhone)
       .maybeSingle();
 
     let userId: string;
@@ -153,7 +145,7 @@ Deno.serve(async (req: Request) => {
         email_confirm: true,
         user_metadata: {
           full_name: full_name ?? "",
-          phone_number,
+          phone_number: normalizedPhone,
           language_preference: language,
         },
       });
@@ -170,7 +162,7 @@ Deno.serve(async (req: Request) => {
 
       await admin.from("profiles").upsert({
         id: userId,
-        phone_number,
+        phone_number: normalizedPhone,
         full_name: full_name ?? null,
         language_preference: language,
         whatsapp_verified: true,
@@ -210,7 +202,7 @@ Deno.serve(async (req: Request) => {
         expires_at: expiresAt,
         user: {
           id: userId,
-          phone_number,
+          phone_number: normalizedPhone,
           full_name: profile?.full_name ?? full_name ?? null,
           language_preference: profile?.language_preference ?? language,
         },
