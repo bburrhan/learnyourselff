@@ -3,12 +3,12 @@ import { handleNetworkError } from '../utils/errorHandler'
 import { getCurrentLanguageFromUrl } from '../components/Layout/LanguageRouter'
 
 // Client-side Stripe utilities
-export const createCheckoutSession = async (courseId: string, email: string, fullName: string, language?: string) => {
+export const createCheckoutSession = async (courseId: string, email: string | undefined, phoneNumber: string, fullName: string, language?: string) => {
   try {
-    logger.info('Creating checkout session', { courseId, email })
-    
+    logger.info('Creating checkout session', { courseId, phoneNumber })
+
     const currentLang = language || getCurrentLanguageFromUrl()
-    
+
     const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout-session`, {
       method: 'POST',
       headers: {
@@ -18,6 +18,7 @@ export const createCheckoutSession = async (courseId: string, email: string, ful
       body: JSON.stringify({
         courseId,
         email,
+        phoneNumber,
         fullName,
         successUrl: `${window.location.origin}/${currentLang}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
         cancelUrl: `${window.location.origin}/${currentLang}/courses/${courseId}?canceled=true`,
@@ -25,9 +26,9 @@ export const createCheckoutSession = async (courseId: string, email: string, ful
     });
 
     if (!response.ok) {
-      logger.warn('Checkout session creation failed', { 
-        status: response.status, 
-        statusText: response.statusText 
+      logger.warn('Checkout session creation failed', {
+        status: response.status,
+        statusText: response.statusText
       })
       const errorData = await response.json();
       const error = new Error(errorData.error || 'Failed to create checkout session');
@@ -39,7 +40,7 @@ export const createCheckoutSession = async (courseId: string, email: string, ful
     logger.info('Checkout session created successfully', { sessionId: data.sessionId })
     return data;
   } catch (error) {
-    logger.error('Checkout session error', { courseId, email, error }, error as Error);
+    logger.error('Checkout session error', { courseId, phoneNumber, error }, error as Error);
     throw error;
   }
 };

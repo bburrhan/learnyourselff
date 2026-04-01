@@ -21,14 +21,24 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const { courseId, email, fullName, successUrl, cancelUrl, language = "en" } = await req.json();
+    const { courseId, email, phoneNumber, fullName, successUrl, cancelUrl, language = "en" } = await req.json();
 
-    if (!courseId || !email) {
+    if (!courseId) {
       return new Response(
-        JSON.stringify({ error: "courseId and email are required" }),
+        JSON.stringify({ error: "courseId is required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    if (!phoneNumber && !email) {
+      return new Response(
+        JSON.stringify({ error: "phoneNumber or email is required" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const isValidEmail = (val: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+    const customerEmail = email && isValidEmail(email) ? email : undefined;
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -64,7 +74,9 @@ Deno.serve(async (req: Request) => {
     const params = new URLSearchParams();
     params.set("payment_method_types[0]", "card");
     params.set("mode", "payment");
-    params.set("customer_email", email);
+    if (customerEmail) {
+      params.set("customer_email", customerEmail);
+    }
     params.set("line_items[0][price_data][currency]", currency);
     params.set("line_items[0][price_data][unit_amount]", String(priceInCents));
     params.set("line_items[0][price_data][product_data][name]", course.title);
@@ -76,7 +88,7 @@ Deno.serve(async (req: Request) => {
     }
     params.set("line_items[0][quantity]", "1");
     params.set("metadata[course_id]", courseId);
-    params.set("metadata[email]", email);
+    params.set("metadata[phone_number]", phoneNumber || "");
     params.set("metadata[full_name]", fullName || "");
     params.set("metadata[language]", language);
     params.set("success_url", finalSuccessUrl);

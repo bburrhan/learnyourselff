@@ -167,9 +167,14 @@ const Checkout: React.FC = () => {
         return;
       }
 
+      const customerEmail = user?.email && !user.email.includes('@noemail.learnyourself.app')
+        ? user.email
+        : undefined;
+
       const { url } = await createCheckoutSession(
         course.id,
-        `phone:${effectivePhone}`,
+        customerEmail,
+        effectivePhone,
         effectiveName,
         i18n.language
       );
