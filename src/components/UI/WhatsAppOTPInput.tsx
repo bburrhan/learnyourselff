@@ -221,7 +221,7 @@ const WhatsAppOTPInput: React.FC<WhatsAppOTPInputProps> = ({
     } finally {
       setLoading(false)
     }
-  }, [otp, fullPhone, purpose, language, onVerified])
+  }, [otp, fullPhone, purpose, language, onVerified, fullName])
 
   useEffect(() => {
     if (otp.every(d => d !== '') && step === 'otp') {

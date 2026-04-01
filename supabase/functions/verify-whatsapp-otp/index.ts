@@ -138,8 +138,10 @@ Deno.serve(async (req: Request) => {
         .eq("id", userId);
 
       if (full_name && full_name.trim()) {
+        const { data: existingAuthUser } = await admin.auth.admin.getUserById(userId);
+        const existingMeta = existingAuthUser?.user?.user_metadata ?? {};
         await admin.auth.admin.updateUserById(userId, {
-          user_metadata: { full_name: full_name.trim() },
+          user_metadata: { ...existingMeta, full_name: full_name.trim() },
         });
       }
 
