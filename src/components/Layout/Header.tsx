@@ -144,7 +144,7 @@ const Header: React.FC = () => {
                   className="flex items-center gap-x-2 text-gray-700 hover:text-royal-blue-600 px-3 py-2 rounded-lg hover:bg-gray-50 transition-all"
                 >
                   <User className="h-5 w-5" />
-                  <span className="text-sm font-medium truncate max-w-32">{user.email}</span>
+                  <span className="text-sm font-medium truncate max-w-32">{user.user_metadata?.full_name || user.user_metadata?.phone_number || t('user')}</span>
                   <ChevronDown className={`h-3.5 w-3.5 transition-transform ${userDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {userDropdownOpen && (

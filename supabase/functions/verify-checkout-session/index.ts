@@ -62,14 +62,14 @@ Deno.serve(async (req: Request) => {
     }
 
     const courseId = session.metadata?.course_id;
-    const email = session.customer_email || session.metadata?.email;
+    const phoneNumber = session.metadata?.phone_number || "";
     const fullName = session.metadata?.full_name || "";
     const sessionLanguage = session.metadata?.language || language;
 
-    if (!courseId || !email) {
-      console.error("Missing metadata - courseId:", courseId, "email:", email);
+    if (!courseId) {
+      console.error("Missing courseId in session metadata");
       return new Response(
-        JSON.stringify({ error: "Missing course or email information in session" }),
+        JSON.stringify({ error: "Missing course information in session" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -102,7 +102,6 @@ Deno.serve(async (req: Request) => {
           purchase_id: existingPurchase.id,
           course_id: courseId,
           course_title: course?.title,
-          email,
           full_name: fullName,
           amount: (session.amount_total ?? 0) / 100,
           currency: session.currency?.toUpperCase() ?? "USD",
@@ -126,64 +125,32 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    let isNewUser = true;
     let userId: string | null = null;
-    let tempPassword: string | null = null;
 
-    const { data: userList } = await admin.auth.admin.listUsers();
-    const matchedUser = userList?.users?.find(
-      (u: { email?: string }) => u.email?.toLowerCase() === email.toLowerCase()
-    );
-    if (matchedUser) {
-      isNewUser = false;
-      userId = matchedUser.id;
-    }
-
-    if (!userId) {
+    if (phoneNumber) {
       const { data: profile } = await admin
         .from("profiles")
         .select("id")
-        .eq("email", email)
+        .eq("phone_number", phoneNumber)
         .maybeSingle();
       if (profile) {
         userId = profile.id;
-        isNewUser = false;
+        console.log("Found user by phone_number:", userId);
       }
     }
 
-    if (isNewUser && !userId) {
-      tempPassword = crypto.randomUUID().replace(/-/g, "") + "Aa1!";
+    const dummyEmail = phoneNumber
+      ? `${phoneNumber.replace(/\+/g, "")}@noemail.learnyourself.app`
+      : "unknown@noemail.learnyourself.app";
 
-      const { data: newUser, error: createError } = await admin.auth.admin.createUser({
-        email,
-        password: tempPassword,
-        email_confirm: true,
-        user_metadata: { full_name: fullName, language_preference: sessionLanguage },
-      });
-
-      if (createError) {
-        console.error("Failed to create user account:", createError);
-      } else {
-        userId = newUser.user.id;
-        console.log("Created confirmed user account:", userId);
-
-        await admin.from("profiles").upsert({
-          id: userId,
-          email,
-          full_name: fullName || null,
-          language_preference: sessionLanguage,
-        });
-      }
-    }
-
-    console.log("Inserting purchase for userId:", userId, "courseId:", courseId, "email:", email);
+    console.log("Inserting purchase for userId:", userId, "courseId:", courseId, "phoneNumber:", phoneNumber);
 
     const { data: purchase, error: purchaseError } = await admin
       .from("purchases")
       .insert({
         user_id: userId,
         course_id: courseId,
-        email,
+        email: dummyEmail,
         stripe_payment_id: stripePaymentId,
         amount: (session.amount_total ?? 0) / 100,
         currency: session.currency?.toUpperCase() ?? "USD",
@@ -208,12 +175,10 @@ Deno.serve(async (req: Request) => {
         purchase_id: purchase!.id,
         course_id: courseId,
         course_title: course.title,
-        email,
         full_name: fullName,
         amount: (session.amount_total ?? 0) / 100,
         currency: session.currency?.toUpperCase() ?? "USD",
-        is_new_user: isNewUser,
-        temp_password: isNewUser ? tempPassword : undefined,
+        is_new_user: false,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );

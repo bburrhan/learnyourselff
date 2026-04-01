@@ -70,17 +70,17 @@ Deno.serve(async (req: Request) => {
 
     const metadata = sessionObj.metadata as Record<string, string> | null;
     const courseId = metadata?.course_id;
-    const email = (sessionObj.customer_email as string) || metadata?.email;
+    const phoneNumber = metadata?.phone_number || "";
     const fullName = metadata?.full_name || "";
     const language = metadata?.language || "en";
     const stripePaymentId = (sessionObj.payment_intent as string) || (sessionObj.id as string);
     const amountTotal = (sessionObj.amount_total as number) ?? 0;
     const currency = ((sessionObj.currency as string) || "usd").toUpperCase();
 
-    if (!courseId || !email) {
-      console.error("Missing metadata in webhook session - courseId:", courseId, "email:", email);
+    if (!courseId) {
+      console.error("Missing courseId in webhook session metadata");
       return new Response(
-        JSON.stringify({ error: "Missing course or email in session metadata" }),
+        JSON.stringify({ error: "Missing course in session metadata" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -117,63 +117,28 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    let isNewUser = true;
     let userId: string | null = null;
 
-    const { data: userList } = await admin.auth.admin.listUsers();
-    const matchedUser = userList?.users?.find(
-      (u: { email?: string }) => u.email?.toLowerCase() === email.toLowerCase()
-    );
-    if (matchedUser) {
-      isNewUser = false;
-      userId = matchedUser.id;
-    }
-
-    if (!userId) {
+    if (phoneNumber) {
       const { data: profile } = await admin
         .from("profiles")
         .select("id")
-        .eq("email", email)
+        .eq("phone_number", phoneNumber)
         .maybeSingle();
       if (profile) {
         userId = profile.id;
-        isNewUser = false;
+        console.log("Webhook: found user by phone_number:", userId);
       }
     }
 
-    if (isNewUser && !userId) {
-      const tempPassword = crypto.randomUUID().replace(/-/g, "") + "Aa1!";
-
-      const { data: newUser, error: createError } = await admin.auth.admin.createUser({
-        email,
-        password: tempPassword,
-        email_confirm: true,
-        user_metadata: { full_name: fullName, language_preference: language },
-      });
-
-      if (createError) {
-        console.error("Webhook: failed to create user account:", createError);
-      } else {
-        userId = newUser.user.id;
-        console.log("Webhook: created confirmed user account:", userId);
-
-        await admin.from("profiles").upsert({
-          id: userId,
-          email,
-          full_name: fullName || null,
-          language_preference: language,
-        });
-      }
-    }
-
-    console.log("Webhook: inserting purchase userId:", userId, "courseId:", courseId, "email:", email);
+    console.log("Webhook: inserting purchase userId:", userId, "courseId:", courseId, "phoneNumber:", phoneNumber);
 
     const { data: purchase, error: purchaseError } = await admin
       .from("purchases")
       .insert({
         user_id: userId,
         course_id: courseId,
-        email,
+        email: phoneNumber ? `${phoneNumber}@noemail.learnyourself.app` : "unknown@noemail.learnyourself.app",
         stripe_payment_id: stripePaymentId,
         amount: amountTotal / 100,
         currency,

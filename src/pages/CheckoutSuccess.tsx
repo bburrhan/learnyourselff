@@ -2,19 +2,17 @@ import React, { useEffect, useState } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import LanguageAwareLink from '../components/Layout/LanguageAwareLink'
-import { CheckCircle, BookOpen, Key, ArrowRight, Loader } from 'lucide-react'
+import { CheckCircle, BookOpen, ArrowRight, Loader } from 'lucide-react'
 
 interface CheckoutInfo {
   courseId?: string
   courseTitle?: string
-  email?: string
   fullName?: string
   amount?: number
   currency?: string
   language?: string
   isFree?: boolean
   purchaseId?: string
-  isNewUser?: boolean
 }
 
 const CheckoutSuccess: React.FC = () => {
@@ -63,24 +61,15 @@ const CheckoutSuccess: React.FC = () => {
         .then(async (res) => {
           const data = await res.json()
           if (res.ok && data.success) {
-            const isNew = parsed.isNewUser === true || data.is_new_user
-            if (isNew && data.temp_password) {
-              localStorage.setItem('pendingSetPassword', JSON.stringify({
-                email: data.email,
-                tempPassword: data.temp_password,
-              }))
-            }
             setCheckoutInfo({
               courseId: data.course_id,
               courseTitle: data.course_title,
-              email: data.email,
               fullName: data.full_name,
               amount: data.amount,
               currency: data.currency,
               language: parsed.language || i18n.language,
               isFree: false,
               purchaseId: data.purchase_id,
-              isNewUser: isNew,
             })
           } else {
             setCheckoutInfo({
@@ -101,16 +90,6 @@ const CheckoutSuccess: React.FC = () => {
     }
   }, [])
 
-  const isNewUser = checkoutInfo?.isNewUser === true
-
-  const getRedirectPath = () => {
-    if (isNewUser) {
-      const emailParam = checkoutInfo?.email ? `?email=${encodeURIComponent(checkoutInfo.email)}` : ''
-      return `/${i18n.language}/set-password${emailParam}`
-    }
-    return `/${i18n.language}/dashboard/courses`
-  }
-
   useEffect(() => {
     if (verifying || checkoutInfo === null) return
 
@@ -118,7 +97,7 @@ const CheckoutSuccess: React.FC = () => {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(interval)
-          navigate(getRedirectPath())
+          navigate(`/${i18n.language}/dashboard/courses`)
           return 0
         }
         return prev - 1
@@ -166,11 +145,6 @@ const CheckoutSuccess: React.FC = () => {
                   <strong>{t('course')}:</strong> {checkoutInfo.courseTitle}
                 </p>
               )}
-              {checkoutInfo.email && (
-                <p className="text-sm text-gray-600 mb-1">
-                  <strong>{t('email')}:</strong> {checkoutInfo.email}
-                </p>
-              )}
               {typeof checkoutInfo.amount === 'number' && !checkoutInfo.isFree && (
                 <p className="text-sm text-gray-600">
                   <strong>{t('amount')}:</strong> {new Intl.NumberFormat('en-US', {
@@ -187,48 +161,25 @@ const CheckoutSuccess: React.FC = () => {
             </div>
           )}
 
-          {isNewUser ? (
-            <div className="bg-royal-blue-50 border border-royal-blue-200 rounded-lg p-4 mb-6">
-              <div className="flex items-center justify-center mb-2">
-                <Key className="h-5 w-5 text-royal-blue-600 me-2" />
-                <span className="font-medium text-royal-blue-900">{t('createYourPassword')}</span>
-              </div>
-              <p className="text-sm text-royal-blue-700">
-                {t('redirectingToSetPassword', { seconds: countdown })}
-              </p>
+          <div className="bg-royal-blue-50 border border-royal-blue-200 rounded-lg p-4 mb-6">
+            <div className="flex items-center justify-center mb-2">
+              <BookOpen className="h-5 w-5 text-royal-blue-600 me-2" />
+              <span className="font-medium text-royal-blue-900">{t('redirectingToCourses')}</span>
             </div>
-          ) : (
-            <div className="bg-royal-blue-50 border border-royal-blue-200 rounded-lg p-4 mb-6">
-              <div className="flex items-center justify-center mb-2">
-                <BookOpen className="h-5 w-5 text-royal-blue-600 me-2" />
-                <span className="font-medium text-royal-blue-900">{t('redirectingToCourses')}</span>
-              </div>
-              <p className="text-sm text-royal-blue-700">
-                {t('redirectingToMyCoursesCountdown', { seconds: countdown })}
-              </p>
-            </div>
-          )}
+            <p className="text-sm text-royal-blue-700">
+              {t('redirectingToMyCoursesCountdown', { seconds: countdown })}
+            </p>
+          </div>
 
           <div className="flex flex-col gap-3">
-            {isNewUser ? (
-              <button
-                onClick={() => navigate(getRedirectPath())}
-                className="w-full bg-royal-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-royal-blue-700 transition-all duration-300 flex items-center justify-center transform hover:scale-105"
-              >
-                <Key className="h-4 w-4 me-2" />
-                {t('createYourPassword')}
-                <ArrowRight className="h-4 w-4 ms-2" />
-              </button>
-            ) : (
-              <LanguageAwareLink
-                to="/dashboard/courses"
-                className="w-full bg-royal-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-royal-blue-700 transition-all duration-300 flex items-center justify-center transform hover:scale-105"
-              >
-                <BookOpen className="h-4 w-4 me-2" />
-                {t('goToMyCourses')}
-                <ArrowRight className="h-4 w-4 ms-2" />
-              </LanguageAwareLink>
-            )}
+            <LanguageAwareLink
+              to="/dashboard/courses"
+              className="w-full bg-royal-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-royal-blue-700 transition-all duration-300 flex items-center justify-center transform hover:scale-105"
+            >
+              <BookOpen className="h-4 w-4 me-2" />
+              {t('goToMyCourses')}
+              <ArrowRight className="h-4 w-4 ms-2" />
+            </LanguageAwareLink>
 
             <LanguageAwareLink
               to="/courses"
