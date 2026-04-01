@@ -77,6 +77,9 @@ Deno.serve(async (req: Request) => {
     const amountTotal = (sessionObj.amount_total as number) ?? 0;
     const currency = ((sessionObj.currency as string) || "usd").toUpperCase();
 
+    const customerDetails = sessionObj.customer_details as Record<string, unknown> | null;
+    const realEmail = (customerDetails?.email as string) || null;
+
     if (!courseId) {
       console.error("Missing courseId in webhook session metadata");
       return new Response(
@@ -146,14 +149,29 @@ Deno.serve(async (req: Request) => {
       }
     }
 
-    console.log("Webhook: inserting purchase userId:", userId, "courseId:", courseId, "phoneNumber:", phoneNumber);
+    if (userId && realEmail) {
+      console.log("Webhook: updating user email to:", realEmail, "for userId:", userId);
+      await admin.auth.admin.updateUserById(userId, {
+        email: realEmail,
+        email_confirm: true,
+      });
+      await admin
+        .from("profiles")
+        .update({ email: realEmail })
+        .eq("id", userId);
+    }
+
+    const purchaseEmail = realEmail
+      || (phoneNumber ? `${phoneNumber}@noemail.learnyourself.app` : "unknown@noemail.learnyourself.app");
+
+    console.log("Webhook: inserting purchase userId:", userId, "courseId:", courseId, "email:", purchaseEmail);
 
     const { data: purchase, error: purchaseError } = await admin
       .from("purchases")
       .insert({
         user_id: userId,
         course_id: courseId,
-        email: phoneNumber ? `${phoneNumber}@noemail.learnyourself.app` : "unknown@noemail.learnyourself.app",
+        email: purchaseEmail,
         stripe_payment_id: stripePaymentId,
         amount: amountTotal / 100,
         currency,

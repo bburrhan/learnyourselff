@@ -64,7 +64,7 @@ Deno.serve(async (req: Request) => {
     const courseId = session.metadata?.course_id;
     const phoneNumber = session.metadata?.phone_number || "";
     const fullName = session.metadata?.full_name || "";
-    const sessionLanguage = session.metadata?.language || language;
+    const realEmail = (session.customer_details?.email as string) || null;
 
     if (!courseId) {
       console.error("Missing courseId in session metadata");
@@ -139,18 +139,29 @@ Deno.serve(async (req: Request) => {
       }
     }
 
-    const dummyEmail = phoneNumber
-      ? `${phoneNumber.replace(/\+/g, "")}@noemail.learnyourself.app`
-      : "unknown@noemail.learnyourself.app";
+    if (userId && realEmail) {
+      console.log("verify-checkout-session: updating user email to:", realEmail, "for userId:", userId);
+      await admin.auth.admin.updateUserById(userId, {
+        email: realEmail,
+        email_confirm: true,
+      });
+      await admin
+        .from("profiles")
+        .update({ email: realEmail })
+        .eq("id", userId);
+    }
 
-    console.log("Inserting purchase for userId:", userId, "courseId:", courseId, "phoneNumber:", phoneNumber);
+    const purchaseEmail = realEmail
+      || (phoneNumber ? `${phoneNumber.replace(/\+/g, "")}@noemail.learnyourself.app` : "unknown@noemail.learnyourself.app");
+
+    console.log("Inserting purchase for userId:", userId, "courseId:", courseId, "email:", purchaseEmail);
 
     const { data: purchase, error: purchaseError } = await admin
       .from("purchases")
       .insert({
         user_id: userId,
         course_id: courseId,
-        email: dummyEmail,
+        email: purchaseEmail,
         stripe_payment_id: stripePaymentId,
         amount: (session.amount_total ?? 0) / 100,
         currency: session.currency?.toUpperCase() ?? "USD",
