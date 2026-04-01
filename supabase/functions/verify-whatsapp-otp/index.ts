@@ -84,11 +84,39 @@ Deno.serve(async (req: Request) => {
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const admin = createClient(supabaseUrl, serviceKey);
 
+    // 1. First look up by profiles.phone_number (fast, indexed)
+    let existingUserId: string | null = null;
+    let wasWhatsappVerified = false;
+
     const { data: existingProfile } = await admin
       .from("profiles")
       .select("id, whatsapp_verified")
       .eq("phone_number", normalizedPhone)
       .maybeSingle();
+
+    if (existingProfile) {
+      existingUserId = existingProfile.id;
+      wasWhatsappVerified = existingProfile.whatsapp_verified;
+      console.log("Found user via profiles.phone_number:", existingUserId);
+    } else {
+      // 2. Fallback: search auth.users metadata (covers users whose profile was not backfilled)
+      const { data: authUsers } = await admin.auth.admin.listUsers({ perPage: 1000 });
+      if (authUsers?.users) {
+        const match = authUsers.users.find(
+          (u) => u.user_metadata?.phone_number === normalizedPhone
+        );
+        if (match) {
+          existingUserId = match.id;
+          console.log("Found user via auth.users metadata fallback:", existingUserId);
+
+          // Backfill the profile with phone_number so future lookups are fast
+          await admin
+            .from("profiles")
+            .update({ phone_number: normalizedPhone, whatsapp_verified: true })
+            .eq("id", existingUserId);
+        }
+      }
+    }
 
     let userId: string;
     let isNewUser = false;
@@ -96,10 +124,10 @@ Deno.serve(async (req: Request) => {
     let refreshToken: string;
     let expiresAt: number;
 
-    if (existingProfile) {
-      userId = existingProfile.id;
+    if (existingUserId) {
+      userId = existingUserId;
 
-      if (!existingProfile.whatsapp_verified) {
+      if (!wasWhatsappVerified) {
         await admin
           .from("profiles")
           .update({ whatsapp_verified: true })
@@ -153,8 +181,10 @@ Deno.serve(async (req: Request) => {
 
       userId = newUser.user.id;
 
+      // handle_new_user trigger fires automatically, but upsert ensures phone_number is set
       await admin.from("profiles").upsert({
         id: userId,
+        email: dummyEmail,
         phone_number: normalizedPhone,
         full_name: full_name ?? null,
         language_preference: language,

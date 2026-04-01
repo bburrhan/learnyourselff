@@ -127,7 +127,22 @@ Deno.serve(async (req: Request) => {
         .maybeSingle();
       if (profile) {
         userId = profile.id;
-        console.log("Webhook: found user by phone_number:", userId);
+        console.log("Webhook: found user by profiles.phone_number:", userId);
+      } else {
+        const { data: authUsers } = await admin.auth.admin.listUsers({ perPage: 1000 });
+        if (authUsers?.users) {
+          const match = authUsers.users.find(
+            (u) => u.user_metadata?.phone_number === phoneNumber
+          );
+          if (match) {
+            userId = match.id;
+            console.log("Webhook: found user by auth.users metadata fallback:", userId);
+            await admin
+              .from("profiles")
+              .update({ phone_number: phoneNumber })
+              .eq("id", userId);
+          }
+        }
       }
     }
 
