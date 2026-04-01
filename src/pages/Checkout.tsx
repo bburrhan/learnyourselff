@@ -53,7 +53,7 @@ const Checkout: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const { user, getPhoneNumber } = useAuth();
+  const { user, getPhoneNumber, signInWithPhone } = useAuth();
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
@@ -127,6 +127,12 @@ const Checkout: React.FC = () => {
   const handlePhoneVerified = async (phone: string) => {
     const stored = sessionStorage.getItem('whatsapp_auth');
     if (stored) {
+      try {
+        const authData = JSON.parse(stored);
+        await signInWithPhone(authData.access_token, authData.refresh_token);
+      } catch {
+        // continue even if session restore fails
+      }
       sessionStorage.removeItem('whatsapp_auth');
     }
     await processCheckout(phone);

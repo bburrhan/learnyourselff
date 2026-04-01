@@ -127,13 +127,6 @@ Deno.serve(async (req: Request) => {
       refreshToken = loginData.session.refresh_token;
       expiresAt = loginData.session.expires_at ?? 0;
     } else {
-      if (purpose === "login") {
-        return new Response(
-          JSON.stringify({ error: "No account found with this phone number. Please sign up first." }),
-          { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-
       isNewUser = true;
       const newUserId = crypto.randomUUID();
       const dummyEmail = generateDummyEmail(newUserId);

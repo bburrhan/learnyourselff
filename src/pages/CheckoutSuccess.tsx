@@ -21,7 +21,7 @@ const CheckoutSuccess: React.FC = () => {
   const navigate = useNavigate()
   const [checkoutInfo, setCheckoutInfo] = useState<CheckoutInfo | null>(null)
   const [verifying, setVerifying] = useState(false)
-  const [countdown, setCountdown] = useState(3)
+  const [countdown, setCountdown] = useState(5)
 
   useEffect(() => {
     window.scrollTo(0, 0)
