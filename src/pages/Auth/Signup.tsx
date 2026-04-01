@@ -87,6 +87,14 @@ const Signup: React.FC = () => {
               onVerified={handleVerified}
               purpose="signup"
               language={i18n.language}
+              fullName={fullName}
+              onBeforeSend={() => {
+                if (!fullName.trim()) {
+                  setNameError(t('fullNameRequired') || 'Full name is required')
+                  return false
+                }
+                return true
+              }}
             />
           </div>
 
