@@ -127,11 +127,20 @@ Deno.serve(async (req: Request) => {
     if (existingUserId) {
       userId = existingUserId;
 
-      if (!wasWhatsappVerified) {
-        await admin
-          .from("profiles")
-          .update({ whatsapp_verified: true })
-          .eq("id", userId);
+      const profileUpdate: Record<string, unknown> = { whatsapp_verified: true };
+      if (full_name && full_name.trim()) {
+        profileUpdate.full_name = full_name.trim();
+      }
+
+      await admin
+        .from("profiles")
+        .update(profileUpdate)
+        .eq("id", userId);
+
+      if (full_name && full_name.trim()) {
+        await admin.auth.admin.updateUserById(userId, {
+          user_metadata: { full_name: full_name.trim() },
+        });
       }
 
       const tempPassword = crypto.randomUUID() + "Aa1!";

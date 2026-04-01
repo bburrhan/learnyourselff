@@ -31,6 +31,7 @@ interface WhatsAppOTPInputProps {
   language?: string
   loading?: boolean
   className?: string
+  fullName?: string
 }
 
 type Step = 'phone' | 'otp' | 'verified'
@@ -44,6 +45,7 @@ const WhatsAppOTPInput: React.FC<WhatsAppOTPInputProps> = ({
   language = 'en',
   loading: externalLoading = false,
   className = '',
+  fullName,
 }) => {
   const [step, setStep] = useState<Step>('phone')
   const [selectedCountry, setSelectedCountry] = useState(COUNTRY_CODES[0])
@@ -187,7 +189,7 @@ const WhatsAppOTPInput: React.FC<WhatsAppOTPInputProps> = ({
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
           },
-          body: JSON.stringify({ phone_number: fullPhone, otp_code: code, purpose, language }),
+          body: JSON.stringify({ phone_number: fullPhone, otp_code: code, purpose, language, full_name: fullName }),
         }
       )
 

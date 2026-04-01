@@ -395,6 +395,7 @@ const Checkout: React.FC = () => {
                         purpose="checkout"
                         language={i18n.language}
                         loading={processing}
+                        fullName={fullName}
                       />
 
                       {error && (
