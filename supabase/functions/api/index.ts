@@ -169,6 +169,38 @@ Deno.serve(async (req: Request) => {
       return json({ success: true, message: "Password updated successfully" });
     }
 
+    // POST /auth/whatsapp/send-otp
+    if (method === "POST" && segments[0] === "auth" && segments[1] === "whatsapp" && segments[2] === "send-otp") {
+      const body = await req.json();
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+
+      const response = await fetch(`${supabaseUrl}/functions/v1/send-whatsapp-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${anonKey}` },
+        body: JSON.stringify(body),
+      });
+
+      const data = await response.json();
+      return json(data, response.status);
+    }
+
+    // POST /auth/whatsapp/verify-otp
+    if (method === "POST" && segments[0] === "auth" && segments[1] === "whatsapp" && segments[2] === "verify-otp") {
+      const body = await req.json();
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+
+      const response = await fetch(`${supabaseUrl}/functions/v1/verify-whatsapp-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${anonKey}` },
+        body: JSON.stringify(body),
+      });
+
+      const data = await response.json();
+      return json(data, response.status);
+    }
+
     // ── CATEGORIES ───────────────────────────────────────────────────────────
 
     // GET /categories
@@ -596,6 +628,22 @@ Deno.serve(async (req: Request) => {
       if (!purchase) return error("Purchase not found", 404, "NOT_FOUND");
 
       return json({ purchase });
+    }
+
+    // POST /checkout/verify-stripe-session
+    if (method === "POST" && segments[0] === "checkout" && segments[1] === "verify-stripe-session") {
+      const body = await req.json();
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+
+      const response = await fetch(`${supabaseUrl}/functions/v1/verify-checkout-session`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${anonKey}` },
+        body: JSON.stringify(body),
+      });
+
+      const data = await response.json();
+      return json(data, response.status);
     }
 
     // ── BLOG ─────────────────────────────────────────────────────────────────

@@ -16,7 +16,7 @@ All protected endpoints require a JWT Bearer token in the `Authorization` header
 Authorization: Bearer <access_token>
 ```
 
-Obtain the token from `POST /auth/login`. Refresh it with `POST /auth/refresh` before it expires.
+Obtain the token from `POST /auth/login` or `POST /auth/whatsapp/verify-otp`. Refresh it with `POST /auth/refresh` before it expires.
 
 ## Standard Error Response
 
@@ -153,6 +153,89 @@ Common codes: `UNAUTHORIZED`, `NOT_FOUND`, `MISSING_FIELDS`, `DB_ERROR`, `INTERN
 
 ---
 
+### Send WhatsApp / SMS OTP
+
+`POST /auth/whatsapp/send-otp`
+
+Sends a 6-digit verification code via SMS to the given phone number using Twilio Verify.
+
+**Body:**
+```json
+{
+  "phone_number": "+905551234567",
+  "purpose": "login",
+  "language": "tr"
+}
+```
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `phone_number` | string | Yes | Phone number in E.164 format (e.g. `+905551234567`). Leading `0` is auto-corrected. |
+| `purpose` | string | No | `login`, `signup`, or `checkout`. Default: `login` |
+| `language` | string | No | Language code for the SMS message. Default: `en` |
+
+**Response `200`:**
+```json
+{
+  "success": true,
+  "phone_number": "+905551234567",
+  "expires_in": 600,
+  "message": "Verification code sent successfully"
+}
+```
+
+**Error codes:** `INVALID_PHONE` (400), `SMS_SEND_FAILED` (502)
+
+---
+
+### Verify WhatsApp / SMS OTP
+
+`POST /auth/whatsapp/verify-otp`
+
+Verifies the OTP code and returns a session. Creates a new account automatically if the phone number is not yet registered.
+
+**Body:**
+```json
+{
+  "phone_number": "+905551234567",
+  "otp_code": "123456",
+  "purpose": "login",
+  "full_name": "Jane Doe",
+  "language": "tr"
+}
+```
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `phone_number` | string | Yes | Same number used in `send-otp` |
+| `otp_code` | string | Yes | 6-digit code received via SMS |
+| `purpose` | string | No | `login`, `signup`, or `checkout`. Default: `login` |
+| `full_name` | string | No | Used when creating a new account |
+| `language` | string | No | Language preference for the new account. Default: `en` |
+
+**Response `200`:**
+```json
+{
+  "success": true,
+  "is_new_user": false,
+  "access_token": "eyJ...",
+  "refresh_token": "eyJ...",
+  "expires_at": 1234567890,
+  "user": {
+    "id": "uuid",
+    "phone_number": "+905551234567",
+    "full_name": "Jane Doe",
+    "language_preference": "tr"
+  }
+}
+```
+
+`is_new_user: true` when a new account was created during this call.
+
+**Error codes:** `INVALID_OTP` (400), `SESSION_FAILED` (500)
+
+---
+
 ## Category Endpoints
 
 ### List Categories
@@ -246,6 +329,7 @@ Common codes: `UNAUTHORIZED`, `NOT_FOUND`, `MISSING_FIELDS`, `DB_ERROR`, `INTERN
     "tags": ["mindset"],
     "language": "en",
     "content_types": ["video"],
+    "format_types": ["guide"],
     "is_featured": false,
     "is_active": true,
     "created_at": "2025-01-01T00:00:00Z"
@@ -356,10 +440,14 @@ Returns full content list with 1-hour signed download/stream URLs.
     "email": "user@example.com",
     "full_name": "Jane Doe",
     "language_preference": "en",
+    "phone_number": "+905551234567",
+    "whatsapp_verified": true,
     "created_at": "2025-01-01T00:00:00Z"
   }
 }
 ```
+
+`phone_number` and `whatsapp_verified` are present for users who authenticated via WhatsApp OTP. They may be `null` for email/password users.
 
 ---
 
@@ -485,23 +573,38 @@ Returns all purchased courses with progress.
 }
 ```
 
+If already enrolled, returns `200` with the existing `purchase_id` and `"Already enrolled"`.
+
 ---
 
 ### Create Stripe Checkout Session
 
 `POST /checkout/stripe`
 
+Either `email` or `phone_number` must be provided (or both).
+
 **Body:**
 ```json
 {
   "course_id": "uuid",
   "email": "user@example.com",
+  "phone_number": "+905551234567",
   "full_name": "Jane Doe",
   "success_url": "myapp://checkout/success?session_id={CHECKOUT_SESSION_ID}",
   "cancel_url": "myapp://courses/uuid?canceled=true",
   "language": "en"
 }
 ```
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `course_id` | string | Yes | Course UUID |
+| `email` | string | Conditional | Customer email. Required if `phone_number` is not provided. |
+| `phone_number` | string | Conditional | Customer phone in E.164 format. Required if `email` is not provided. Used to link the purchase to a WhatsApp-authenticated user. |
+| `full_name` | string | No | Customer name shown in Stripe checkout |
+| `success_url` | string | No | Redirect URL after payment. Use `{CHECKOUT_SESSION_ID}` placeholder. |
+| `cancel_url` | string | No | Redirect URL when payment is cancelled. |
+| `language` | string | No | Language preference (`en`, `tr`, `hi`). Default: `en` |
 
 **Response `200`:**
 ```json
@@ -511,13 +614,55 @@ Returns all purchased courses with progress.
 }
 ```
 
-Open `url` in an in-app browser or WebView. On success, Stripe redirects to `success_url`.
+Open `url` in an in-app browser or WebView. On success, Stripe redirects to `success_url` with `session_id` appended.
 
 ---
 
-### Verify Purchase
+### Verify Stripe Session (after payment)
+
+`POST /checkout/verify-stripe-session`
+
+Call this after the user returns from Stripe checkout to confirm the payment and record the purchase. Does **not** require authentication — suitable for WhatsApp-only users who do not have an active session.
+
+**Body:**
+```json
+{
+  "sessionId": "cs_...",
+  "language": "en"
+}
+```
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `sessionId` | string | Yes | Stripe Checkout Session ID from the redirect URL |
+| `language` | string | No | Language for confirmation email. Default: `en` |
+
+**Response `200`:**
+```json
+{
+  "success": true,
+  "purchase_id": "uuid",
+  "course_id": "uuid",
+  "course_title": "Master Your Mindset",
+  "full_name": "Jane Doe",
+  "amount": 29.99,
+  "currency": "USD",
+  "is_new_user": false,
+  "already_processed": false
+}
+```
+
+`already_processed: true` is returned (with `200`) if the session was already verified before (idempotent).
+
+**Error `400`:** Payment not completed (`payment_status` is not `paid`).
+
+---
+
+### Verify Purchase by ID
 
 `GET /checkout/verify/:purchaseId` *(requires auth)*
+
+Verify ownership of a specific purchase record. Useful for access-gating screens.
 
 **Response `200`:**
 ```json
@@ -596,7 +741,7 @@ Open `url` in an in-app browser or WebView. On success, Stripe redirects to `suc
 
 ---
 
-## Example: Typical Mobile App Flow
+## Example: Email/Password Login Flow
 
 ```bash
 # 1. Login
@@ -628,5 +773,38 @@ curl -X POST "https://mkupsvtavdcvqafajeef.supabase.co/functions/v1/api/courses/
 
 # 7. Get my enrolled courses
 curl "https://mkupsvtavdcvqafajeef.supabase.co/functions/v1/api/me/courses" \
+  -H "Authorization: Bearer ACCESS_TOKEN"
+```
+
+---
+
+## Example: WhatsApp OTP Login Flow
+
+```bash
+# 1. Send OTP to phone
+curl -X POST https://mkupsvtavdcvqafajeef.supabase.co/functions/v1/api/auth/whatsapp/send-otp \
+  -H "Content-Type: application/json" \
+  -d '{"phone_number":"+905551234567","purpose":"login","language":"tr"}'
+
+# 2. Verify OTP — returns access_token (creates account if new user)
+curl -X POST https://mkupsvtavdcvqafajeef.supabase.co/functions/v1/api/auth/whatsapp/verify-otp \
+  -H "Content-Type: application/json" \
+  -d '{"phone_number":"+905551234567","otp_code":"123456","purpose":"login","language":"tr"}'
+
+# 3. Browse and view courses (same as email flow)
+curl "https://mkupsvtavdcvqafajeef.supabase.co/functions/v1/api/courses?language=tr"
+
+# 4. Start Stripe checkout for a paid course (phone_number links purchase to user)
+curl -X POST https://mkupsvtavdcvqafajeef.supabase.co/functions/v1/api/checkout/stripe \
+  -H "Content-Type: application/json" \
+  -d '{"course_id":"COURSE_ID","phone_number":"+905551234567","full_name":"Jane","success_url":"myapp://success?session_id={CHECKOUT_SESSION_ID}","cancel_url":"myapp://cancel","language":"tr"}'
+
+# 5. After returning from Stripe, verify the session (no auth required)
+curl -X POST https://mkupsvtavdcvqafajeef.supabase.co/functions/v1/api/checkout/verify-stripe-session \
+  -H "Content-Type: application/json" \
+  -d '{"sessionId":"cs_...","language":"tr"}'
+
+# 6. Access purchased course content using the token from step 2
+curl "https://mkupsvtavdcvqafajeef.supabase.co/functions/v1/api/courses/COURSE_ID/learn" \
   -H "Authorization: Bearer ACCESS_TOKEN"
 ```
