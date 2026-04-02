@@ -285,12 +285,40 @@ const CourseDetailModal: React.FC<Props> = ({ course, onClose }) => {
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
 
   const fetchContents = async () => {
-    const { data } = await supabase
+    const { data: existingContent } = await supabase
       .from('course_content')
       .select('*')
       .eq('course_id', course.id)
       .order('sort_order', { ascending: true })
-    setContents(data || [])
+
+    if (existingContent && existingContent.length > 0) {
+      setContents(existingContent)
+      setLoadingContents(false)
+      return
+    }
+
+    if (course.pdf_url) {
+      const storagePath = extractStoragePath(course.pdf_url) || course.pdf_url
+      const { data: migrated, error } = await supabase
+        .from('course_content')
+        .insert({
+          course_id: course.id,
+          content_type: 'ebook',
+          title: 'Ebook / PDF',
+          file_url: storagePath,
+          file_name: storagePath.split('/').pop() || '',
+          file_size: 0,
+          sort_order: 0,
+        })
+        .select()
+        .maybeSingle()
+
+      if (!error && migrated) {
+        await supabase.from('courses').update({ pdf_url: null }).eq('id', course.id)
+        setContents([migrated])
+      }
+    }
+
     setLoadingContents(false)
   }
 
@@ -732,30 +760,6 @@ const CourseDetailModal: React.FC<Props> = ({ course, onClose }) => {
             )}
           </div>
 
-          {course.pdf_url && (
-            <div>
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">PDF File</p>
-              <UrlRow url={course.pdf_url} copiedUrl={copiedUrl} onCopy={copyToClipboard} onOpen={openSignedUrl} />
-              <div className="flex gap-2 mt-2">
-                <button
-                  onClick={() => openSignedUrl(course.pdf_url!)}
-                  disabled={openingUrl === course.pdf_url}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-teal-600 hover:bg-teal-700 disabled:opacity-60 rounded-lg transition-colors"
-                >
-                  <Eye className="h-3.5 w-3.5" />
-                  {openingUrl === course.pdf_url ? 'Opening...' : 'View PDF'}
-                </button>
-                <button
-                  onClick={() => openSignedUrl(course.pdf_url!, true)}
-                  disabled={openingUrl === course.pdf_url}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 disabled:opacity-60 rounded-lg transition-colors"
-                >
-                  <Download className="h-3.5 w-3.5" />
-                  Download PDF
-                </button>
-              </div>
-            </div>
-          )}
         </div>
 
         <div className="px-6 py-4 border-t border-gray-100 flex justify-end">

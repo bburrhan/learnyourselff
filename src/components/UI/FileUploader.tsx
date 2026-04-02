@@ -55,7 +55,15 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     setFileName(file.name)
 
     if (currentFileUrl && bucket !== 'course-covers') {
-      await supabase.storage.from(bucket).remove([currentFileUrl])
+      const extractPath = (url: string) => {
+        const marker = '/storage/v1/object/public/' + bucket + '/'
+        const idx = url.indexOf(marker)
+        if (idx !== -1) return url.slice(idx + marker.length)
+        if (!url.startsWith('http') && !url.startsWith('/') && !url.startsWith('blob:')) return url
+        return null
+      }
+      const oldPath = extractPath(currentFileUrl) || currentFileUrl
+      await supabase.storage.from(bucket).remove([oldPath])
     }
 
     const ext = file.name.split('.').pop()

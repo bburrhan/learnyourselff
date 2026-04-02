@@ -11,6 +11,22 @@ interface ContentManagerProps {
   onContentTypesChange: (types: ContentType[]) => void
 }
 
+function extractStoragePath(url: string): string | null {
+  if (!url) return null
+  try {
+    const publicMarker = '/storage/v1/object/public/course-files/'
+    const idx = url.indexOf(publicMarker)
+    if (idx !== -1) return url.slice(idx + publicMarker.length)
+    const signedMarker = '/storage/v1/object/sign/course-files/'
+    const idx2 = url.indexOf(signedMarker)
+    if (idx2 !== -1) return url.slice(idx2 + signedMarker.length).split('?')[0]
+    if (!url.startsWith('http') && !url.startsWith('/') && !url.startsWith('blob:')) return url
+    return null
+  } catch {
+    return null
+  }
+}
+
 const CONTENT_CONFIG: Record<ContentType, {
   label: string
   description: string
@@ -74,15 +90,49 @@ const ContentManager: React.FC<ContentManagerProps> = ({ courseId, onContentType
   }, [courseId])
 
   const fetchContents = async () => {
-    const { data } = await supabase
+    const { data: existingContent } = await supabase
       .from('course_content')
       .select('*')
       .eq('course_id', courseId)
       .order('sort_order', { ascending: true })
 
-    const items = data || []
-    setContents(items)
-    updateContentTypes(items)
+    if (existingContent && existingContent.length > 0) {
+      setContents(existingContent)
+      updateContentTypes(existingContent)
+      setLoading(false)
+      return
+    }
+
+    const { data: courseRow } = await supabase
+      .from('courses')
+      .select('pdf_url')
+      .eq('id', courseId)
+      .maybeSingle()
+
+    if (courseRow?.pdf_url) {
+      const storagePath = extractStoragePath(courseRow.pdf_url) || courseRow.pdf_url
+      const { data: migrated, error } = await supabase
+        .from('course_content')
+        .insert({
+          course_id: courseId,
+          content_type: 'ebook',
+          title: 'Ebook / PDF',
+          file_url: storagePath,
+          file_name: storagePath.split('/').pop() || '',
+          file_size: 0,
+          sort_order: 0,
+        })
+        .select()
+        .maybeSingle()
+
+      if (!error && migrated) {
+        await supabase.from('courses').update({ pdf_url: null }).eq('id', courseId)
+        const items = [migrated]
+        setContents(items)
+        updateContentTypes(items)
+      }
+    }
+
     setLoading(false)
   }
 
@@ -122,7 +172,8 @@ const ContentManager: React.FC<ContentManagerProps> = ({ courseId, onContentType
   const handleFileUploaded = async (contentId: string, fileUrl: string, fileName: string, fileSize: number) => {
     const oldItem = contents.find(c => c.id === contentId)
     if (oldItem?.file_url && oldItem.file_url !== fileUrl) {
-      await supabase.storage.from('course-files').remove([oldItem.file_url])
+      const oldPath = extractStoragePath(oldItem.file_url) || oldItem.file_url
+      await supabase.storage.from('course-files').remove([oldPath])
     }
 
     const titleFromFile = fileName ? fileName.replace(/\.[^/.]+$/, '') : ''
@@ -167,7 +218,8 @@ const ContentManager: React.FC<ContentManagerProps> = ({ courseId, onContentType
 
     const item = contents.find(c => c.id === contentId)
     if (item?.file_url) {
-      await supabase.storage.from('course-files').remove([item.file_url])
+      const storagePath = extractStoragePath(item.file_url) || item.file_url
+      await supabase.storage.from('course-files').remove([storagePath])
     }
 
     await supabase.from('course_content').delete().eq('id', contentId)
