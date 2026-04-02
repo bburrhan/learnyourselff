@@ -24,6 +24,7 @@ import Signup from './pages/Auth/Signup'
 import ForgotPassword from './pages/Auth/ForgotPassword'
 import ResetPassword from './pages/Auth/ResetPassword'
 import SetPassword from './pages/Auth/SetPassword'
+import AdminLogin from './pages/Auth/AdminLogin'
 import Dashboard from './pages/Dashboard/Dashboard'
 import AdminDashboard from './pages/Admin/AdminDashboard'
 import AdminCourses from './pages/Admin/AdminCourses'
@@ -70,6 +71,7 @@ function App() {
                   <Route path="/:lang/forgot-password" element={<ForgotPassword />} />
                   <Route path="/:lang/reset-password" element={<ResetPassword />} />
                   <Route path="/:lang/set-password" element={<SetPassword />} />
+                  <Route path="/:lang/admin-login" element={<AdminLogin />} />
                   <Route path="/:lang/about" element={<About />} />
                   <Route path="/:lang/contact" element={<Contact />} />
                   <Route path="/:lang/privacy" element={<Privacy />} />
