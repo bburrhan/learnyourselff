@@ -32,6 +32,7 @@ type CourseContent = Database['public']['Tables']['course_content']['Row']
 interface Props {
   course: Course
   onClose: () => void
+  onCourseUpdated?: (updated: Partial<Course> & { id: string }) => void
 }
 
 function formatFileSize(bytes: number): string {
@@ -275,7 +276,7 @@ const InlineUploader: React.FC<InlineUploaderProps> = ({
   )
 }
 
-const CourseDetailModal: React.FC<Props> = ({ course, onClose }) => {
+const CourseDetailModal: React.FC<Props> = ({ course, onClose, onCourseUpdated }) => {
   const [contents, setContents] = useState<CourseContent[]>([])
   const [loadingContents, setLoadingContents] = useState(true)
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null)
@@ -283,6 +284,7 @@ const CourseDetailModal: React.FC<Props> = ({ course, onClose }) => {
   const [isEditing, setIsEditing] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+  const migrationAttemptedRef = useRef(false)
 
   const fetchContents = async () => {
     const { data: existingContent } = await supabase
@@ -297,7 +299,8 @@ const CourseDetailModal: React.FC<Props> = ({ course, onClose }) => {
       return
     }
 
-    if (course.pdf_url) {
+    if (course.pdf_url && !migrationAttemptedRef.current) {
+      migrationAttemptedRef.current = true
       const storagePath = extractStoragePath(course.pdf_url) || course.pdf_url
       const { data: migrated, error } = await supabase
         .from('course_content')
@@ -315,6 +318,7 @@ const CourseDetailModal: React.FC<Props> = ({ course, onClose }) => {
 
       if (!error && migrated) {
         await supabase.from('courses').update({ pdf_url: null }).eq('id', course.id)
+        onCourseUpdated?.({ id: course.id, pdf_url: null })
         setContents([migrated])
       }
     }

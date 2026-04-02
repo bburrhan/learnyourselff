@@ -550,6 +550,10 @@ const AdminCourses: React.FC = () => {
         <CourseDetailModal
           course={viewingCourse}
           onClose={() => setViewingCourse(null)}
+          onCourseUpdated={(updated) => {
+            setCourses(prev => prev.map(c => c.id === updated.id ? { ...c, ...updated } : c))
+            setViewingCourse(prev => prev ? { ...prev, ...updated } : prev)
+          }}
         />
       )}
     </div>

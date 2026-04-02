@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { FileText, Music, Video, Trash2, GripVertical, Plus } from 'lucide-react'
 import { supabase, Database, ContentType } from '../../lib/supabase'
 import FileUploader from '../UI/FileUploader'
@@ -84,6 +84,7 @@ const CONTENT_CONFIG: Record<ContentType, {
 const ContentManager: React.FC<ContentManagerProps> = ({ courseId, onContentTypesChange }) => {
   const [contents, setContents] = useState<CourseContent[]>([])
   const [loading, setLoading] = useState(true)
+  const migrationAttemptedRef = useRef(false)
 
   useEffect(() => {
     fetchContents()
@@ -109,7 +110,8 @@ const ContentManager: React.FC<ContentManagerProps> = ({ courseId, onContentType
       .eq('id', courseId)
       .maybeSingle()
 
-    if (courseRow?.pdf_url) {
+    if (courseRow?.pdf_url && !migrationAttemptedRef.current) {
+      migrationAttemptedRef.current = true
       const storagePath = extractStoragePath(courseRow.pdf_url) || courseRow.pdf_url
       const { data: migrated, error } = await supabase
         .from('course_content')
@@ -222,7 +224,12 @@ const ContentManager: React.FC<ContentManagerProps> = ({ courseId, onContentType
       await supabase.storage.from('course-files').remove([storagePath])
     }
 
-    await supabase.from('course_content').delete().eq('id', contentId)
+    const { error } = await supabase.from('course_content').delete().eq('id', contentId)
+    if (error) {
+      toast.error('Failed to remove content')
+      return
+    }
+
     const updated = contents.filter(c => c.id !== contentId)
     setContents(updated)
     updateContentTypes(updated)
