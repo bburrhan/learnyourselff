@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { Smartphone, Phone, ArrowRight, RefreshCw, CheckCircle, ChevronDown } from 'lucide-react'
 
 const COUNTRY_CODES = [
+  { code: '+63', flag: '🇵🇭', name: 'Philippines' },
   { code: '+90', flag: '🇹🇷', name: 'Turkey' },
   { code: '+1', flag: '🇺🇸', name: 'USA / Canada' },
   { code: '+44', flag: '🇬🇧', name: 'UK' },
