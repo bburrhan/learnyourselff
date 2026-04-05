@@ -208,7 +208,7 @@ const BlogPost: React.FC = () => {
         {post.cta_text && post.cta_link ? (
           <div className="mt-12 bg-gradient-to-r from-royal-blue-50 to-royal-blue-100 border border-royal-blue-200 rounded-lg p-6">
             <div className="text-gray-800 mb-4">
-              {renderMarkdown(post.cta_text)}
+              <div dangerouslySetInnerHTML={{ __html: post.cta_text }} />
             </div>
             <LanguageAwareLink
               to={post.cta_link.startsWith('http') ? post.cta_link : post.cta_link}
