@@ -30,7 +30,7 @@ type Course = Database['public']['Tables']['courses']['Row']
 const CourseDetail: React.FC = () => {
   const { t, i18n } = useTranslation()
   const { slug } = useParams<{ slug: string }>()
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const [course, setCourse] = useState<Course | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -53,6 +53,8 @@ const CourseDetail: React.FC = () => {
     const fetchCourse = async () => {
       if (!slug) return
 
+      setLoading(true)
+
       const result = await handleAsyncError(async () => {
         logger.info('Fetching course details', { slug })
 
@@ -66,23 +68,8 @@ const CourseDetail: React.FC = () => {
           setError(null)
           logger.info('Found course in Supabase', { title: data.title })
 
-          const [catRes, purchaseRes] = await Promise.all([
-            supabase.from('categories').select('name').eq('slug', data.category).maybeSingle(),
-            user
-              ? supabase
-                  .from('purchases')
-                  .select('id')
-                  .eq('user_id', user.id)
-                  .eq('course_id', data.id)
-                  .eq('status', 'completed')
-                  .limit(1)
-              : Promise.resolve({ data: null }),
-          ])
-
+          const catRes = await supabase.from('categories').select('name').eq('slug', data.category).maybeSingle()
           if (catRes.data) setCategoryName(catRes.data.name)
-          if (purchaseRes.data && (purchaseRes.data as { id: string }[]).length > 0) {
-            setHasPurchased(true)
-          }
 
           return true
         }
@@ -115,7 +102,27 @@ const CourseDetail: React.FC = () => {
     }
 
     fetchCourse()
-  }, [slug, i18n.language, user])
+  }, [slug, i18n.language])
+
+  useEffect(() => {
+    if (authLoading || !user || !course) return
+
+    const checkPurchase = async () => {
+      const { data } = await supabase
+        .from('purchases')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('course_id', course.id)
+        .eq('status', 'completed')
+        .limit(1)
+
+      if (data && (data as { id: string }[]).length > 0) {
+        setHasPurchased(true)
+      }
+    }
+
+    checkPurchase()
+  }, [authLoading, user, course])
 
   if (loading) {
     return (
