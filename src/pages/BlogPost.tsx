@@ -8,7 +8,6 @@ import { Calendar, Tag, ArrowLeft, ArrowRight, Share2, BookOpen } from 'lucide-r
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
 import useSeo from '../hooks/useSeo'
-import { renderMarkdown } from '../utils/renderMarkdown'
 
 type BlogPost = Database['public']['Tables']['blog_posts']['Row']
 
@@ -183,9 +182,10 @@ const BlogPost: React.FC = () => {
 
         {/* Content */}
         <div className="prose prose-lg max-w-none">
-          <div className="text-gray-800 leading-relaxed">
-            {renderMarkdown(post.content)}
-          </div>
+          <div
+            className="text-gray-800 leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: post.content }}
+          />
         </div>
 
         {/* TL;DR Section */}
@@ -195,9 +195,10 @@ const BlogPost: React.FC = () => {
               <BookOpen className="h-5 w-5 text-yellow-600 mt-1 me-3 flex-shrink-0" />
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">TL;DR</h3>
-                <div className="text-gray-700 leading-relaxed">
-                  {renderMarkdown(post.tldr)}
-                </div>
+                <div
+                  className="text-gray-700 leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: post.tldr }}
+                />
               </div>
             </div>
           </div>
