@@ -29,7 +29,6 @@ const AdminBlogs: React.FC = () => {
     excerpt: '',
     meta_description: '',
     slug: '',
-    author_name: '',
     cover_image_url: '',
     tags: '',
     tldr: '',
@@ -85,7 +84,6 @@ const AdminBlogs: React.FC = () => {
       excerpt: '',
       meta_description: '',
       slug: '',
-      author_name: '',
       cover_image_url: '',
       tags: '',
       tldr: '',
@@ -107,7 +105,6 @@ const AdminBlogs: React.FC = () => {
       excerpt: post.excerpt,
       meta_description: post.meta_description || '',
       slug: post.slug,
-      author_name: post.author_name,
       cover_image_url: post.cover_image_url || '',
       tags: post.tags?.join(', ') || '',
       tldr: post.tldr || '',
@@ -506,34 +503,18 @@ const AdminBlogs: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Author Name *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.author_name}
-                      onChange={(e) => setFormData({ ...formData, author_name: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Author's full name"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Language
-                    </label>
-                    <select
-                      value={formData.language}
-                      onChange={(e) => setFormData({ ...formData, language: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="en">English</option>
-                      <option value="tr">Turkish</option>
-                    </select>
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Language
+                  </label>
+                  <select
+                    value={formData.language}
+                    onChange={(e) => setFormData({ ...formData, language: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="en">English</option>
+                    <option value="tr">Turkish</option>
+                  </select>
                 </div>
 
                 <div>
