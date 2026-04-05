@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { supabase, Database } from '../lib/supabase'
 import LoadingSpinner from '../components/UI/LoadingSpinner'
 import LanguageAwareLink from '../components/Layout/LanguageAwareLink'
-import { Calendar, User, Tag, ArrowLeft, ArrowRight, Share2, BookOpen } from 'lucide-react'
+import { Calendar, Tag, ArrowLeft, ArrowRight, Share2, BookOpen } from 'lucide-react'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
 import useSeo from '../hooks/useSeo'
@@ -155,10 +155,6 @@ const BlogPost: React.FC = () => {
           
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-x-4 text-sm text-gray-500">
-              <div className="flex items-center">
-                <User className="h-4 w-4 me-1" />
-                {post.author_name}
-              </div>
               <div className="flex items-center">
                 <Calendar className="h-4 w-4 me-1" />
                 {format(new Date(post.created_at), 'MMMM d, yyyy')}
