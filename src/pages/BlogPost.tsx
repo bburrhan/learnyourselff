@@ -181,12 +181,10 @@ const BlogPost: React.FC = () => {
         )}
 
         {/* Content */}
-        <div className="prose prose-lg max-w-none">
-          <div
-            className="text-gray-800 leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
-        </div>
+        <div
+          className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-h2:text-2xl prose-h3:text-xl prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-royal-blue-600 prose-a:no-underline hover:prose-a:underline prose-strong:text-gray-900 prose-ul:text-gray-700 prose-ol:text-gray-700 prose-li:my-1 prose-blockquote:border-royal-blue-400 prose-blockquote:text-gray-600 prose-code:text-royal-blue-700 prose-code:bg-gray-100 prose-code:px-1 prose-code:rounded prose-img:rounded-lg prose-img:shadow-md"
+          dangerouslySetInnerHTML={{ __html: post.content }}
+        />
 
         {/* TL;DR Section */}
         {post.tldr && (
