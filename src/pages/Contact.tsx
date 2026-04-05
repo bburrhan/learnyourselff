@@ -119,9 +119,9 @@ const Contact: React.FC = () => {
                   <div className="ms-3">
                     <p className="text-sm font-medium text-gray-900">{t('office')}</p>
                     <p className="text-sm text-gray-600">
-                      123 Education Street<br />
-                      Learning District<br />
-                      Knowledge City, KC 12345
+                      Ahtri tn 12, 15551<br />
+                      Kesklinna linnaosa, Tallinn<br />
+                      Harju maakond, Estonia
                     </p>
                   </div>
                 </div>

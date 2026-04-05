@@ -191,7 +191,7 @@ const Privacy: React.FC = () => {
             <div className="bg-gray-50 rounded-lg p-4">
               <p className="text-gray-600">
                 <strong>Email:</strong> privacy@learnyourself.co<br />
-                <strong>Address:</strong> 123 Education Street, Learning District, Knowledge City, KC 12345<br />
+                <strong>Address:</strong> Ahtri tn 12, 15551, Kesklinna linnaosa, Tallinn, Harju maakond, Estonia<br />
                 <strong>Phone:</strong> +1 (555) 123-4567
               </p>
             </div>
