@@ -95,6 +95,10 @@ const Blog: React.FC = () => {
                     src={posts[0].cover_image_url || 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg'}
                     alt={posts[0].title}
                     className="w-full h-64 md:h-full object-cover"
+                    fetchpriority="high"
+                    decoding="async"
+                    width="800"
+                    height="600"
                   />
                 </div>
                 <div className="md:w-1/2 p-8">
@@ -148,6 +152,9 @@ const Blog: React.FC = () => {
                   alt={post.title}
                   className="w-full h-full object-cover"
                   loading="lazy"
+                  decoding="async"
+                  width="400"
+                  height="225"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.src = 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg';

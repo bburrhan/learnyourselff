@@ -79,9 +79,13 @@ const Home: React.FC = () => {
         {/* Background Image */}
         <div className="absolute inset-0">
           <img
-            src="https://images.pexels.com/photos/4050291/pexels-photo-4050291.jpeg"
+            src="https://images.pexels.com/photos/4050291/pexels-photo-4050291.jpeg?auto=compress&cs=tinysrgb&w=1920&q=75"
             alt="Person working on computer"
             className="w-full h-full object-cover"
+            fetchpriority="high"
+            decoding="async"
+            width="1920"
+            height="1080"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-royal-blue-900/90 via-royal-blue-800/85 to-emerald-700/80"></div>
         </div>

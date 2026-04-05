@@ -39,6 +39,9 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, className = '', categor
           alt={course.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
+          decoding="async"
+          width="400"
+          height="225"
           onError={() => setImgSrc(FALLBACK_IMAGE)}
         />
       </div>
