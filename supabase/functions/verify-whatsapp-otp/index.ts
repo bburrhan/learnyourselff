@@ -86,7 +86,6 @@ Deno.serve(async (req: Request) => {
 
     // 1. First look up by profiles.phone_number (fast, indexed)
     let existingUserId: string | null = null;
-    let wasWhatsappVerified = false;
 
     const { data: existingProfile } = await admin
       .from("profiles")
@@ -96,7 +95,6 @@ Deno.serve(async (req: Request) => {
 
     if (existingProfile) {
       existingUserId = existingProfile.id;
-      wasWhatsappVerified = existingProfile.whatsapp_verified;
       console.log("Found user via profiles.phone_number:", existingUserId);
     } else {
       // 2. Fallback: search auth.users metadata (covers users whose profile was not backfilled)
@@ -137,20 +135,41 @@ Deno.serve(async (req: Request) => {
         .update(profileUpdate)
         .eq("id", userId);
 
+      // Fetch the real auth email for this user — do NOT assume it matches generateDummyEmail(userId)
+      const { data: authUserData, error: authUserError } = await admin.auth.admin.getUserById(userId);
+      if (authUserError || !authUserData?.user?.email) {
+        console.error("Failed to fetch auth user:", authUserError);
+        return new Response(
+          JSON.stringify({ error: "Failed to fetch user account" }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const realEmail = authUserData.user.email;
+      const existingMeta = authUserData.user.user_metadata ?? {};
+
       if (full_name && full_name.trim()) {
-        const { data: existingAuthUser } = await admin.auth.admin.getUserById(userId);
-        const existingMeta = existingAuthUser?.user?.user_metadata ?? {};
         await admin.auth.admin.updateUserById(userId, {
           user_metadata: { ...existingMeta, full_name: full_name.trim() },
         });
       }
 
+      // If auth email does not match the expected dummy email, fix it now
+      const expectedEmail = generateDummyEmail(userId);
+      if (realEmail !== expectedEmail) {
+        console.log(`Fixing mismatched email for user ${userId}: ${realEmail} -> ${expectedEmail}`);
+        await admin.auth.admin.updateUserById(userId, { email: expectedEmail });
+      }
+
       const tempPassword = crypto.randomUUID() + "Aa1!";
       await admin.auth.admin.updateUserById(userId, { password: tempPassword });
 
+      // Small delay to allow password propagation
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
       const anonClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!);
       const { data: loginData, error: loginError } = await anonClient.auth.signInWithPassword({
-        email: generateDummyEmail(userId),
+        email: expectedEmail,
         password: tempPassword,
       });
 
