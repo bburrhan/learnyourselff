@@ -46,10 +46,6 @@ const CourseDetail: React.FC = () => {
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(val)
 
   useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [slug])
-
-  useEffect(() => {
     const fetchCourse = async () => {
       if (!slug) return
 

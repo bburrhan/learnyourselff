@@ -68,10 +68,6 @@ const Checkout: React.FC = () => {
   fullNameRef.current = fullName;
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
-  useEffect(() => {
     if (user) {
       setFullName(prev => prev || user.user_metadata?.full_name || '');
     }

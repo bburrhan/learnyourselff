@@ -24,10 +24,6 @@ const BlogPost: React.FC = () => {
   })
 
   useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [])
-
-  useEffect(() => {
     const fetchPost = async () => {
       if (!slug) return
 

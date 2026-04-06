@@ -12,11 +12,6 @@ const Courses: React.FC = () => {
   const { t } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
 
-  // Scroll to top when component mounts
-  useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [])
-
   const [showFilters, setShowFilters] = useState(false)
   const [categories, setCategories] = useState<any[]>([])
   const [categoriesLoading, setCategoriesLoading] = useState(true)
