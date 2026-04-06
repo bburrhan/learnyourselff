@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -26,6 +26,10 @@ const Contact: React.FC = () => {
     title: t('contact'),
     description: t('contactPageDesc'),
   })
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   const {
     register,

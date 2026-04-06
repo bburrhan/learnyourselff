@@ -12,7 +12,6 @@ export const useCourses = (filters?: {
   search?: string
   priceRange?: [number, number]
   formatType?: string
-  fields?: string
 }) => {
   const [courses, setCourses] = useState<Course[]>([])
   const [loading, setLoading] = useState(true)
@@ -34,7 +33,7 @@ export const useCourses = (filters?: {
         
         let query = supabase
           .from('courses')
-          .select(filters?.fields || '*')
+          .select('*')
           .eq('is_active', true)
           .eq('language', i18n.language)
           .order('created_at', { ascending: false })
@@ -82,7 +81,7 @@ export const useCourses = (filters?: {
     }
 
     fetchCourses()
-  }, [filters?.category, filters?.search, filters?.priceRange?.[0], filters?.priceRange?.[1], filters?.formatType, filters?.fields, i18n.language])
+  }, [filters?.category, filters?.search, filters?.priceRange?.[0], filters?.priceRange?.[1], filters?.formatType, i18n.language])
 
   return { courses, loading, error }
 }

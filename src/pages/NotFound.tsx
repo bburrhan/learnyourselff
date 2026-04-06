@@ -1,10 +1,16 @@
 import React from 'react'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import LanguageAwareLink from '../components/Layout/LanguageAwareLink'
 import { Home, ArrowLeft, Search, BookOpen } from 'lucide-react'
 
 const NotFound: React.FC = () => {
   const { t } = useTranslation()
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center px-4">

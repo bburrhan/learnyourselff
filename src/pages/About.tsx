@@ -1,4 +1,5 @@
 import React from 'react'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BookOpen, Users, Globe, Award, Heart, Target } from 'lucide-react'
 import LanguageAwareLink from '../components/Layout/LanguageAwareLink'
@@ -11,6 +12,10 @@ const About: React.FC = () => {
     title: t('about'),
     description: t('aboutHeroDesc'),
   })
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   return (
     <div className="min-h-screen bg-gray-50">

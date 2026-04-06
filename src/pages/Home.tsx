@@ -1,4 +1,5 @@
 import React from 'react'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCourses } from '../hooks/useCourses'
 import useSeo from '../hooks/useSeo'
@@ -22,15 +23,16 @@ import {
 
 const Home: React.FC = () => {
   const { t } = useTranslation()
-  const { courses: sampleCourses, loading: sampleLoading } = useCourses({
-    priceRange: [0, 10],
-    fields: 'id,title,slug,description,cover_image_url,price,currency',
-  })
+  const { courses: sampleCourses, loading: sampleLoading } = useCourses({ priceRange: [0, 10] })
 
   useSeo({
     title: t('heroTitleHome'),
     description: t('heroSubtitleHome'),
   })
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   const transformationStories = [
     {

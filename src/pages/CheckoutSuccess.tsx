@@ -24,6 +24,10 @@ const CheckoutSuccess: React.FC = () => {
   const [countdown, setCountdown] = useState(5)
 
   useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
+  useEffect(() => {
     const sessionId = searchParams.get('session_id')
     const isFree = searchParams.get('free') === 'true'
 

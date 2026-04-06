@@ -1,23 +1,19 @@
-import React, { Suspense, lazy, useEffect } from 'react'
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
+import React, { Suspense, lazy } from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import './lib/i18n'
 import ErrorBoundary from './components/ErrorBoundary'
 import logger from './utils/logger'
+
+// Layout components (always loaded - part of shell)
 import Header from './components/Layout/Header'
 import Footer from './components/Layout/Footer'
 import { LanguageRouter } from './components/Layout/LanguageRouter'
 import ProtectedRoute from './components/Auth/ProtectedRoute'
 import LoadingSpinner from './components/UI/LoadingSpinner'
-import Home from './pages/Home'
 
-const ScrollToTop = () => {
-  const { pathname } = useLocation()
-  useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [pathname])
-  return null
-}
+// Eagerly loaded public pages (critical path)
+import Home from './pages/Home'
 
 // Lazily loaded pages
 const Courses = lazy(() => import('./pages/Courses'))
@@ -71,7 +67,6 @@ function App() {
     <ErrorBoundary>
       <Router>
         <LanguageRouter>
-          <ScrollToTop />
           <div className="min-h-screen bg-gray-50 flex flex-col">
             <Header />
             <main className="flex-1">
