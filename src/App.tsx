@@ -4,6 +4,12 @@ import { Toaster } from 'react-hot-toast'
 import './lib/i18n'
 import ErrorBoundary from './components/ErrorBoundary'
 import logger from './utils/logger'
+import Header from './components/Layout/Header'
+import Footer from './components/Layout/Footer'
+import { LanguageRouter } from './components/Layout/LanguageRouter'
+import ProtectedRoute from './components/Auth/ProtectedRoute'
+import LoadingSpinner from './components/UI/LoadingSpinner'
+import Home from './pages/Home'
 
 const ScrollToTop = () => {
   const { pathname } = useLocation()
@@ -12,16 +18,6 @@ const ScrollToTop = () => {
   }, [pathname])
   return null
 }
-
-// Layout components (always loaded - part of shell)
-import Header from './components/Layout/Header'
-import Footer from './components/Layout/Footer'
-import { LanguageRouter } from './components/Layout/LanguageRouter'
-import ProtectedRoute from './components/Auth/ProtectedRoute'
-import LoadingSpinner from './components/UI/LoadingSpinner'
-
-// Eagerly loaded public pages (critical path)
-import Home from './pages/Home'
 
 // Lazily loaded pages
 const Courses = lazy(() => import('./pages/Courses'))
