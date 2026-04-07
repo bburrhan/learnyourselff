@@ -31,7 +31,7 @@ interface SalesData {
 }
 
 const AdminAnalytics: React.FC = () => {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const [analytics, setAnalytics] = useState<SalesData>({
     totalRevenue: 0,
     totalSales: 0,
@@ -78,11 +78,10 @@ const AdminAnalytics: React.FC = () => {
           .from('purchases')
           .select(`
             *,
-            courses!inner (title)
+            courses (title)
           `)
           .eq('status', 'completed')
           .gte('created_at', startDate.toISOString())
-          .eq('courses.language', i18n.language)
           .order('created_at', { ascending: false })
 
         if (purchasesError) throw purchasesError
@@ -137,7 +136,7 @@ const AdminAnalytics: React.FC = () => {
         // Recent transactions
         const recentTransactions = purchases.slice(0, 10).map(purchase => ({
           id: purchase.id,
-          email: purchase.email,
+          email: purchase.email || purchase.phone_number || '',
           amount: purchase.amount,
           currency: purchase.currency,
           course_title: purchase.courses?.title || 'Unknown',
@@ -171,7 +170,7 @@ const AdminAnalytics: React.FC = () => {
     }
 
     fetchAnalytics()
-  }, [dateRange, i18n.language])
+  }, [dateRange])
 
   if (loading) {
     return <LoadingSpinner className="py-12" />

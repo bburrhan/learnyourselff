@@ -68,21 +68,20 @@ const AdminDashboard: React.FC = () => {
           .from('purchases')
           .select(`
             *,
-            courses!inner (title)
+            courses (title)
           `)
           .eq('status', 'completed')
-          .eq('courses.language', i18n.language)
           .order('created_at', { ascending: false })
           .limit(10)
 
         const totalSales = purchasesData?.length || 0
         const totalRevenue = purchasesData?.reduce((sum, purchase) => sum + purchase.amount, 0) || 0
-        
+
         const recentSales = purchasesData?.map(purchase => ({
           id: purchase.id,
           amount: purchase.amount,
           currency: purchase.currency,
-          email: purchase.email,
+          email: purchase.email || purchase.phone_number || '',
           course_title: purchase.courses?.title || 'Unknown',
           created_at: purchase.created_at,
         })) || []
