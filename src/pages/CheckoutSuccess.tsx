@@ -1,8 +1,14 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import LanguageAwareLink from '../components/Layout/LanguageAwareLink'
 import { CheckCircle, BookOpen, ArrowRight, Loader } from 'lucide-react'
+
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void
+  }
+}
 
 interface CheckoutInfo {
   courseId?: string
@@ -22,6 +28,7 @@ const CheckoutSuccess: React.FC = () => {
   const [checkoutInfo, setCheckoutInfo] = useState<CheckoutInfo | null>(null)
   const [verifying, setVerifying] = useState(false)
   const [countdown, setCountdown] = useState(5)
+  const pixelFiredRef = useRef(false)
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -89,6 +96,31 @@ const CheckoutSuccess: React.FC = () => {
         })
     }
   }, [])
+
+  useEffect(() => {
+    if (verifying || checkoutInfo === null || pixelFiredRef.current) return
+    if (typeof window.fbq !== 'function') return
+
+    pixelFiredRef.current = true
+
+    if (checkoutInfo.isFree) {
+      window.fbq('track', 'Purchase', {
+        value: 0,
+        currency: 'USD',
+        content_ids: checkoutInfo.courseId ? [checkoutInfo.courseId] : [],
+        content_name: checkoutInfo.courseTitle || '',
+        content_type: 'product',
+      })
+    } else if (typeof checkoutInfo.amount === 'number') {
+      window.fbq('track', 'Purchase', {
+        value: checkoutInfo.amount,
+        currency: checkoutInfo.currency || 'USD',
+        content_ids: checkoutInfo.courseId ? [checkoutInfo.courseId] : [],
+        content_name: checkoutInfo.courseTitle || '',
+        content_type: 'product',
+      })
+    }
+  }, [verifying, checkoutInfo])
 
   useEffect(() => {
     if (verifying || checkoutInfo === null) return
