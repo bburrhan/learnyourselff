@@ -77,13 +77,12 @@ const Header: React.FC = () => {
     <header className="bg-white/95 backdrop-blur-sm shadow-md sticky top-0 z-50 border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <LanguageAwareLink to="/" className="flex items-center gap-x-2 hover:opacity-80 transition-opacity">
+          <LanguageAwareLink to="/" className="flex items-center hover:opacity-80 transition-opacity">
             <img
-              src="/Learnyourself_Logo copy.svg"
+              src="/LY_Logo_Full_Colored.png"
               alt="LearnYourself Logo"
-              className="h-8 w-8"
+              className="h-8 w-auto"
             />
-            <span className="text-xl font-bold text-gray-900 hidden sm:block">LearnYourself</span>
           </LanguageAwareLink>
 
           <nav className="hidden md:flex gap-x-8">

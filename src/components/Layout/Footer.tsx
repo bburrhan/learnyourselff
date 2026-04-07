@@ -50,12 +50,11 @@ const Footer: React.FC = () => {
               className="flex items-center gap-x-2 mb-4 cursor-pointer"
               onClick={handleLogoClick}
             >
-              <img 
-                src="/Learnyourself_Logo copy.svg" 
-                alt="LearnYourself Logo" 
-                className="h-8 w-8"
+              <img
+                src="/LY_Logo_Full_Colored.png"
+                alt="LearnYourself Logo"
+                className="h-8 w-auto"
               />
-              <span className="text-xl font-bold text-white">LearnYourself</span>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
               {t('brandTagline')}
