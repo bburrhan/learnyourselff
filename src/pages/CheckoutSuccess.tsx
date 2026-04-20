@@ -150,6 +150,16 @@ const CheckoutSuccess: React.FC = () => {
         })
       }
     }
+
+    // Google Ads conversion
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'conversion', {
+        send_to: 'AW-18061722041/9HMwCIf03p8cELmDwKRD',
+        value: checkoutInfo.isFree ? 0 : (checkoutInfo.amount ?? 0),
+        currency: checkoutInfo.currency || 'USD',
+        transaction_id: checkoutInfo.purchaseId || checkoutInfo.courseId || '',
+      })
+    }
   }, [verifying, checkoutInfo])
 
   useEffect(() => {
