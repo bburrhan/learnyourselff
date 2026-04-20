@@ -7,6 +7,7 @@ import { CheckCircle, BookOpen, ArrowRight, Loader } from 'lucide-react'
 declare global {
   interface Window {
     fbq?: (...args: unknown[]) => void
+    gtag?: (...args: unknown[]) => void
   }
 }
 
@@ -99,26 +100,55 @@ const CheckoutSuccess: React.FC = () => {
 
   useEffect(() => {
     if (verifying || checkoutInfo === null || pixelFiredRef.current) return
-    if (typeof window.fbq !== 'function') return
 
     pixelFiredRef.current = true
 
-    if (checkoutInfo.isFree) {
-      window.fbq('track', 'Purchase', {
-        value: 0,
-        currency: 'USD',
-        content_ids: checkoutInfo.courseId ? [checkoutInfo.courseId] : [],
-        content_name: checkoutInfo.courseTitle || '',
-        content_type: 'product',
-      })
-    } else if (typeof checkoutInfo.amount === 'number') {
-      window.fbq('track', 'Purchase', {
-        value: checkoutInfo.amount,
-        currency: checkoutInfo.currency || 'USD',
-        content_ids: checkoutInfo.courseId ? [checkoutInfo.courseId] : [],
-        content_name: checkoutInfo.courseTitle || '',
-        content_type: 'product',
-      })
+    if (typeof window.fbq === 'function') {
+      if (checkoutInfo.isFree) {
+        window.fbq('track', 'Purchase', {
+          value: 0,
+          currency: 'USD',
+          content_ids: checkoutInfo.courseId ? [checkoutInfo.courseId] : [],
+          content_name: checkoutInfo.courseTitle || '',
+          content_type: 'product',
+        })
+      } else if (typeof checkoutInfo.amount === 'number') {
+        window.fbq('track', 'Purchase', {
+          value: checkoutInfo.amount,
+          currency: checkoutInfo.currency || 'USD',
+          content_ids: checkoutInfo.courseId ? [checkoutInfo.courseId] : [],
+          content_name: checkoutInfo.courseTitle || '',
+          content_type: 'product',
+        })
+      }
+    }
+
+    if (typeof window.gtag === 'function') {
+      if (checkoutInfo.isFree) {
+        window.gtag('event', 'purchase', {
+          transaction_id: checkoutInfo.purchaseId || checkoutInfo.courseId,
+          value: 0,
+          currency: 'USD',
+          items: [{
+            item_id: checkoutInfo.courseId || '',
+            item_name: checkoutInfo.courseTitle || '',
+            price: 0,
+            quantity: 1,
+          }],
+        })
+      } else if (typeof checkoutInfo.amount === 'number') {
+        window.gtag('event', 'purchase', {
+          transaction_id: checkoutInfo.purchaseId || checkoutInfo.courseId,
+          value: checkoutInfo.amount,
+          currency: checkoutInfo.currency || 'USD',
+          items: [{
+            item_id: checkoutInfo.courseId || '',
+            item_name: checkoutInfo.courseTitle || '',
+            price: checkoutInfo.amount,
+            quantity: 1,
+          }],
+        })
+      }
     }
   }, [verifying, checkoutInfo])
 
